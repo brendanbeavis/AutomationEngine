@@ -1,3 +1,4 @@
+using AutomationEngine.Configuration;
 using AutomationEngine.Dto;
 using AutomationEngine.Models;
 using AutomationEngine.Models.Cron;
@@ -18,6 +19,8 @@ namespace AutomationEngine.Components.Pages.Main
 
         [Parameter]
         public bool IsEdit { get; set; } = false;
+        [Parameter]
+        public bool IsDupe { get; set; } = false;
 
         [Parameter]
         public string ErrorMessage { get; set; } = string.Empty;
@@ -80,7 +83,7 @@ namespace AutomationEngine.Components.Pages.Main
             if (Job.Type == JobType.PowerShell)
             {
                 oldCommand = Job.Command;
-                Job.Command = "powershell.exe";
+                Job.Command = Constants.Jobs.PowerShellDefault;
             }
             else if (Job.Type == JobType.FileCleanup)
             {

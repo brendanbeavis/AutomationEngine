@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using AutomationEngine.Configuration;
 using AutomationEngine.Options;
 using System.Threading.Tasks;
 
@@ -47,7 +48,7 @@ namespace AutomationEngine.Middleware
             }
 
             // For API requests, validate the X-Admin-Secret header
-            if (!context.Request.Headers.TryGetValue("X-Admin-Secret", out var headerValue))
+            if (!context.Request.Headers.TryGetValue(Constants.Headers.AdminSecret, out var headerValue))
             {
                 _logger.LogWarning("API request from {RemoteIp} missing X-Admin-Secret header. Path: {Path}", 
                     context.Connection.RemoteIpAddress, path);
@@ -57,7 +58,7 @@ namespace AutomationEngine.Middleware
                 await context.Response.WriteAsJsonAsync(new
                 {
                     error = "Unauthorized",
-                    message = "X-Admin-Secret header is required for API access"
+                    message = $"{Constants.Headers.AdminSecret} header is required for API access"
                 });
                 return;
             }
@@ -73,7 +74,7 @@ namespace AutomationEngine.Middleware
                 await context.Response.WriteAsJsonAsync(new
                 {
                     error = "Unauthorized",
-                    message = "Invalid X-Admin-Secret"
+                    message = $"Invalid {Constants.Headers.AdminSecret}"
                 });
                 return;
             }

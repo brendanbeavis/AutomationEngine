@@ -87,8 +87,8 @@ namespace AutomationEngine.Components.Pages.Main
                     await JS.InvokeVoidAsync("window.applyTheme", SelectedTheme);
                 }
 
-                // Clear success message after 3 seconds
-                await Task.Delay(3000);
+                // Clear success message after 1 second
+                await Task.Delay(1000);
                 SuccessMessage = null;
             }
             catch (Exception ex)

@@ -1,4 +1,5 @@
 using AutomationEngine.Api;
+using AutomationEngine.Configuration;
 using AutomationEngine.Data;
 using AutomationEngine.Services;
 using AutomationEngine.Services.Abstractions;
@@ -81,11 +82,14 @@ builder.Services.AddDbContextFactory<AutomationDbContext>(options =>
     });
 });
 
-//builder.Services.AddHttpClient();
+// Configure Kestrel and all URLs based on Server:Port configuration
+// This makes the port a single source of truth - no duplication needed
+var serverConfig = builder.Configuration.GetSection(ServerOptions.SectionName)
+    .Get<ServerOptions>() ?? new ServerOptions();
 
 builder.Services.AddHttpClient<JobApiClient>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
+    client.BaseAddress = new Uri(serverConfig.LocalhostUrl);
 });
 
 // Configure Polly resilience policies
@@ -93,7 +97,7 @@ var retryPolicy = Policy<bool>
     .Handle<Exception>()
     .OrResult(r => !r)
     .WaitAndRetryAsync(
-        retryCount: 3,
+        retryCount: Constants.Resilience.RetryAttempts,
         sleepDurationProvider: attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)),
         onRetry: (outcome, timespan, retryCount, context) =>
         {
@@ -105,8 +109,8 @@ var circuitBreakerPolicy = Policy<bool>
     .Handle<Exception>()
     .OrResult(r => !r)
     .CircuitBreakerAsync(
-        handledEventsAllowedBeforeBreaking: 5,
-        durationOfBreak: TimeSpan.FromSeconds(30),
+        handledEventsAllowedBeforeBreaking: Constants.Resilience.CircuitBreakerThreshold,
+        durationOfBreak: TimeSpan.FromSeconds(Constants.Resilience.CircuitBreakerDurationSeconds),
         onBreak: (outcome, timespan) =>
         {
             Log.Error("Circuit breaker opened due to repeated failures. Breaking for {Duration}ms", timespan.TotalMilliseconds);
@@ -124,9 +128,16 @@ builder.Services.AddSingleton(retryPolicy);
 builder.Services.AddSingleton(circuitBreakerPolicy);
 builder.Services.AddSingleton(combinedPolicy);
 
+// Configure Kestrel to listen on the URL derived from Server:Port
+builder.WebHost.UseUrls(serverConfig.LocalhostUrl);
+
+
 // Configure typed options from configuration sections
 builder.Services.Configure<SecurityOptions>(builder.Configuration.GetSection(SecurityOptions.SectionName));
 builder.Services.AddSingleton<ISecurityOptions>(sp => sp.GetRequiredService<IOptions<SecurityOptions>>().Value);
+
+builder.Services.Configure<ServerOptions>(builder.Configuration.GetSection(ServerOptions.SectionName));
+builder.Services.AddSingleton<IServerOptions>(sp => sp.GetRequiredService<IOptions<ServerOptions>>().Value);
 
 builder.Services.Configure<NtfyOptions>(builder.Configuration.GetSection(NtfyOptions.SectionName));
 builder.Services.AddSingleton<INtfyOptions>(sp => sp.GetRequiredService<IOptions<NtfyOptions>>().Value);
@@ -172,8 +183,12 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
+        // Get server options to use configured port in CORS origins
+        var serverOptions = builder.Configuration.GetSection(ServerOptions.SectionName)
+            .Get<ServerOptions>() ?? new ServerOptions();
+
         policy
-            .WithOrigins("http://127.0.0.1:5000", "http://localhost:5000")
+            .WithOrigins(serverOptions.LoopbackUrl, serverOptions.LocalhostUrl)
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
@@ -280,14 +295,17 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<AutomationEngine.Components.App>()
     .AddInteractiveServerRenderMode();
-app.MapHub<JobStatusHub>("/hubs/job-status");
+app.MapHub<JobStatusHub>(Constants.SignalR.JobStatusHubPath);
 
 // Log that the app is running
 app.Lifetime.ApplicationStarted.Register(() =>
 {
     var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
     Log.Information("Application started with version {Version} in environment {Environment}", version, app.Environment.EnvironmentName);
-    Log.Information("Automation Engine started and ready to accept connections | Url: http://localhost:5000");
+
+    // Get server options to log the actual configured URL
+    var serverOptions = app.Services.GetRequiredService<IServerOptions>();
+    Log.Information("Automation Engine started and ready to accept connections | Url: {Url}", serverOptions.LocalhostUrl);
 });
 
 app.Lifetime.ApplicationStopping.Register(() =>

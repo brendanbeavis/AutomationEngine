@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Cronos;
+using AutomationEngine.Configuration;
 using AutomationEngine.Models;
 
 namespace AutomationEngine.Dto
@@ -26,7 +27,7 @@ namespace AutomationEngine.Dto
         [StringLength(500, ErrorMessage = "Arguments are limited to 500 characters")]
         public string? Arguments { get; set; }
 
-        [StringLength(5000, ErrorMessage = "Script is limited to 5000 characters")]
+        [StringLength(Constants.Jobs.CommandMaxLength, ErrorMessage = "Script is limited to character length of " + nameof(Constants.Jobs.CommandMaxLength))]
         public string? Script { get; set; }
 
         [StringLength(260, ErrorMessage = "WorkingDirectory is limited to 260 characters")]
@@ -88,9 +89,9 @@ namespace AutomationEngine.Dto
                 {
                     yield return new ValidationResult("Script is required for PowerShell jobs", new[] { nameof(Script) });
                 }
-                else if (Script.Length > 5000)
+                else if (Script.Length > Constants.Jobs.CommandMaxLength)
                 {
-                    yield return new ValidationResult("Script exceeds maximum length of 5000 characters", new[] { nameof(Script) });
+                    yield return new ValidationResult($"Script exceeds maximum length of {Constants.Jobs.CommandMaxLength} characters", new[] { nameof(Script) });
                 }
             }
 

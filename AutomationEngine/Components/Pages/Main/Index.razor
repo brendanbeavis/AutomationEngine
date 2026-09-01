@@ -206,10 +206,11 @@ else
     OnClose="HideStopConfirm">
 </StopConfirm>
 
-<!-- Add/Edit Job Modal -->
+<!-- Add/Edit/Duplicate Job Modal -->
 <AddJobModal
     IsVisible="@showAddJobModal"
     IsEdit="@isEdit"
+    IsDupe="@isDupe"
     Job="@newJob"
     ErrorMessage="@modalErrorMessage"
     Schedule="@schedule"

@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AutomationEngine.Configuration;
 using AutomationEngine.Data.Entities;
 using AutomationEngine.Extensions;
 using AutomationEngine.Models;
@@ -73,9 +74,9 @@ namespace AutomationEngine.Services
                 {
                     throw new ArgumentException("Script is required for PowerShell jobs", nameof(job.Script));
                 }
-                if (job.Script.Length > 5000)
+                if (job.Script.Length > Constants.Jobs.CommandMaxLength)
                 {
-                    throw new ArgumentException("Script exceeds maximum length of 5000 characters", nameof(job.Script));
+                    throw new ArgumentException($"Script exceeds maximum length of {Constants.Jobs.CommandMaxLength} characters", nameof(job.Script));
                 }
             }
 
@@ -245,7 +246,7 @@ namespace AutomationEngine.Services
                     await System.IO.File.WriteAllTextAsync(tempScriptPath, job.Script ?? string.Empty, cancellationToken).ConfigureAwait(false);
 
                     // prefer pwsh (PowerShell Core) if available, otherwise fallback to powershell
-                    fileName = string.IsNullOrWhiteSpace(fileName) ? "powershell.exe" : fileName;
+                    fileName = string.IsNullOrWhiteSpace(fileName) ? Constants.Jobs.PowerShellDefault : fileName;
                     arguments = $"-NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"{tempScriptPath}\"";
                 }
 

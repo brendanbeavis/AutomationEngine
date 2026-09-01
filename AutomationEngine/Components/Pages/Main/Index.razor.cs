@@ -1,3 +1,4 @@
+using AutomationEngine.Configuration;
 using AutomationEngine.Dto;
 using AutomationEngine.Models;
 using AutomationEngine.Models.Cron;
@@ -50,6 +51,7 @@ namespace AutomationEngine.Components.Pages.Main
         private bool showAddJobModal = false;
         private bool showHistoryModal = false;
         private bool isEdit = false;
+        private bool isDupe = false;
         private JobDto newJob = new JobDto();
         private string oldCommand = string.Empty;
         private EditContext editContext = new EditContext(new JobDto());
@@ -98,7 +100,7 @@ namespace AutomationEngine.Components.Pages.Main
             try
             {
                 _hubConnection = new HubConnectionBuilder()
-                    .WithUrl(NavManager.ToAbsoluteUri("/hubs/job-status"))
+                    .WithUrl(NavManager.ToAbsoluteUri(Constants.SignalR.JobStatusHubPath))
                     .WithAutomaticReconnect()
                     .Build();
 
@@ -330,6 +332,7 @@ namespace AutomationEngine.Components.Pages.Main
         private void ShowEditJobModal(JobDto job)
         {
             isEdit = true;
+            isDupe = false;
             newJob = new JobDto
             {
                 JobId = job.JobId,
@@ -425,6 +428,7 @@ namespace AutomationEngine.Components.Pages.Main
         private void ShowDuplicateModal(JobDto job)
         {
             isEdit = false;
+            isDupe = true;
             newJob = new JobDto
             {
                 DisplayName = $"{job.DisplayName} (Copy)",
