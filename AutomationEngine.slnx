@@ -1,0 +1,21 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/scripts/">
+    <File Path="scripts/AV.ps1" />
+    <File Path="scripts/backup.ps1" />
+    <File Path="scripts/cleaner.ps1" />
+    <File Path="scripts/CleanupSecurityCameraRecordings.ps1" />
+    <File Path="scripts/HealthChecker.ps1" />
+    <File Path="scripts/OpenRGB.ps1" />
+  </Folder>
+  <Folder Name="/Solution Items/" />
+  <Project Path="AutomationEngine/AutomationEngine.csproj" />
+  <Project Path="SetupAutomationEngine/SetupAutomationEngine.wixproj" Id="f1a20f08-6c31-48f9-88b2-2e41fb5a533b">
+    <Platform Project="x86" />
+    <Build Solution="*|x86" />
+    <Build Solution="Release|Any CPU" />
+  </Project>
+</Solution>

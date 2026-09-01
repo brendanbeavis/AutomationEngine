@@ -1,0 +1,109 @@
+@page "/ui-demo"
+@using Microsoft.AspNetCore.Components
+
+<div class="cp-container">
+  <h1 class="neon-text">⚡ Cyberpunk Theme — Demo</h1>
+  <p class="text-muted mb-4">Enhanced dark theme with neon accents, glitch effects, and futuristic styling</p>
+
+  <!-- Buttons Section -->
+  <div class="cp-card cp-glass cp-chamfer mb-3">
+    <h3>Neon Buttons</h3>
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn btn-primary cp-btn neon">Primary</button>
+      <button class="btn btn-success cp-btn neon">Success</button>
+      <button class="btn btn-warning cp-btn neon">Warning</button>
+      <button class="btn btn-danger cp-btn neon">Danger</button>
+      <button class="btn btn-secondary cp-btn neon">Secondary</button>
+      <button class="btn btn-info cp-btn neon">Info</button>
+    </div>
+  </div>
+
+  <!-- Cyberpunk Badges Section -->
+  <div class="cp-card cp-glass cp-chamfer mb-3">
+    <h3>Cyberpunk Badges</h3>
+
+    <!-- Neon Badge Variants -->
+    <div class="mb-3">
+      <p class="mb-2"><strong>Neon Status Badges:</strong></p>
+      <div class="d-flex gap-2 flex-wrap">
+        <span class="badge bg-cyan-neon">● ONLINE</span>
+        <span class="badge bg-pink-neon">● ACTIVE</span>
+        <span class="badge bg-purple-neon">● PROCESSING</span>
+        <span class="badge bg-lime-neon">● READY</span>
+        <span class="badge bg-orange-neon">● WARNING</span>
+        <span class="badge bg-secondary">● IDLE</span>
+      </div>
+    </div>
+
+    <!-- Bootstrap Standard Badges with Cyberpunk Styling -->
+    <div class="mb-3">
+      <p class="mb-2"><strong>Bootstrap Badges (Enhanced):</strong></p>
+      <div class="d-flex gap-2 flex-wrap">
+        <span class="badge bg-success">Success</span>
+        <span class="badge bg-danger">Error</span>
+        <span class="badge bg-warning">Alert</span>
+        <span class="badge bg-secondary">Neutral</span>
+      </div>
+    </div>
+
+    <!-- Uppercase Badges -->
+    <div class="mb-3">
+      <p class="mb-2"><strong>System Status Indicators:</strong></p>
+      <div class="d-flex gap-2 flex-wrap">
+        <span class="badge bg-cyan-neon">NETWORK OK</span>
+        <span class="badge bg-lime-neon">SYSTEM NOMINAL</span>
+        <span class="badge bg-pink-neon">ALERT ACTIVE</span>
+        <span class="badge bg-purple-neon">SCANNING</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Glass Panel & Form -->
+  <div class="cp-card cp-chamfer mb-3">
+    <h3>Glass Panel & Form</h3>
+    <div class="cp-glass p-3">
+      <label class="form-label muted">Name</label>
+      <input class="form-control mb-2" placeholder="Enter name" />
+      <label class="form-label muted">Message</label>
+      <textarea class="form-control mb-2" rows="3"></textarea>
+      <button class="btn btn-primary cp-btn neon">Send</button>
+    </div>
+  </div>
+
+  <!-- Progress and Logs -->
+  <div class="cp-card cp-chamfer mb-3">
+    <h3>System Status</h3>
+
+    <label class="form-label muted">Overall Progress</label>
+    <div class="cp-progress mb-3"><div class="bar" style="width:42%"></div></div>
+
+    <h5 class="mb-2">Recent Log</h5>
+    <pre class="cp-card cp-chamfer cp-glass"><code>
+[12:03:01] Job 'Backup' started
+[12:03:04] Job 'Backup' completed (OK)
+[12:04:10] Job 'Cleanup' queued
+[12:04:11] Job 'Cleanup' failed: File locked
+    </code></pre>
+  </div>
+
+  <!-- Text Effects -->
+  <div class="cp-card cp-chamfer mb-3">
+    <h3>Neon Text Effects</h3>
+    <div class="mb-3">
+      <p><span class="neon-text">Cyan Neon Glow</span> — Main accent color with animated flicker</p>
+      <p><span class="neon-pink">Pink/Magenta Neon</span> — Secondary accent with vibrant glow</p>
+      <p><span class="neon-purple">Purple Neon</span> — Tertiary accent for highlights</p>
+      <p><span class="neon-lime">Lime Green Neon</span> — Energy/success indicator</p>
+      <p><span class="neon-orange">Orange Neon</span> — Warning/caution indicator</p>
+    </div>
+  </div>
+
+  <!-- Typography -->
+  <div class="cp-card">
+    <h3>Futuristic Typography</h3>
+    <p class="text-muted">All headings use the <strong>Orbitron</strong> font family with enhanced letter-spacing for that cyberpunk aesthetic.</p>
+    <p class="text-muted">Code and monospace text use <strong>Space Mono</strong> for a technical, futuristic feel.</p>
+    <h5 class="mt-3">[ END TRANSMISSION ]</h5>
+  </div>
+
+</div>

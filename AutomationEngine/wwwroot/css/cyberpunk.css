@@ -1,0 +1,697 @@
+/* Cyberpunk theme - dark base with neon accents and glitch effects */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono:wght@400;700&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root{
+  --cp-bg-900: #03040a;
+  --cp-bg-800: #0a0b12;
+  --cp-panel: rgba(255,255,255,0.03);
+  --cp-accent-cyan: #00fff6;
+  --cp-accent-pink: #ff2d95;
+  --cp-accent-purple: #7a00ff;
+  --cp-accent-lime: #39ff14;
+  --cp-accent-magenta: #ff006e;
+  --cp-accent-orange: #ff6b35;
+  --cp-glow: 0 0 18px rgba(0,255,246,0.12), 0 0 36px rgba(122,0,255,0.06);
+  --cp-glow-pink: 0 0 20px rgba(255,45,149,0.15), 0 0 40px rgba(255,45,149,0.08);
+  --cp-glow-purple: 0 0 22px rgba(122,0,255,0.18), 0 0 45px rgba(122,0,255,0.09);
+  --cp-glow-lime: 0 0 18px rgba(57,255,20,0.12), 0 0 36px rgba(57,255,20,0.06);
+  --cp-border: rgba(255,255,255,0.06);
+  --cp-radius: 1px;
+  --cp-chamfer-size: 20px;
+}
+
+html,body{
+  height:100%;
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(122,0,255,0.08), transparent 8%),
+              radial-gradient(900px 400px at 90% 90%, rgba(0,255,246,0.06), transparent 12%),
+              linear-gradient(180deg, var(--cp-bg-800), var(--cp-bg-900));
+  color: #e6f7ff;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Glitch animation effect */
+@keyframes glitch {
+  0% { text-shadow: 3px 0 #ff2d95, -3px 0 #00fff6; }
+  14% { text-shadow: 3px 0 #ff2d95, -3px 0 #00fff6; }
+  15% { text-shadow: -3px -3px #ff2d95, 3px 3px #00fff6, 0 0 8px #7a00ff; }
+  49% { text-shadow: -3px -3px #ff2d95, 3px 3px #00fff6, 0 0 8px #7a00ff; }
+  50% { text-shadow: 3px 0 #ff2d95, -3px 0 #00fff6; }
+  100% { text-shadow: 3px 0 #ff2d95, -3px 0 #00fff6; }
+}
+
+@keyframes glitch-color {
+  0% { color: var(--cp-accent-cyan); }
+  50% { color: var(--cp-accent-pink); }
+  100% { color: var(--cp-accent-cyan); }
+}
+
+@keyframes scan-lines {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(10px); }
+}
+
+@keyframes neon-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { text-shadow: 0 0 10px #00fff6, 0 0 20px #00fff6, 0 0 30px #00fff6, 0 0 40px #0ff; }
+  20%, 24%, 55% { text-shadow: 0 0 5px #00fff6; }
+}
+
+@keyframes slideInTop {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Typography */
+h1,h2,h3,h4,h5{
+  font-family: 'Orbitron', sans-serif;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+
+code,pre{
+  font-family: 'Space Mono', monospace;
+  font-weight: 500;
+}
+
+/* Page container */
+.cp-container{padding:1.5rem}
+
+/* Neon utilities */
+.neon-text{
+  color: var(--cp-accent-cyan);
+  text-shadow: 0 0 8px rgba(0,255,246,0.95), 0 0 18px rgba(0,255,246,0.4), 0 0 30px rgba(0,255,246,0.2);
+  animation: neon-flicker 3s infinite alternate;
+}
+
+.neon-text.glitch {
+  animation: glitch 0.2s infinite;
+}
+
+.neon-pink{
+  color: var(--cp-accent-pink);
+  text-shadow: 0 0 8px rgba(255,45,149,0.95), 0 0 18px rgba(255,45,149,0.4), 0 0 30px rgba(255,45,149,0.2);
+}
+
+.neon-pink.glitch {
+  animation: glitch 0.2s infinite;
+}
+
+.neon-purple{
+  color: var(--cp-accent-purple);
+  text-shadow: 0 0 8px rgba(122,0,255,0.95), 0 0 18px rgba(122,0,255,0.4), 0 0 30px rgba(122,0,255,0.2);
+}
+
+.neon-lime{
+  color: var(--cp-accent-lime);
+  text-shadow: 0 0 8px rgba(57,255,20,0.95), 0 0 18px rgba(57,255,20,0.4), 0 0 30px rgba(57,255,20,0.2);
+}
+
+.neon-orange{
+  color: var(--cp-accent-orange);
+  text-shadow: 0 0 8px rgba(255,107,53,0.95), 0 0 18px rgba(255,107,53,0.4), 0 0 30px rgba(255,107,53,0.2);
+}
+
+.neon-glow{
+  box-shadow: var(--cp-glow)
+}
+
+/* Badges - Cyberpunk Edition */
+.badge {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 0.5rem 0.8rem;
+  border-radius: 2px;
+  border: 1px solid rgba(255,255,255,0.1);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.badge:hover::before {
+  left: 100%;
+}
+
+/* Cyan Neon Badge */
+.badge.bg-cyan-neon,
+.badge.bg-success {
+  background: linear-gradient(135deg, rgba(0,255,246,0.15), rgba(0,200,200,0.1));
+  color: var(--cp-accent-cyan);
+  border-color: var(--cp-accent-cyan);
+  box-shadow: 0 0 12px rgba(0,255,246,0.25), inset 0 0 12px rgba(0,255,246,0.08);
+  text-shadow: 0 0 4px rgba(0,255,246,0.6);
+}
+
+.badge.bg-cyan-neon:hover,
+.badge.bg-success:hover {
+  box-shadow: 0 0 20px rgba(0,255,246,0.4), inset 0 0 16px rgba(0,255,246,0.12), 0 0 30px rgba(0,255,246,0.15);
+  background: linear-gradient(135deg, rgba(0,255,246,0.25), rgba(0,200,200,0.15));
+}
+
+/* Pink Magenta Badge */
+.badge.bg-pink-neon,
+.badge.bg-danger {
+  background: linear-gradient(135deg, rgba(255,45,149,0.15), rgba(255,0,110,0.1));
+  color: #ffffff;
+  border-color: var(--cp-accent-magenta);
+  box-shadow: 0 0 12px rgba(255,45,149,0.25), inset 0 0 12px rgba(255,45,149,0.08);
+  text-shadow: 0 0 4px rgba(255,45,149,0.6);
+}
+
+.badge.bg-pink-neon:hover,
+.badge.bg-danger:hover {
+  box-shadow: 0 0 20px rgba(255,45,149,0.4), inset 0 0 16px rgba(255,45,149,0.12), 0 0 30px rgba(255,45,149,0.15);
+  background: linear-gradient(135deg, rgba(255,45,149,0.25), rgba(255,0,110,0.15));
+}
+
+/* Purple Badge */
+.badge.bg-purple-neon {
+  background: linear-gradient(135deg, rgba(122,0,255,0.15), rgba(100,0,220,0.1));
+  color: var(--cp-accent-purple);
+  border-color: var(--cp-accent-purple);
+  box-shadow: 0 0 12px rgba(122,0,255,0.25), inset 0 0 12px rgba(122,0,255,0.08);
+  text-shadow: 0 0 4px rgba(122,0,255,0.6);
+}
+
+.badge.bg-purple-neon:hover {
+  box-shadow: 0 0 20px rgba(122,0,255,0.4), inset 0 0 16px rgba(122,0,255,0.12), 0 0 30px rgba(122,0,255,0.15);
+  background: linear-gradient(135deg, rgba(122,0,255,0.25), rgba(100,0,220,0.15));
+}
+
+/* Lime Green Badge */
+.badge.bg-lime-neon {
+  background: linear-gradient(135deg, rgba(57,255,20,0.15), rgba(50,220,20,0.1));
+  color: var(--cp-accent-lime);
+  border-color: var(--cp-accent-lime);
+  box-shadow: 0 0 12px rgba(57,255,20,0.25), inset 0 0 12px rgba(57,255,20,0.08);
+  text-shadow: 0 0 4px rgba(57,255,20,0.6);
+}
+
+.badge.bg-lime-neon:hover {
+  box-shadow: 0 0 20px rgba(57,255,20,0.4), inset 0 0 16px rgba(57,255,20,0.12), 0 0 30px rgba(57,255,20,0.15);
+  background: linear-gradient(135deg, rgba(57,255,20,0.25), rgba(50,220,20,0.15));
+}
+
+/* Orange Badge */
+.badge.bg-orange-neon {
+  background: linear-gradient(135deg, rgba(255,107,53,0.15), rgba(220,80,40,0.1));
+  color: var(--cp-accent-orange);
+  border-color: var(--cp-accent-orange);
+  box-shadow: 0 0 12px rgba(255,107,53,0.25), inset 0 0 12px rgba(255,107,53,0.08);
+  text-shadow: 0 0 4px rgba(255,107,53,0.6);
+}
+
+.badge.bg-orange-neon:hover {
+  box-shadow: 0 0 20px rgba(255,107,53,0.4), inset 0 0 16px rgba(255,107,53,0.12), 0 0 30px rgba(255,107,53,0.15);
+  background: linear-gradient(135deg, rgba(255,107,53,0.25), rgba(220,80,40,0.15));
+}
+
+/* Secondary/Gray Badge */
+.badge.bg-secondary {
+  background: linear-gradient(135deg, rgba(120,120,140,0.15), rgba(100,100,120,0.1));
+  color: rgba(230,247,255,0.9);
+  border-color: rgba(255,255,255,0.2);
+  box-shadow: 0 0 10px rgba(120,120,140,0.15), inset 0 0 10px rgba(255,255,255,0.05);
+}
+
+.badge.bg-secondary:hover {
+  box-shadow: 0 0 16px rgba(120,120,140,0.25), inset 0 0 12px rgba(255,255,255,0.08);
+  background: linear-gradient(135deg, rgba(120,120,140,0.25), rgba(100,100,120,0.15));
+}
+
+/* Warning Badge */
+.badge.bg-warning {
+  background: linear-gradient(135deg, rgba(255,193,7,0.15), rgba(220,170,0,0.1));
+  color: #ffc107;
+  border-color: rgba(255,193,7,0.4);
+  box-shadow: 0 0 12px rgba(255,193,7,0.2), inset 0 0 12px rgba(255,193,7,0.06);
+  text-shadow: 0 0 4px rgba(255,193,7,0.5);
+}
+
+.badge.bg-warning:hover {
+  box-shadow: 0 0 18px rgba(255,193,7,0.3), inset 0 0 14px rgba(255,193,7,0.1);
+  background: linear-gradient(135deg, rgba(255,193,7,0.25), rgba(220,170,0,0.15));
+}
+
+/* Buttons */
+.cp-btn{
+  display:inline-block;
+  padding:0.3rem 0.5rem;
+  border-radius: var(--cp-radius);
+  /* use a per-instance CSS variable so contextual classes can set border color without needing !important */
+  border:1px solid var(--cp-btn-border-color, var(--cp-border));
+  background:transparent; /* allow bootstrap contextual classes like btn-success to control background */
+  color:inherit; /* inherit color from btn-* or parent */
+  cursor:pointer;
+  /* animate only color/background/box-shadow/border-color to avoid movement on hover */
+  transition: box-shadow .18s ease, background-color .12s ease, color .12s ease, border-color .12s ease;
+  font-weight:600;
+}
+/* Remove upward translate on hover to avoid layout shift */
+.cp-btn:hover, .cp-btn:focus, .cp-btn:active { transform: none; }
+.cp-btn.ghost{background:transparent; border:1px dashed var(--cp-border); color:var(--cp-accent-pink)}
+
+/* Optional neon accent when combined (use .neon to add glow) */
+.cp-btn.neon{box-shadow: 0 6px 30px rgba(0,255,246,0.06);}
+
+/* Ensure buttons honor the theme radius across bootstrap variations */
+.btn.cp-btn, .btn.cp-btn:focus, .btn.cp-btn:active,
+.btn-sm.cp-btn, .btn-lg.cp-btn, .btn.block.cp-btn {
+  border-radius: var(--cp-radius) !important;
+  overflow: hidden;
+}
+
+/* If cp-glass applied to buttons, ensure same radius */
+.cp-glass.cp-btn{ border-radius: var(--cp-radius) !important; }
+
+/* Respect common bootstrap contextual classes by adding subtle neon glows and setting a border variable */
+.cp-btn.btn-primary{box-shadow: 0 6px 30px rgba(13,110,253,0.12), inset 0 0 0 1px rgba(13,110,253,0.25); --cp-btn-border-color: rgba(13,110,253,0.25)}
+.cp-btn.btn-success{box-shadow: 0 6px 30px rgba(40,167,69,0.12), inset 0 0 0 1px rgba(40,167,69,0.22); --cp-btn-border-color: rgba(40,167,69,0.22)}
+.cp-btn.btn-warning{box-shadow: 0 6px 30px rgba(255,193,7,0.12), inset 0 0 0 1px rgba(255,193,7,0.18); --cp-btn-border-color: rgba(255,193,7,0.18)}
+.cp-btn.btn-danger{box-shadow: 0 6px 30px rgba(220,53,69,0.12), inset 0 0 0 1px rgba(220,53,69,0.18); --cp-btn-border-color: rgba(220,53,69,0.18)}
+.cp-btn.btn-info{box-shadow: 0 6px 30px rgba(23,162,184,0.12), inset 0 0 0 1px rgba(23,162,184,0.18); --cp-btn-border-color: rgba(23,162,184,0.18)}
+.cp-btn.btn-secondary{box-shadow: 0 6px 30px rgba(108,117,125,0.08), inset 0 0 0 1px rgba(108,117,125,0.12); --cp-btn-border-color: rgba(108,117,125,0.12)}
+
+/* Hover/focus/active states - preserve cyberpunk accents instead of reverting to Bootstrap defaults */
+.cp-btn.btn-primary:hover,
+.cp-btn.btn-primary:focus,
+.cp-btn.btn-primary:active{ 
+  background: linear-gradient(90deg, rgba(13,110,253,0.14), rgba(10,80,230,0.08));
+  color: #eaf4ff;
+  /* use the same variable so border stays tinted */
+  --cp-btn-border-color: rgba(13,110,253,0.35);
+  box-shadow: 0 10px 40px rgba(13,110,253,0.14);
+}
+.cp-btn.btn-success:hover,
+.cp-btn.btn-success:focus,
+.cp-btn.btn-success:active{
+  background: linear-gradient(90deg, rgba(40,167,69,0.12), rgba(30,140,60,0.06));
+  color: #eaffef;
+  --cp-btn-border-color: rgba(40,167,69,0.30);
+  box-shadow: 0 10px 40px rgba(40,167,69,0.12);
+}
+.cp-btn.btn-warning:hover,
+.cp-btn.btn-warning:focus,
+.cp-btn.btn-warning:active{
+  background: linear-gradient(90deg, rgba(255,193,7,0.12), rgba(220,160,6,0.06));
+  color: #221200;
+  --cp-btn-border-color: rgba(255,193,7,0.28);
+  box-shadow: 0 10px 40px rgba(255,193,7,0.12);
+}
+.cp-btn.btn-danger:hover,
+.cp-btn.btn-danger:focus,
+.cp-btn.btn-danger:active{
+  background: linear-gradient(90deg, rgba(220,53,69,0.12), rgba(180,40,55,0.06));
+  color: #fff5f6;
+  --cp-btn-border-color: rgba(220,53,69,0.30);
+  box-shadow: 0 10px 40px rgba(220,53,69,0.12);
+}
+.cp-btn.btn-info:hover,
+.cp-btn.btn-info:focus,
+.cp-btn.btn-info:active{
+  background: linear-gradient(90deg, rgba(23,162,184,0.12), rgba(10,130,150,0.06));
+  color: #e9fbff;
+  --cp-btn-border-color: rgba(23,162,184,0.30);
+  box-shadow: 0 10px 40px rgba(23,162,184,0.12);
+}
+.cp-btn.btn-secondary:hover,
+.cp-btn.btn-secondary:focus,
+.cp-btn.btn-secondary:active{
+  background: linear-gradient(90deg, rgba(108,117,125,0.06), rgba(80,88,95,0.04));
+  color: #f7f7f8;
+  --cp-btn-border-color: rgba(108,117,125,0.18);
+  box-shadow: 0 10px 30px rgba(108,117,125,0.08);
+}
+
+/* Outline variants: give subtle neon border and tinted hover */
+.cp-btn.btn-outline-primary:hover,
+.cp-btn.btn-outline-primary:focus{ background: rgba(13,110,253,0.06); --cp-btn-border-color: rgba(13,110,253,0.28); color: #eaf4ff }
+.cp-btn.btn-outline-success:hover,
+.cp-btn.btn-outline-success:focus{ background: rgba(40,167,69,0.06); --cp-btn-border-color: rgba(40,167,69,0.26); color: #eaffef }
+.cp-btn.btn-outline-warning:hover,
+.cp-btn.btn-outline-warning:focus{ background: rgba(255,193,7,0.06); --cp-btn-border-color: rgba(255,193,7,0.22); color: #221200 }
+.cp-btn.btn-outline-danger:hover,
+.cp-btn.btn-outline-danger:focus{ background: rgba(220,53,69,0.06); --cp-btn-border-color: rgba(220,53,69,0.22); color: #fff5f6 }
+.cp-btn.btn-outline-info:hover,
+.cp-btn.btn-outline-info:focus{ background: rgba(23,162,184,0.06); --cp-btn-border-color: rgba(23,162,184,0.22); color: #e9fbff }
+
+/* Hover/focus/active states - preserve cyberpunk accents instead of reverting to Bootstrap defaults */
+.cp-btn.btn-primary:hover,
+.cp-btn.btn-primary:focus,
+.cp-btn.btn-primary:active{ 
+  background: linear-gradient(90deg, rgba(13,110,253,0.14), rgba(10,80,230,0.08));
+  color: #eaf4ff;
+  border-color: rgba(13,110,253,0.35);
+  box-shadow: 0 10px 40px rgba(13,110,253,0.14);
+}
+.cp-btn.btn-success:hover,
+.cp-btn.btn-success:focus,
+.cp-btn.btn-success:active{
+  background: linear-gradient(90deg, rgba(40,167,69,0.12), rgba(30,140,60,0.06));
+  color: #eaffef;
+  border-color: rgba(40,167,69,0.30);
+  box-shadow: 0 10px 40px rgba(40,167,69,0.12);
+}
+.cp-btn.btn-warning:hover,
+.cp-btn.btn-warning:focus,
+.cp-btn.btn-warning:active{
+  background: linear-gradient(90deg, rgba(255,193,7,0.12), rgba(220,160,6,0.06));
+  color: #ffffe1;
+  border-color: rgba(255,193,7,0.28);
+  box-shadow: 0 10px 40px rgba(255,193,7,0.12);
+}
+.cp-btn.btn-danger:hover,
+.cp-btn.btn-danger:focus,
+.cp-btn.btn-danger:active{
+  background: linear-gradient(90deg, rgba(220,53,69,0.12), rgba(180,40,55,0.06));
+  color: #fff5f6;
+  border-color: rgba(220,53,69,0.30);
+  box-shadow: 0 10px 40px rgba(220,53,69,0.12);
+}
+.cp-btn.btn-info:hover,
+.cp-btn.btn-info:focus,
+.cp-btn.btn-info:active{
+  background: linear-gradient(90deg, rgba(23,162,184,0.12), rgba(10,130,150,0.06));
+  color: #e9fbff;
+  border-color: rgba(23,162,184,0.30);
+  box-shadow: 0 10px 40px rgba(23,162,184,0.12);
+}
+.cp-btn.btn-secondary:hover,
+.cp-btn.btn-secondary:focus,
+.cp-btn.btn-secondary:active{
+  background: linear-gradient(90deg, rgba(108,117,125,0.06), rgba(80,88,95,0.04));
+  color: #f7f7f8;
+  border-color: rgba(108,117,125,0.18);
+  box-shadow: 0 10px 30px rgba(108,117,125,0.08);
+}
+
+/* Outline variants: give subtle neon border and tinted hover */
+.cp-btn.btn-outline-primary:hover,
+.cp-btn.btn-outline-primary:focus{ background: rgba(13,110,253,0.06); border-color: rgba(13,110,253,0.28); color: #eaf4ff }
+.cp-btn.btn-outline-success:hover,
+.cp-btn.btn-outline-success:focus{ background: rgba(40,167,69,0.06); border-color: rgba(40,167,69,0.26); color: #eaffef }
+.cp-btn.btn-outline-warning:hover,
+.cp-btn.btn-outline-warning:focus{ background: rgba(255,193,7,0.06); border-color: rgba(255,193,7,0.22); color: #221200 }
+.cp-btn.btn-outline-danger:hover,
+.cp-btn.btn-outline-danger:focus{ background: rgba(220,53,69,0.06); border-color: rgba(220,53,69,0.22); color: #fff5f6 }
+.cp-btn.btn-outline-info:hover,
+.cp-btn.btn-outline-info:focus{ background: rgba(23,162,184,0.06); border-color: rgba(23,162,184,0.22); color: #e9fbff }
+
+
+/* Cards and panels */
+.cp-card{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid var(--cp-border);
+  padding:1rem;
+  border-radius: var(--cp-radius);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+  position:relative;
+  overflow:hidden;
+}
+
+/* Chamfer helper — cuts small top-left corner for a cyberpunk look */
+.cp-chamfer{
+  -webkit-clip-path: polygon(var(--cp-chamfer-size) 0, 100% 0, 100% 100%, 0 100%, 0 var(--cp-chamfer-size));
+  clip-path: polygon(var(--cp-chamfer-size) 0, 100% 0, 100% 100%, 0 100%, 0 var(--cp-chamfer-size));
+}
+
+/* Subtle bevel accent on chamfered elements */
+.cp-chamfer::after{
+  content:''; position:absolute; left:0; top:0; width:var(--cp-chamfer-size); height:var(--cp-chamfer-size);
+  background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+  transform: translate(-40%, -40%) rotate(45deg);
+  pointer-events:none;
+}
+
+/* Glass / frosted */
+.cp-glass{
+  background: rgba(255,255,255,0.02);
+  backdrop-filter: blur(6px) saturate(120%);
+  border:1px solid rgba(255,255,255,0.04);
+  border-radius: var(--cp-radius);
+}
+
+/* When cp-glass is used on buttons, prefer contextual border color from .cp-btn (keeps neon tint) */
+.cp-glass.cp-btn{
+  border:1px solid var(--cp-btn-border-color, var(--cp-border));
+}
+
+/* Neon progress bar */
+.cp-progress{ height:12px; background: rgba(255,255,255,0.02); border-radius: var(--cp-radius); overflow:hidden; border:1px solid rgba(255,255,255,0.03); }
+.cp-progress .bar{ height:100%; width:60%; background: linear-gradient(90deg,var(--cp-accent-pink),var(--cp-accent-cyan)); box-shadow: inset 0 6px 24px rgba(0,255,246,0.06); transition: width .4s ease; }
+
+/* Navbar */
+.cp-navbar{
+  background: linear-gradient(90deg, rgba(10,10,12,0.6), rgba(5,5,8,0.75));
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  padding:0.6rem 1rem;
+}
+.cp-navbar .brand{
+  font-family: 'Orbitron', sans-serif;
+  font-size:1.15rem;
+  color:var(--cp-accent-pink);
+  text-shadow: 0 0 12px rgba(255,45,149,0.12), 0 0 28px rgba(122,0,255,0.06);
+}
+.cp-navbar .brand .symbol{color:var(--cp-accent-cyan); margin-right:8px}
+
+/* Accent borders */
+.cp-accent-line{
+  height:3px; background:linear-gradient(90deg,var(--cp-accent-pink),var(--cp-accent-cyan)); border-radius:2px; margin:0.6rem 0;
+}
+
+/* Form inputs */
+input, textarea, select{
+  background:transparent; border:1px solid rgba(255,255,255,0.06); color:inherit; padding:0.5rem; border-radius:6px;
+}
+
+/* Small helpers */
+.muted{color:rgba(230,247,255,0.6)}
+
+/* Make bootstrap utilities play nicer */
+.navbar-dark .navbar-brand{color:inherit}
+
+/* Example utility to highlight status */
+.status-ok{color:var(--cp-accent-cyan); text-shadow:0 0 8px rgba(0,255,246,0.14)}
+.status-warn{color:var(--cp-accent-pink); text-shadow:0 0 6px rgba(255,45,149,0.12)}
+
+/* Responsive tweaks */
+@media (max-width:768px){
+  .cp-navbar{padding:0.5rem}
+}
+
+/* Job History Dashboard Styles */
+.job-history-dashboard {
+  border: 1px solid var(--cp-border);
+  border-radius: 0;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(122,0,255,0.04), rgba(0,255,246,0.03));
+  backdrop-filter: blur(4px);
+  position: relative;
+  overflow: hidden;
+}
+
+.job-history-dashboard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cp-accent-cyan), transparent);
+  opacity: 0.3;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0,255,246,0.1);
+  padding-bottom: 0.75rem;
+}
+
+.dashboard-header h6 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 2px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.metric-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(0,255,246,0.1);
+  padding: 1.25rem;
+  position: relative;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(2px);
+}
+
+.metric-card:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(0,255,246,0.2);
+  box-shadow: 0 0 12px rgba(0,255,246,0.08);
+}
+
+.metric-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(230,247,255,0.5);
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+}
+
+.metric-value {
+  font-size: 1.85rem;
+  font-weight: 700;
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+}
+
+.metric-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0.25rem 0;
+}
+
+.metric-bar-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.6s ease;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.metric-subtext {
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.metric-info {
+  font-size: 0.75rem;
+  color: rgba(230,247,255,0.4);
+}
+
+/* Status badge enhancements */
+.badge-success {
+  background-color: rgba(57,255,20,0.2);
+  color: #39ff14;
+  border: 1px solid rgba(57,255,20,0.3);
+  text-shadow: 0 0 6px rgba(57,255,20,0.4);
+}
+
+.badge-danger {
+  background-color: rgba(255,45,149,0.2);
+  color: #ff2d95;
+  border: 1px solid rgba(255,45,149,0.3);
+  text-shadow: 0 0 6px rgba(255,45,149,0.4);
+}
+
+/* Text color enhancements */
+.text-success {
+  color: #39ff14 !important;
+  text-shadow: 0 0 6px rgba(57,255,20,0.3);
+}
+
+.text-danger {
+  color: #ff2d95 !important;
+  text-shadow: 0 0 6px rgba(255,45,149,0.3);
+}
+
+/* Modal specific adjustments */
+.modal-body {
+  background: var(--cp-bg-800);
+}
+
+.modal-content {
+  background: var(--cp-bg-800);
+  border: 1px solid var(--cp-border);
+}
+
+.table-light thead {
+  background: rgba(255,255,255,0.05);
+  border-bottom: 2px solid var(--cp-accent-cyan);
+}
+
+.table-light thead th {
+  color: var(--cp-accent-cyan);
+  border-color: var(--cp-border);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+.table tbody tr {
+  border-color: var(--cp-border);
+  transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background: rgba(0,255,246,0.05);
+}
+
+.table tbody td {
+  border-color: var(--cp-border);
+  color: inherit;
+}
+
+/* Animation for metric values on load */
+@keyframes metric-pulse {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.metric-card {
+  animation: metric-pulse 0.5s ease forwards;
+}
+
+.metric-card:nth-child(1) { animation-delay: 0.1s; }
+.metric-card:nth-child(2) { animation-delay: 0.2s; }
+.metric-card:nth-child(3) { animation-delay: 0.3s; }
+.metric-card:nth-child(4) { animation-delay: 0.4s; }
+

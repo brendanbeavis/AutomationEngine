@@ -1,0 +1,286 @@
+﻿@namespace AutomationEngine.Components
+@using AutomationEngine.Models.Cron
+
+<div class="cron-builder">
+
+    <div class="cron-section">
+
+        <select class="cron-select"
+                value="@Schedule.ScheduleType"
+                @onchange="OnTypeChanged">
+
+            <option value="@CronScheduleType.EveryMinute">
+                Every minute
+            </option>
+
+            <option value="@CronScheduleType.MinuteInterval">
+                Every N minutes
+            </option>
+
+            <option value="@CronScheduleType.Hourly">
+                Every hour
+            </option>
+
+            <option value="@CronScheduleType.HourlyInterval">
+                Every N hours
+            </option>
+
+            <option value="@CronScheduleType.Daily">
+                Daily
+            </option>
+
+            <option value="@CronScheduleType.Weekly">
+                Weekly
+            </option>
+
+            <option value="@CronScheduleType.Monthly">
+                Monthly
+            </option>
+
+            @if (ShowCustom)
+            {
+                <option value="@CronScheduleType.Custom">
+                    Custom
+                </option>
+            }
+
+        </select>
+
+    </div>
+
+
+    @if (Schedule.ScheduleType == CronScheduleType.MinuteInterval)
+    {
+        <div class="cron-row">
+            <span>Run every</span>
+
+            <input type="number"
+                   class="cron-number"
+                   min="1"
+                   max="59"
+                   @bind="Schedule.MinuteInterval"
+                   @bind:after="NotifyScheduleChanged" />
+
+            <span>minutes</span>
+        </div>
+    }
+
+
+    @if (Schedule.ScheduleType == CronScheduleType.Hourly)
+    {
+        <div class="cron-row">
+            <span>Run every hour at minute</span>
+
+            <input type="number"
+                   class="cron-number"
+                   min="0"
+                   max="59"
+                   @bind="Schedule.Minute"
+                   @bind:after="NotifyScheduleChanged" />
+
+            <span>minutes past the hour</span>
+        </div>
+    }
+
+
+    @if (Schedule.ScheduleType == CronScheduleType.HourlyInterval)
+    {
+        <div class="cron-row">
+
+            <span>Run every</span>
+
+            <input type="number"
+                   class="cron-number"
+                   min="1"
+                   max="23"
+                   @bind="Schedule.HourInterval"
+                   @bind:after="NotifyScheduleChanged" />
+
+            <span>hours at minute</span>
+
+            <input type="number"
+                   class="cron-number"
+                   min="0"
+                   max="59"
+                   @bind="Schedule.Minute"
+                   @bind:after="NotifyScheduleChanged" />
+
+        </div>
+    }
+
+
+    @if (Schedule.ScheduleType == CronScheduleType.Daily)
+    {
+        <div class="cron-row">
+
+            <span>Run every day at</span>
+
+            <input type="number"
+                   class="cron-number"
+                   min="0"
+                   max="23"
+                   @bind="Schedule.Hour"
+                   @bind:after="NotifyScheduleChanged" />
+
+            <span>:</span>
+
+            <input type="number"
+                   class="cron-number"
+                   min="0"
+                   max="59"
+                   @bind="Schedule.Minute"
+                   @bind:after="NotifyScheduleChanged" />
+
+        </div>
+    }
+
+
+    @if (Schedule.ScheduleType == CronScheduleType.Weekly)
+    {
+        <div class="cron-section">
+
+            <label class="cron-label">
+                Days
+            </label>
+
+            <div class="cron-days">
+
+                @foreach (var day in Days)
+                {
+                    <label class="cron-day">
+
+                        <input type="checkbox"
+                               checked="@Schedule.DaysOfWeek.Contains(day)"
+                               @onchange="e => ToggleDay(day, e)" />
+
+                        <span>@GetDayName(day)</span>
+
+                    </label>
+                }
+
+            </div>
+
+        </div>
+
+        <div class="cron-row">
+
+            <span>at</span>
+
+            <input type="number"
+                   class="cron-number"
+                   min="0"
+                   max="23"
+                   @bind="Schedule.Hour"
+                   @bind:after="NotifyScheduleChanged" />
+
+            <span>:</span>
+
+            <input type="number"
+                   class="cron-number"
+                   min="0"
+                   max="59"
+                   @bind="Schedule.Minute"
+                   @bind:after="NotifyScheduleChanged" />
+
+        </div>
+    }
+
+
+    @if (Schedule.ScheduleType == CronScheduleType.Monthly)
+    {
+        <div class="cron-row">
+
+            <span>Run on day</span>
+
+            <input type="number"
+                   class="cron-number"
+                   min="1"
+                   max="31"
+                   @bind="Schedule.DayOfMonth"
+                   @bind:after="NotifyScheduleChanged" />
+
+            <span>of every month at</span>
+
+            <input type="number"
+                   class="cron-number"
+                   min="0"
+                   max="23"
+                   @bind="Schedule.Hour"
+                   @bind:after="NotifyScheduleChanged" />
+
+            <span>:</span>
+
+            <input type="number"
+                   class="cron-number"
+                   min="0"
+                   max="59"
+                   @bind="Schedule.Minute"
+                   @bind:after="NotifyScheduleChanged" />
+
+        </div>
+    }
+
+
+    @if (Schedule.ScheduleType == CronScheduleType.Custom)
+    {
+        <div class="cron-section">
+
+            <label class="cron-label">
+                Cron expression
+            </label>
+
+            <input class="cron-expression"
+                   @bind="Schedule.CustomExpression"
+                   @bind:event="oninput"
+                   @bind:after="NotifyScheduleChanged" />
+
+        </div>
+    }
+
+
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <div class="cron-error">
+            @ErrorMessage
+        </div>
+    }
+
+
+    @if (ShowPreview && IsValid)
+    {
+        <div class="cron-preview">
+
+            <div class="cron-preview-title">
+                Schedule
+            </div>
+
+            <div class="cron-description">
+                @Description
+            </div>
+
+@*             <div class="cron-expression-preview">
+                <code>@Expression</code>
+            </div> *@
+
+            @if (NextOccurrences.Any())
+            {
+                <div class="cron-next">
+
+                    <div class="cron-preview-title">
+                        Next runs
+                    </div>
+
+                    @foreach (var occurrence in NextOccurrences)
+                    {
+                        <div class="cron-occurrence">
+                            @occurrence.ToString("ddd, dd MMM yyyy HH:mm:ss")
+                        </div>
+                    }
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

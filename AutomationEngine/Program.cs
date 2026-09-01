@@ -1,0 +1,303 @@
+using AutomationEngine.Api;
+using AutomationEngine.Data;
+using AutomationEngine.Services;
+using AutomationEngine.Services.Abstractions;
+using AutomationEngine.SignalR;
+using AutomationEngine.Middleware;
+using AutomationEngine.Options;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Serilog;
+using Serilog.Context;
+using System.Reflection;
+using Polly;
+using Polly.CircuitBreaker;
+using Polly.Retry;
+
+// Configure Serilog with structured logging
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(new ConfigurationBuilder()
+        .AddJsonFile("appsettings.json", optional: true)
+        .AddJsonFile("appsettings.Development.json", optional: true)
+        .AddEnvironmentVariables()
+        .Build())
+    .Enrich.FromLogContext()
+    .Enrich.WithProperty("Application", "AutomationEngine")
+    .CreateLogger();
+
+var exePath = Assembly.GetExecutingAssembly().Location;
+var exeDirectory = Path.GetDirectoryName(exePath);
+Directory.SetCurrentDirectory(exeDirectory);
+
+var builder = WebApplication.CreateBuilder(args);
+//var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+//{
+ //   Args = args,
+ //   ContentRootPath = exeDirectory, // Hard-bind it directly during instantiation
+//    ApplicationName = System.Diagnostics.Process.GetCurrentProcess().ProcessName
+//});
+
+builder.Host
+    .UseWindowsService()
+    .UseSerilog();
+
+// WINDOWS SERVICE CONFIGURATION:
+// The .UseWindowsService() call enables the application to run as a Windows service.
+// It is safe to call even when running as a console application - it will detect and work appropriately.
+// When deployed as a Windows service:
+// - Service Name: AutomatedTaskSchedulerService
+// - The app will receive service lifecycle events (start, stop, pause, continue)
+// - Graceful shutdown is handled automatically by the host
+// - See docs/WINDOWS_SERVICE_SETUP.md for installation and management procedures
+
+// Add services
+// Configure typed database options from appsettings.json
+builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection(DatabaseOptions.SectionName));
+
+// Validate database configuration on startup
+var databaseOptionsSection = builder.Configuration.GetSection(DatabaseOptions.SectionName);
+var databaseOptions = new DatabaseOptions();
+databaseOptionsSection.Bind(databaseOptions);
+
+if (!databaseOptions.IsValid(out var dbValidationError))
+{
+    Log.Fatal("Database configuration is invalid: {Error}", dbValidationError);
+    throw new InvalidOperationException($"Database configuration is invalid: {dbValidationError}");
+}
+
+// Build connection string using validated options
+var connectionString = ConnectionStringBuilder.Build(databaseOptions);
+Log.Information("Database configured: Provider={Provider}, Timeout={TimeoutSec}s, Pool={PoolSize}, WAL={Wal}",
+    databaseOptions.Provider, databaseOptions.CommandTimeoutSeconds, databaseOptions.PoolSize, databaseOptions.SqliteEnableWal);
+
+// Use DbContextFactory for background job execution with singleton services
+// This allows thread-safe DbContext instances without manual scoping
+builder.Services.AddDbContextFactory<AutomationDbContext>(options =>
+{
+    options.UseSqlite(connectionString, sqliteOptions =>
+    {
+        sqliteOptions.CommandTimeout(databaseOptions.CommandTimeoutSeconds);
+    });
+});
+
+//builder.Services.AddHttpClient();
+
+builder.Services.AddHttpClient<JobApiClient>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
+});
+
+// Configure Polly resilience policies
+var retryPolicy = Policy<bool>
+    .Handle<Exception>()
+    .OrResult(r => !r)
+    .WaitAndRetryAsync(
+        retryCount: 3,
+        sleepDurationProvider: attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)),
+        onRetry: (outcome, timespan, retryCount, context) =>
+        {
+            Log.Warning("Polly retry triggered. Attempt {RetryCount} after {Delay}ms. Exception: {Exception}",
+                retryCount, timespan.TotalMilliseconds, outcome.Exception?.Message ?? outcome.Result.ToString());
+        });
+
+var circuitBreakerPolicy = Policy<bool>
+    .Handle<Exception>()
+    .OrResult(r => !r)
+    .CircuitBreakerAsync(
+        handledEventsAllowedBeforeBreaking: 5,
+        durationOfBreak: TimeSpan.FromSeconds(30),
+        onBreak: (outcome, timespan) =>
+        {
+            Log.Error("Circuit breaker opened due to repeated failures. Breaking for {Duration}ms", timespan.TotalMilliseconds);
+        },
+        onReset: () =>
+        {
+            Log.Information("Circuit breaker reset - service recovered");
+        });
+
+// Combine policies with wrap
+var combinedPolicy = Policy.WrapAsync(retryPolicy, circuitBreakerPolicy);
+
+// Register policies as singletons for dependency injection
+builder.Services.AddSingleton(retryPolicy);
+builder.Services.AddSingleton(circuitBreakerPolicy);
+builder.Services.AddSingleton(combinedPolicy);
+
+// Configure typed options from configuration sections
+builder.Services.Configure<SecurityOptions>(builder.Configuration.GetSection(SecurityOptions.SectionName));
+builder.Services.AddSingleton<ISecurityOptions>(sp => sp.GetRequiredService<IOptions<SecurityOptions>>().Value);
+
+builder.Services.Configure<NtfyOptions>(builder.Configuration.GetSection(NtfyOptions.SectionName));
+builder.Services.AddSingleton<INtfyOptions>(sp => sp.GetRequiredService<IOptions<NtfyOptions>>().Value);
+
+// Register job management services following Single Responsibility Principle
+builder.Services.AddSingleton<IJobCache, JobCacheService>();
+builder.Services.AddSingleton<IJobRepository, JobRepository>();
+builder.Services.AddSingleton<IJobQueryService, JobQueryService>();
+builder.Services.AddSingleton<IJobStateTransitionService, JobStateTransitionService>();
+builder.Services.AddSingleton<IJobRunService, JobRunService>();
+builder.Services.AddSingleton<JobStateManager>();
+
+builder.Services.AddSingleton<JobRunner>();
+builder.Services.AddScoped<SettingsService>();
+builder.Services.AddSingleton<IAuditLogService, AuditLogService>();
+builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+builder.Services.AddHostedService<BackgroundTaskQueue>(sp => sp.GetRequiredService<IBackgroundTaskQueue>() as BackgroundTaskQueue ?? throw new InvalidOperationException("BackgroundTaskQueue not registered"));
+builder.Services.AddHostedService<SchedulerService>();
+
+// Periodic health check service for validating running jobs have valid processes
+// Runs every 5 minutes to detect and auto-correct stale Running states
+builder.Services.AddHostedService<JobHealthCheckService>();
+
+// ASP.NET Core services
+builder.Services.AddControllers();
+builder.Services.AddRazorComponents(options =>
+{
+    options.DetailedErrors = builder.Environment.IsDevelopment();
+})
+    .AddInteractiveServerComponents();
+
+builder.Services.AddWindowsService(options =>
+{
+    options.ServiceName = "AutomatedTaskSchedulerService";
+});
+
+
+builder.Services.AddSignalR();
+
+// Configure CORS - Not needed for localhost-only app, but explicitly disabled for clarity
+// Cross-origin requests are blocked at middleware level anyway
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy
+            .WithOrigins("http://127.0.0.1:5000", "http://localhost:5000")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
+// Configure Kestrel to listen on localhost:5000
+//builder.Services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
+//{
+//    options.ListenLocalhost(5000);
+//});
+
+////builder.Host.UseWindowsService();
+//builder.Environment.ContentRootPath = exeDirectory;
+
+// Register database connection validator
+builder.Services.AddSingleton<DatabaseConnectionValidator>();
+
+var app = builder.Build();
+
+
+// Validate database connection on startup (non-fatal)
+try
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var validator = scope.ServiceProvider.GetRequiredService<DatabaseConnectionValidator>();
+        if (builder.Configuration.GetSection(DatabaseOptions.SectionName).Get<DatabaseOptions>()?.ValidateConnectionOnStartup ?? true)
+        {
+            await validator.ValidateAndLogAsync();
+        }
+    }
+}
+catch (Exception ex)
+{
+    Log.Warning(ex, "Database validation encountered an error but will continue");
+}
+
+// Apply migrations on startup
+try
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AutomationDbContext>();
+        await db.Database.MigrateAsync();
+        Log.Information("Database migrations applied successfully");
+    }
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Failed to apply database migrations - application cannot continue");
+    throw;
+}
+
+// Initialize JobStateManager and validate running jobs
+try
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var stateManager = scope.ServiceProvider.GetRequiredService<JobStateManager>();
+        var stateTransition = scope.ServiceProvider.GetRequiredService<IJobStateTransitionService>();
+
+        await stateManager.LoadJobsAsync();
+        Log.Information("JobStateManager initialized successfully");
+
+        // Validate all running jobs have valid processes on startup
+        // This prevents issues where a job stays in Running state after app restart
+        await stateTransition.ValidateAndCleanupStaleRunningStatesAsync();
+        Log.Information("Startup validation of running jobs completed");
+    }
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Failed to initialize JobStateManager - application cannot continue");
+    throw;
+}
+
+// Configure the HTTP request pipeline
+// Add localhost-only middleware FIRST to protect all subsequent requests
+app.UseMiddleware<LocalhostOnlyMiddleware>();
+
+// Add admin secret validation middleware (only active if AdminSecret is configured in appsettings)
+app.UseMiddleware<AdminSecretValidationMiddleware>();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    app.UseHsts();
+}
+
+//app.UseHttpsRedirection();
+//app.UseAntiforgery();
+
+// Map endpoints
+app.MapControllers();
+app.UseStaticFiles();
+
+app.UseRouting();
+app.UseCors();
+app.UseAntiforgery();
+// Map static framework assets (required for Razor Components interactive render modes)
+//app.MapStaticAssets();
+
+
+app.MapRazorComponents<AutomationEngine.Components.App>()
+    .AddInteractiveServerRenderMode();
+app.MapHub<JobStatusHub>("/hubs/job-status");
+
+// Log that the app is running
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
+    Log.Information("Application started with version {Version} in environment {Environment}", version, app.Environment.EnvironmentName);
+    Log.Information("Automation Engine started and ready to accept connections | Url: http://localhost:5000");
+});
+
+app.Lifetime.ApplicationStopping.Register(() =>
+{
+    Log.Information("Application shutdown requested");
+});
+
+app.Lifetime.ApplicationStopped.Register(() =>
+{
+    Log.Information("Application has stopped - normal shutdown");
+});
+
+await app.RunAsync();

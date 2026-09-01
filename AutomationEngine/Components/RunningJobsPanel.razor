@@ -1,0 +1,128 @@
+@using AutomationEngine.Dto
+@using AutomationEngine.Models
+
+<div class="running-jobs-panel mb-4">
+    @if (RunningJobs != null && RunningJobs.Count > 0)
+    {
+        <div class="cp-card cp-glass cp-chamfer">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <Blazicon Svg="BootstrapIcon.ArrowClockwise.Animate(BlaziconAnimation.Spin)"></Blazicon>
+                    <span class="neon-text"> Running Jobs (@RunningJobs.Count)</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="running-jobs-list">
+                    @foreach (var job in RunningJobs)
+                    {
+                        var elapsedTime = GetElapsedTime(job);
+                        var progressPercent = CalculateProgressPercent(job);
+
+                        <div class="running-job-item mb-3 p-3 cp-glass cp-chamfer">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">
+                                        <span class="badge bg-lime-neon">● RUNNING</span>
+                                        <span class="ms-2">@job.DisplayName</span>
+                                    </h6>
+                                    <small class="text-muted">
+                                        Job ID: <code>@job.JobId</code> | Type: <code>@job.Type</code>
+                                    </small>
+                                </div>
+                                <button class="btn btn-sm btn-danger cp-btn" @onclick="@(async () => await OnStopJob.InvokeAsync(job.JobId))">
+                                    <Blazicon Svg="BootstrapIcon.StopFill"></Blazicon> Stop
+                                </button>
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="d-block mb-1 text-muted">
+                                    Elapsed: <strong class="neon-text">@FormatTimeSpan(elapsedTime)</strong>
+                                    @if (job.TimeoutSeconds > 0)
+                                    {
+                                        <span class="ms-3">Timeout: <strong>@job.TimeoutSeconds</strong>s</span>
+                                    }
+                                </small>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar progress-bar-animated bg-success" 
+                                         role="progressbar" 
+                                         style="width: @progressPercent%;" 
+                                         aria-valuenow="@progressPercent" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (job.RunningProcessId.HasValue)
+                            {
+                                <small class="text-muted d-block">Process ID: <code>@job.RunningProcessId.Value</code></small>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public List<JobDto>? RunningJobs { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnStopJob { get; set; }
+
+    private TimeSpan GetElapsedTime(JobDto job)
+    {
+        if (job.RunningStartTime.HasValue)
+        {
+            return DateTime.UtcNow - job.RunningStartTime.Value;
+        }
+        return TimeSpan.Zero;
+    }
+
+    private int CalculateProgressPercent(JobDto job)
+    {
+        if (job.TimeoutSeconds <= 0) return 50; // Indeterminate progress
+
+        var elapsed = GetElapsedTime(job).TotalSeconds;
+        var percent = (int)((elapsed / job.TimeoutSeconds) * 100);
+        return Math.Min(percent, 99); // Cap at 99% until actually done
+    }
+
+    private string FormatTimeSpan(TimeSpan ts)
+    {
+        if (ts.TotalHours >= 1)
+            return $"{ts.Hours}h {ts.Minutes}m {ts.Seconds}s";
+        else if (ts.TotalMinutes >= 1)
+            return $"{ts.Minutes}m {ts.Seconds}s";
+        else
+            return $"{ts.Seconds}s";
+    }
+}
+
+<style>
+.running-jobs-panel {
+    animation: slideInTop 0.3s ease-out;
+}
+
+.running-job-item {
+    border-left: 3px solid var(--cp-accent-lime);
+    transition: all 0.2s ease;
+}
+
+.running-job-item:hover {
+    border-left-color: var(--cp-accent-cyan);
+    box-shadow: 0 0 15px rgba(0, 255, 246, 0.15);
+}
+
+.progress {
+    background-color: rgba(0, 255, 246, 0.1);
+    border-radius: 2px;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #39ff14, #00fff6);
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+}
+</style>

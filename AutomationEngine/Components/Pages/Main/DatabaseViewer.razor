@@ -1,0 +1,183 @@
+@using AutomationEngine.Data
+@using AutomationEngine.Data.Entities
+
+@if (IsLoading)
+{
+    <div class="text-center">
+        <Blazicon Svg="BootstrapIcon.ArrowClockwise.Animate(BlaziconAnimation.Spin)"></Blazicon>
+        <p>Loading database information...</p>
+    </div>
+}
+else
+{
+    <div class="database-viewer">
+        <h6 class="neon-text mb-3" style="letter-spacing: 1px;">RAW DATABASE VIEWER</h6>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger">
+                <Blazicon Svg="BootstrapIcon.ExclamationTriangle"></Blazicon>
+                @ErrorMessage
+            </div>
+        }
+
+        <div class="row">
+            <!-- Tables List -->
+            <div class="col-md-3 mb-3">
+                <h6 class="text-muted small mb-2">TABLES (@Tables.Count)</h6>
+                <div class="list-group" style="max-height: 600px; overflow-y: auto;">
+                    @foreach (var table in Tables)
+                    {
+                        var isSelected = SelectedTable?.TableName == table.TableName;
+                        <button class="list-group-item list-group-item-action @(isSelected ? "active" : "")"
+                                @onclick="() => SelectTableAsync(table)"
+                                style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="font-monospace" style="font-size: 0.9rem;">@table.TableName</div>
+                                    <small class="text-muted">@table.RowCount rows</small>
+                                </div>
+                                <Blazicon Svg="BootstrapIcon.Database" style="@GetTableIconStyle(isSelected)"></Blazicon>
+                            </div>
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <!-- Table Details -->
+            <div class="col-md-9">
+                @if (SelectedTable == null)
+                {
+                    <div class="alert alert-info">
+                        <Blazicon Svg="BootstrapIcon.InfoCircle"></Blazicon>
+                        Select a table from the list to view its structure and data.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-details cp-chamfer" style="padding: 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--cp-border);">
+                        <!-- Table Header Info -->
+                        <div class="mb-4">
+                            <h5 class="neon-text mb-2">@SelectedTable.TableName</h5>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                                <div>
+                                    <small class="text-muted">Entity Type</small>
+                                    <div class="font-monospace" style="color: var(--cp-accent-cyan);">@SelectedTable.EntityType.Name</div>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Row Count</small>
+                                    <div class="font-monospace" style="color: var(--cp-accent-lime);">@TableData.Count</div>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Columns</small>
+                                    <div class="font-monospace" style="color: var(--cp-accent-pink);">@SelectedTable.Columns.Count</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr style="border-color: var(--cp-border);" />
+
+                        <!-- Columns Info -->
+                        <div class="mb-4">
+                            <h6 class="text-muted small mb-2" style="letter-spacing: 1px;">COLUMNS</h6>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.5rem;">
+                                @foreach (var column in SelectedTable.Columns)
+                                {
+                                    <div style="padding: 0.75rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(0,255,246,0.1); border-radius: 4px;">
+                                        <div class="font-monospace" style="font-size: 0.9rem; color: #00fff6;">@column.Name</div>
+                                        <small class="text-muted">
+                                            @column.Type@(column.IsNullable ? " (nullable)" : "")
+                                        </small>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <hr style="border-color: var(--cp-border);" />
+
+                        <!-- Table Data -->
+                        <div>
+                            <h6 class="text-muted small mb-3" style="letter-spacing: 1px;">
+                                DATA (@TableData.Count records)
+                            </h6>
+
+                            @if (TableData.Count == 0)
+                            {
+                                <div class="alert alert-info">
+                                    <Blazicon Svg="BootstrapIcon.InfoCircle"></Blazicon>
+                                    No records in this table.
+                                </div>
+                            }
+                            else
+                            {
+                                <div style="overflow-x: auto;">
+                                    <table class="table table-sm table-striped" style="background: rgba(255,255,255,0.01); border: 1px solid var(--cp-border);">
+                                        <thead>
+                                            <tr style="border-bottom: 2px solid var(--cp-accent-cyan);">
+                                                @foreach (var column in SelectedTable.Columns)
+                                                {
+                                                    <th style="color: var(--cp-accent-cyan); font-family: 'Space Mono', monospace; font-size: 0.85rem; white-space: nowrap;">
+                                                        @column.Name
+                                                    </th>
+                                                }
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var row in TableData.Take(100))
+                                            {
+                                                <tr style="border-color: var(--cp-border);">
+                                                    @foreach (var column in SelectedTable.Columns)
+                                                    {
+                                                        <td style="font-family: 'Space Mono', monospace; font-size: 0.85rem; color: #e6f7ff;">
+                                                            @if (row.TryGetValue(column.Name, out var value))
+                                                            {
+                                                                @if (value == null)
+                                                                {
+                                                                    <span style="color: #888888; font-style: italic;">NULL</span>
+                                                                }
+                                                                else if (value is DateTime dt)
+                                                                {
+                                                                    <span>@dt.ToString("g")</span>
+                                                                }
+                                                                else if (value is byte[] bytes)
+                                                                {
+                                                                    <span style="color: #ff2d95;">[Binary: @bytes.Length bytes]</span>
+                                                                }
+                                                                else if (value is bool b)
+                                                                {
+                                                                    <span style="color: @(b ? "#39ff14" : "#ff2d95");">@(b ? "true" : "false")</span>
+                                                                }
+                                                                else if (value is string str && str.Length > 50)
+                                                                {
+                                                                    <span title="@str">@str.Substring(0, 50)...</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span>@value</span>
+                                                                }
+                                                            }
+                                                        </td>
+                                                    }
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+
+                                    @if (TableData.Count > 100)
+                                    {
+                                        <div class="alert alert-info mt-2">
+                                            <small>
+                                                <Blazicon Svg="BootstrapIcon.InfoCircle"></Blazicon>
+                                                Showing first 100 of @TableData.Count records
+                                            </small>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

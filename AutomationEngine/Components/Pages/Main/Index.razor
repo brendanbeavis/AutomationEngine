@@ -1,0 +1,232 @@
+@page "/"
+@using AutomationEngine.Api
+@using AutomationEngine.Dto
+@using AutomationEngine.Models
+@using AutomationEngine.Extensions
+@using Cronos
+
+@rendermode InteractiveServer
+
+<PageTitle>Dashboard</PageTitle>
+
+<!-- Toast Notification -->
+@if (isNotificationVisible)
+{
+    <div class="alert alert-@notificationType alert-dismissible fade show" role="alert" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050; max-width: 400px; min-width: 300px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); animation: slideIn 0.3s ease-out;">
+        @notificationMessage
+        <button type="button" class="btn-close" @onclick="HideNotification" aria-label="Close"></button>
+    </div>
+}
+
+<div style="display: flex; justify-content: space-between; align-items: baseline; width: 100%;">
+    <h2 class="neon-text">Jobs Dashboard</h2>
+    <span>
+        <button class="btn badge bg-cyan-neon" style="margin: 6px;" type="button" @onclick="ShowAddJobModal" title="Add New Job">
+            <Blazicon Svg="BootstrapIcon.Plus"></Blazicon> New Job
+        </button>
+        <button class="btn badge bg-purple-neon" style="margin: 6px;" type="button" @onclick="ShowSettings">
+            <Blazicon Svg="BootstrapIcon.Gear.Animate(BlaziconAnimation.Spin)"></Blazicon> Settings
+        </button>
+    </span>
+</div>
+
+<!-- Job Summary Section -->
+@if (jobs != null && jobs.Count > 0)
+{
+    <div class="metrics-grid" style="margin: 20px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+        <div class="metric-card cp-chamfer">
+            <div class="metric-card-body">
+                <div class="metric-label">Total Jobs</div>
+                <div class="metric-value" style="color: #0d6efd;">@TotalJobs</div>
+            </div>
+        </div>
+        <div class="metric-card cp-chamfer">
+            <div class="metric-card-body">
+                <div class="metric-label">Enabled</div>
+                <div class="metric-value" style="color: #198754;">@TotalEnabled</div>
+            </div>
+        </div>
+        <div class="metric-card cp-chamfer">
+            <div class="metric-card-body">
+                <div class="metric-label">Disabled</div>
+                <div class="metric-value" style="color: #dc3545;">@TotalDisabled</div>
+            </div>
+        </div>
+        <div class="metric-card cp-chamfer">
+            <div class="metric-card-body">
+                <div class="metric-label">Running</div>
+                <div class="metric-value" style="color: #ffc107;">@TotalRunning</div>
+            </div>
+        </div>
+        <div class="metric-card cp-chamfer">
+            <div class="metric-card-body">
+                <div class="metric-label">Queued</div>
+                <div class="metric-value" style="color: #0dcaf0;">@TotalQueued</div>
+            </div>
+        </div>
+        <div class="metric-card cp-chamfer">
+            <div class="metric-card-body">
+                <div class="metric-label">Succeeded</div>
+                <div class="metric-value" style="color: #198754;">@TotalSucceeded</div>
+            </div>
+        </div>
+        <div class="metric-card cp-chamfer">
+            <div class="metric-card-body">
+                <div class="metric-label">Failed</div>
+                <div class="metric-value" style="color: #dc3545;">@TotalFailed</div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="cp-accent-line" aria-hidden="true"></div>
+
+@if (jobs == null)
+{
+    <p><em>Loading jobs...</em></p>
+}
+else if (jobs.Count == 0)
+{
+    <div class="alert alert-info">No jobs configured.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <colgroup>
+                <col style="width: 100px;" />
+                <col style="width: 240px;" />
+                <col style="width: 120px;" />
+                <col style="width: 150px;" />
+                <col style="width: 150px;" />
+                <col style="width: 150px;" />
+                <col style="width: 120px;" />
+                <col style="width: 520px;" />
+                <col />
+            </colgroup>
+            <thead class="table-dark">
+                <tr>
+                    <th>Job ID</th>
+                    <th>Display Name</th>
+                    <th>Schedule</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Last Run</th>
+                    <th>Result</th>
+                    <th>Actions</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var job in jobs)
+                {
+                    <tr>
+                        <td><code>@job.JobId</code></td>
+                        <td>@job.DisplayName</td>
+                        <td><code>@job.Schedule</code></td>
+                        <td><small>@(job.CreatedAt.ToLocalTime().ToString("g"))</small></td>
+                        <td><small>@(job.UpdatedAt?.ToLocalTime().ToString("g") ?? "Never")</small></td>
+                        <td><small>@(job.LastRun?.ToLocalTime().ToString("g") ?? "Never")</small></td>
+                        <td>
+                            @if (job.IsRunning)
+                            {
+                                <span class="neon-purple">Running...</span>
+                            }
+                            else if (job.LastRunSuccess == null)
+                            {
+                                <span class="neon-orange">Never run</span>
+                            }
+                            else if (job.LastRunSuccess.Value)
+                            {
+                                <span class="neon-lime">Success</span>
+                            }
+                            else
+                            {
+                                <span class="neon-pink">Failed</span>
+                            }
+                        </td>
+                        <td>
+                         
+                                <button class="btn badge bg-lime-neon" disabled="@job.IsRunning" @onclick="() => TriggerJob(job)" title="@(job.IsRunning ? "Job Running..." : "Run Job Now")">
+                                   
+                                <Blazicon Svg="@(job.IsRunning ? BootstrapIcon.ArrowClockwise.Animate(BlaziconAnimation.Spin) : BootstrapIcon.Play)"></Blazicon> Run
+                                </button>
+            
+
+                            <Blazicon Svg="BootstrapIcon.GripVertical"></Blazicon>
+
+                            <button class="btn badge bg-cyan-neon" @onclick="() => ShowEditJobModal(job)" title="Edit job">
+                                <Blazicon Svg="BootstrapIcon.PencilSquare"></Blazicon> 
+                            </button>
+                            <button class="btn badge bg-purple-neon" @onclick="() => ShowHistoryModal(job.JobId)" title="Job Run History">
+                                <Blazicon Svg="BootstrapIcon.Clipboard2Data"></Blazicon> 
+                            </button>
+                            <button class="btn badge bg-success" @onclick="() => ShowDuplicateModal(job)" title="Duplicate Job">
+                                <Blazicon Svg="BootstrapIcon.Copy"></Blazicon> 
+                            </button>
+                            <button class="btn badge bg-pink-neon" disabled="@showDeleteConfirm" @onclick="() => ShowDeleteConfirm(job)" title="Delete Job">
+                                <Blazicon Svg="BootstrapIcon.Trash"></Blazicon> 
+                            </button>
+                            <button class="btn badge bg-orange-neon" disabled="@showStopConfirm" @onclick="() => ShowStopConfirm(job)" title="Stop Job">
+                                <Blazicon Svg="BootstrapIcon.StopFill"></Blazicon>
+                            </button>
+                            <Blazicon Svg="BootstrapIcon.GripVertical"></Blazicon>
+
+                           
+                            <button class="btn @(job.Enabled ? "badge bg-lime-neon" : "badge bg-secondary")" @onclick="() => EnableDisableJob(job.JobId, job.Enabled)" title="Disable or Enable Job">
+                                <Blazicon Svg="BootstrapIcon.Power"></Blazicon> @(job.Enabled ? "Disable" : "Enable")
+                            </button>
+
+                        </td>
+                        <td>
+                            <code>@job.JobStatus()</code>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<!-- Delete Confirmation Modal -->
+<DeleteConfirm 
+    IsVisible="@showDeleteConfirm"
+    JobId="@deleteJobId"
+    JobDisplayName="@deleteJobDisplayName"
+    OnConfirm="OnDeleteConfirmed"
+    OnClose="HideDeleteConfirm">
+</DeleteConfirm>
+
+<!-- Stop Confirmation Modal -->
+<StopConfirm 
+    IsVisible="@showStopConfirm"
+    JobId="@stopJobId"
+    JobDisplayName="@stopJobDisplayName"
+    OnConfirm="OnStopConfirmed"
+    OnClose="HideStopConfirm">
+</StopConfirm>
+
+<!-- Add/Edit Job Modal -->
+<AddJobModal
+    IsVisible="@showAddJobModal"
+    IsEdit="@isEdit"
+    Job="@newJob"
+    ErrorMessage="@modalErrorMessage"
+    Schedule="@schedule"
+    OnSave="OnAddJobSaved"
+    OnClose="OnAddJobClosed">
+</AddJobModal>
+
+<!-- History Modal -->
+<HistoryModal
+    IsVisible="@showHistoryModal"
+    JobId="@historyJobId"
+    Runs="@runs"
+    OnClose="OnHistoryModalClosed">
+</HistoryModal>
+
+<!-- Settings Modal -->
+<SettingsModal
+    IsVisible="@showSettingsModal"
+    OnClose="OnSettingsModalClosed">
+</SettingsModal>

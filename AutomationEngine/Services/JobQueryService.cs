@@ -1,0 +1,80 @@
+using AutomationEngine.Data.Entities;
+using AutomationEngine.Models;
+using AutomationEngine.Services.Abstractions;
+using Microsoft.Extensions.Logging;
+
+namespace AutomationEngine.Services
+{
+    /// <summary>
+    /// Service for querying job data from cache
+    /// Single Responsibility: Query operations only
+    /// No state changes, no database writes
+    /// </summary>
+    public class JobQueryService : IJobQueryService
+    {
+        private readonly IJobCache _cache;
+        private readonly ILogger<JobQueryService> _logger;
+
+        public JobQueryService(IJobCache cache, ILogger<JobQueryService> logger)
+        {
+            _cache = cache;
+            _logger = logger;
+        }
+
+        public List<JobEntity> GetAllJobs()
+        {
+            return _cache.GetAll();
+        }
+
+        public JobEntity? GetJobById(string jobId)
+        {
+            return _cache.Get(jobId);
+        }
+
+        public List<JobEntity> GetRunningJobsByType(JobType jobType)
+        {
+            return _cache.GetAll()
+                .Where(j => j.Type == jobType && j.CurrentState == JobState.Running)
+                .ToList();
+        }
+
+        public bool IsJobBusy(int id)
+        {
+            return _cache.GetAll()
+                .Any(j => j.Id == id && j.CurrentState == JobState.Running);
+        }
+
+        public List<JobEntity> GetAllRunningJobs()
+        {
+            return _cache.GetAll()
+                .Where(j => j.CurrentState == JobState.Running)
+                .ToList();
+        }
+
+        public TimeSpan? GetJobRunningDuration(string jobId)
+        {
+            var job = _cache.Get(jobId);
+            if (job != null && 
+                job.CurrentState == JobState.Running && 
+                job.RunningStartTime.HasValue)
+            {
+                return DateTime.UtcNow - job.RunningStartTime.Value;
+            }
+            return null;
+        }
+
+        public List<JobEntity> GetJobsByEnabledStatus(bool enabled)
+        {
+            return _cache.GetAll()
+                .Where(j => j.Enabled == enabled)
+                .ToList();
+        }
+
+        public List<JobEntity> GetJobsByType(JobType jobType)
+        {
+            return _cache.GetAll()
+                .Where(j => j.Type == jobType)
+                .ToList();
+        }
+    }
+}
