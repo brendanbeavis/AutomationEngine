@@ -81,6 +81,7 @@ namespace AutomationEngine.Components.Pages.Main
         private string notificationType = "success"; // success, danger, warning
         private bool isNotificationVisible = false;
         private CancellationTokenSource? notificationCts;
+        private Task? _autoHideTask = null;
 
         // Job Summary Statistics
         private int TotalJobs { get; set; } = 0;
@@ -509,8 +510,19 @@ namespace AutomationEngine.Components.Pages.Main
             // Cancel any existing auto-hide timer
             if (notificationCts is not null)
             {
-                notificationCts.Cancel();
-                notificationCts.Dispose();
+                try
+                {
+                    notificationCts.Cancel();
+                }
+                catch (ObjectDisposedException)
+                {
+                    // Token was already disposed, ignore
+                }
+                finally
+                {
+                    notificationCts.Dispose();
+                    notificationCts = null;
+                }
             }
 
             notificationMessage = message;
@@ -520,7 +532,8 @@ namespace AutomationEngine.Components.Pages.Main
             if (autoHideDuration > 0)
             {
                 notificationCts = new CancellationTokenSource();
-                _ = AutoHideNotificationAsync(autoHideDuration, notificationCts.Token);
+                // Fire and forget, but capture the task to ensure proper cleanup
+                _autoHideTask = AutoHideNotificationAsync(autoHideDuration, notificationCts.Token);
             }
         }
 
@@ -529,9 +542,19 @@ namespace AutomationEngine.Components.Pages.Main
             // Cancel any pending auto-hide
             if (notificationCts is not null)
             {
-                notificationCts.Cancel();
-                notificationCts.Dispose();
-                notificationCts = null;
+                try
+                {
+                    notificationCts.Cancel();
+                }
+                catch (ObjectDisposedException)
+                {
+                    // Token was already disposed, ignore
+                }
+                finally
+                {
+                    notificationCts.Dispose();
+                    notificationCts = null;
+                }
             }
 
             isNotificationVisible = false;
@@ -552,6 +575,10 @@ namespace AutomationEngine.Components.Pages.Main
             catch (OperationCanceledException)
             {
                 // Notification was manually hidden or replaced
+            }
+            catch (ObjectDisposedException)
+            {
+                // CancellationTokenSource was disposed, notification already replaced
             }
         }
 

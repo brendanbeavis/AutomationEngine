@@ -136,23 +136,18 @@ namespace AutomationEngine.Services
                 var job = await context.Jobs.FirstOrDefaultAsync(j => j.JobId == jobId);
                 if (job is not null)
                 {
-                    // Soft delete the job
-                    job.DeletedAt = DateTime.UtcNow;
-
-                    // Soft delete all related job runs
+                    // Delete all related job runs
                     var runs = await context.JobRuns
-                        .Where(r => r.JobId == job.Id && r.DeletedAt == null)
+                        .Where(r => r.JobId == job.Id)
                         .ToListAsync();
 
-                    foreach (var run in runs)
-                    {
-                        run.DeletedAt = DateTime.UtcNow;
-                    }
+                    context.JobRuns.RemoveRange(runs);
 
-                    context.Jobs.Update(job);
+                    // Hard delete the job
+                    context.Jobs.Remove(job);
                     await context.SaveChangesAsync();
 
-                    _logger.LogInformation("Job soft-deleted in repository | JobId: {JobId} | DeletedRunsCount: {Count}", 
+                    _logger.LogInformation("Job hard-deleted in repository | JobId: {JobId} | DeletedRunsCount: {Count}", 
                         jobId, runs.Count);
                 }
             }

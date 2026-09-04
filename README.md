@@ -11,8 +11,6 @@ fix light theme
 
 
 
-saving a job that matches a id of a previously deleted job causes an errpr "Error saving job: BadRequest"
-
 What is Running JobsPanel?
 review models.cron structure
 
