@@ -3,6 +3,7 @@ using AutomationEngine.Dto;
 using AutomationEngine.Models;
 using AutomationEngine.Models.Cron;
 using AutomationEngine.Services;
+using AutomationEngine.Services.Abstractions;
 using Cronos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -39,6 +40,9 @@ namespace AutomationEngine.Components.Pages.Main
 
         [Inject]
         private ILogger<Index> _logger { get; set; } = default!;
+
+        [Inject]
+        private IJobStatusService JobStatusService { get; set; } = default!;
 
         // SignalR Hub Connection
         private HubConnection? _hubConnection;

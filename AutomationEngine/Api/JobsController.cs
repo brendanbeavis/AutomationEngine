@@ -23,6 +23,8 @@ namespace AutomationEngine.Api
         private readonly ILogger<JobsController> _logger;
         private readonly IBackgroundTaskQueue _backgroundTaskQueue;
         private readonly IAuditLogService _auditService;
+        private readonly IJobValidationService _jobValidationService;
+        private readonly IJobStatusService _jobStatusService;
 
         public JobsController(
             JobStateManager stateManager, 
@@ -30,7 +32,9 @@ namespace AutomationEngine.Api
             IHubContext<JobStatusHub> hubContext,
             ILogger<JobsController> logger,
             IBackgroundTaskQueue backgroundTaskQueue,
-            IAuditLogService auditService)
+            IAuditLogService auditService,
+            IJobValidationService jobValidationService,
+            IJobStatusService jobStatusService)
         {
             _stateManager = stateManager;
             _runner = runner;
@@ -38,6 +42,8 @@ namespace AutomationEngine.Api
             _logger = logger;
             _backgroundTaskQueue = backgroundTaskQueue;
             _auditService = auditService;
+            _jobValidationService = jobValidationService;
+            _jobStatusService = jobStatusService;
         }
 
         /// <summary>
@@ -103,18 +109,16 @@ namespace AutomationEngine.Api
         [ProducesResponseType(400)]
         public async Task<IActionResult> CreateOrUpdateJob([FromBody] JobDto dto)
         {
-            // Validate ModelState
+            // Validate ModelState (DataAnnotations)
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            // Validate DTO using its IValidatableObject implementation
-            var validationContext = new System.ComponentModel.DataAnnotations.ValidationContext(dto);
-            var validationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
-            bool isValid = System.ComponentModel.DataAnnotations.Validator.TryValidateObject(dto, validationContext, validationResults, validateAllProperties: true);
+            // Validate DTO using the JobValidationService
+            var validationResults = _jobValidationService.ValidateJob(dto).ToList();
 
-            if (!isValid)
+            if (validationResults.Any())
             {
                 var errors = validationResults.ToDictionary(
                     vr => string.Join(",", vr.MemberNames),

@@ -151,6 +151,10 @@ builder.Services.AddSingleton<IJobStateTransitionService, JobStateTransitionServ
 builder.Services.AddSingleton<IJobRunService, JobRunService>();
 builder.Services.AddSingleton<JobStateManager>();
 
+// Register job validation and status services
+builder.Services.AddSingleton<IJobValidationService, JobValidationService>();
+builder.Services.AddSingleton<IJobStatusService, JobStatusService>();
+
 builder.Services.AddSingleton<JobRunner>();
 builder.Services.AddScoped<SettingsService>();
 builder.Services.AddSingleton<IAuditLogService, AuditLogService>();
