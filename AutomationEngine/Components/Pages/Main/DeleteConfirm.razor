@@ -12,7 +12,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn badge bg-pink-neon" @onclick="OnCloseClick">✗ Cancel</button>
-                    <button class="btn badge bg-orange-neon" @onclick="OnConfirmClick"><Blazicon Svg="BootstrapIcon.Trash"></Blazicon> Delete</button>
+                    <button class="btn badge bg-orange-neon" disbaled=@isDeleting" @onclick="OnConfirmClick"><Blazicon Svg="@(isDeleting ? BootstrapIcon.ArrowClockwise.Animate(BlaziconAnimation.Spin) : BootstrapIcon.Trash)"></Blazicon> Delete</button>
                 </div>
             </div>
         </div>

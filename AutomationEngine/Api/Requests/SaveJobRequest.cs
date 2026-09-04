@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using AutomationEngine.Models;
 
-namespace AutomationEngine.Dto
+namespace AutomationEngine.Api.Requests
 {
     /// <summary>
     /// Parameter object for SaveJobAsync operation.

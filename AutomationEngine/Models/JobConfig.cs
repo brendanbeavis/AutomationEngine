@@ -29,9 +29,4 @@ namespace AutomationEngine.Models
         public bool Recurse { get; set; } = false;
         public string? FileFilter { get; set; }
     }
-
-    public class JobsConfig
-    {
-        public List<JobConfig> Jobs { get; set; } = new List<JobConfig>();
-    }
 }

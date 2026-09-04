@@ -19,9 +19,20 @@ namespace AutomationEngine.Components.Pages.Main
         [Parameter]
         public EventCallback OnClose { get; set; }
 
+        private bool isDeleting = false;
+
         private async Task OnConfirmClick()
         {
-            await OnConfirm.InvokeAsync();
+            try
+            {
+                isDeleting = true;
+                await Task.Delay(200);
+                await OnConfirm.InvokeAsync();
+            }
+            finally
+            {
+                isDeleting = false;
+            }
         }
 
         private async Task OnCloseClick()

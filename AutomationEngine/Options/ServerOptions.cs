@@ -1,3 +1,5 @@
+using AutomationEngine.Options.Interfaces;
+
 namespace AutomationEngine.Options
 {
     /// <summary>

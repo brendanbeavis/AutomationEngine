@@ -1,4 +1,4 @@
-namespace AutomationEngine.Options
+namespace AutomationEngine.Options.Interfaces
 {
     /// <summary>
     /// Typed options for Ntfy push notification configuration

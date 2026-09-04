@@ -1,3 +1,4 @@
+using AutomationEngine.Options.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
 namespace AutomationEngine.Options

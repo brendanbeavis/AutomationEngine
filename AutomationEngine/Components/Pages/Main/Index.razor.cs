@@ -221,7 +221,7 @@ namespace AutomationEngine.Components.Pages.Main
                     if (response.IsSuccessStatusCode)
                     {
                         ShowNotification($"Job '{job.DisplayName}' triggered successfully", "success", 3000);
-                        await Task.Delay(2500);
+                        await Task.Delay(2000);
                     }
                     else
                     {

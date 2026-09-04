@@ -47,6 +47,8 @@ namespace AutomationEngine.Components.Pages.Main
         private string oldCommand = string.Empty;
         private CronSchedule ScheduleValue { get; set; } = new();
 
+        private bool isSaving = false;
+
         protected override void OnInitialized()
         {
             EditContext = new EditContext(Job);
@@ -113,6 +115,8 @@ namespace AutomationEngine.Components.Pages.Main
 
         private async Task OnSubmitClick()
         {
+            isSaving = true;
+            await Task.Delay(500);
             // Validate Job ID is unique (only when creating new jobs)
             if (!IsEdit && !string.IsNullOrEmpty(Job.JobId) && JobApi != null)
             {
@@ -122,6 +126,7 @@ namespace AutomationEngine.Components.Pages.Main
                     if (exists)
                     {
                         ErrorMessage = $"A job with ID '{Job.JobId}' already exists. Please use a different ID.";
+                        isSaving = false;
                         return;
                     }
                 }
@@ -129,6 +134,7 @@ namespace AutomationEngine.Components.Pages.Main
                 {
                     _logger.LogWarning(ex, "Failed to check Job ID uniqueness | JobId: {JobId}", Job.JobId);
                     ErrorMessage = $"Error checking Job ID: {ex.Message}";
+                    isSaving = false;
                     return;
                 }
             }
@@ -136,6 +142,7 @@ namespace AutomationEngine.Components.Pages.Main
             // Clear error message before saving
             ErrorMessage = string.Empty;
             await OnSave.InvokeAsync(Job);
+            isSaving = false;
         }
 
         private async Task OnCloseClick()

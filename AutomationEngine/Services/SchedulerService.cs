@@ -1,9 +1,9 @@
 using Cronos;
 using AutomationEngine.Data.Entities;
 using AutomationEngine.Models;
-using AutomationEngine.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using AutomationEngine.Options.Interfaces;
 
 namespace AutomationEngine.Services
 {

@@ -8,19 +8,6 @@ namespace AutomationEngine.Configuration
     public static class Constants
     {
         /// <summary>
-        /// HTTP header names and authentication constants
-        /// </summary>
-        public static class Headers
-        {
-            /// <summary>
-            /// Name of the custom header used for optional admin secret validation.
-            /// When AdminSecret is configured in appsettings.json, this header is required for API/SignalR requests.
-            /// Allows external scripts/tools to authenticate with the API while maintaining localhost-only restriction.
-            /// </summary>
-            public const string AdminSecret = "X-Admin-Secret";
-        }
-
-        /// <summary>
         /// Job execution and configuration constants
         /// </summary>
         public static class Jobs

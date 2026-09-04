@@ -15,6 +15,7 @@ using System.Reflection;
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.Retry;
+using AutomationEngine.Options.Interfaces;
 
 // Configure Serilog with structured logging
 Log.Logger = new LoggerConfiguration()
@@ -267,11 +268,8 @@ catch (Exception ex)
 }
 
 // Configure the HTTP request pipeline
-// Add localhost-only middleware FIRST to protect all subsequent requests
+// Add localhost-only middleware to protect all subsequent requests
 app.UseMiddleware<LocalhostOnlyMiddleware>();
-
-// Add admin secret validation middleware (only active if AdminSecret is configured in appsettings)
-app.UseMiddleware<AdminSecretValidationMiddleware>();
 
 if (!app.Environment.IsDevelopment())
 {

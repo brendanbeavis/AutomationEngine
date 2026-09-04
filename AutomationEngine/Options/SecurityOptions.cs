@@ -1,3 +1,4 @@
+using AutomationEngine.Options.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
 namespace AutomationEngine.Options
@@ -18,17 +19,5 @@ namespace AutomationEngine.Options
         /// </summary>
         public bool LocalhostOnly { get; set; } = true;
 
-        /// <summary>
-        /// Admin secret for programmatic API access
-        /// Null/empty means admin secret validation is disabled
-        /// </summary>
-        [StringLength(500)]
-        public string? AdminSecret { get; set; }
-
-        /// <summary>
-        /// Description of the admin secret setting
-        /// </summary>
-        [StringLength(1000)]
-        public string? AdminSecretDescription { get; set; }
     }
 }

@@ -132,7 +132,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn badge bg-pink-neon" @onclick="OnCloseClick">✗ Cancel</button>
-                        <button type="submit" class="btn badge bg-lime-neon"><Blazicon Svg="BootstrapIcon.Check"></Blazicon> @(IsEdit ? "Update" : "Add")</button>
+                        <button type="submit" class="btn badge bg-lime-neon" disabled="@isSaving"><Blazicon Svg="@(isSaving ? BootstrapIcon.ArrowClockwise.Animate(BlaziconAnimation.Spin) : BootstrapIcon.Check)"></Blazicon> @(IsEdit ? "Update" : IsDupe ? "Save Copy" : "Add")</button>
                     </div>
                 </EditForm>
             </div>
