@@ -1,7 +1,8 @@
-﻿using Cronos;
+﻿using AutomationEngine.Models.Cron;
+using Cronos;
 using System.Globalization;
 
-namespace AutomationEngine.Models.Cron
+namespace AutomationEngine.Utilities.Cron
 {
    
     public static class CronExpressionGenerator

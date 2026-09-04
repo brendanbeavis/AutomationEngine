@@ -4,6 +4,7 @@ using AutomationEngine.Models;
 using AutomationEngine.Models.Cron;
 using AutomationEngine.Services;
 using AutomationEngine.Services.Abstractions;
+using AutomationEngine.Utilities.Cron;
 using Cronos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -355,7 +356,7 @@ namespace AutomationEngine.Components.Pages.Main
                 CreatedAt = job.CreatedAt,
                 UpdatedAt = job.UpdatedAt
             };
-            schedule = CronSchedule.FromExpression(job.Schedule);
+            schedule = CronScheduleParser.FromExpression(job.Schedule);
             editContext = new EditContext(newJob);
             modalErrorMessage = string.Empty;
             showAddJobModal = true;
@@ -448,7 +449,7 @@ namespace AutomationEngine.Components.Pages.Main
                 OnFailureNotify = job.OnFailureNotify,
                 Enabled = job.Enabled
             };
-            schedule = CronSchedule.FromExpression(job.Schedule);
+            schedule = CronScheduleParser.FromExpression(job.Schedule);
             editContext = new EditContext(newJob);
             modalErrorMessage = string.Empty;
             showAddJobModal = true;
