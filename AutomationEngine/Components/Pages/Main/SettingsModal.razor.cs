@@ -1,5 +1,6 @@
 using AutomationEngine.Dto;
 using AutomationEngine.Services;
+using AutomationEngine.Services.Abstractions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
@@ -9,7 +10,7 @@ namespace AutomationEngine.Components.Pages.Main
     public partial class SettingsModal
     {
         [Inject]
-        private SettingsService SettingsService { get; set; } = default!;
+        private ISettingsService SettingsService { get; set; } = default!;
 
         [Inject]
         private IJSRuntime JS { get; set; } = default!;

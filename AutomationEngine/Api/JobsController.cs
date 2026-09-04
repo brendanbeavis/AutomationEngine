@@ -25,6 +25,7 @@ namespace AutomationEngine.Api
         private readonly IAuditLogService _auditService;
         private readonly IJobValidationService _jobValidationService;
         private readonly IJobStatusService _jobStatusService;
+        private readonly INtfyNotificationService _ntfyService;
 
         public JobsController(
             JobStateManager stateManager, 
@@ -34,7 +35,8 @@ namespace AutomationEngine.Api
             IBackgroundTaskQueue backgroundTaskQueue,
             IAuditLogService auditService,
             IJobValidationService jobValidationService,
-            IJobStatusService jobStatusService)
+            IJobStatusService jobStatusService,
+            INtfyNotificationService ntfyService)
         {
             _stateManager = stateManager;
             _runner = runner;
@@ -44,6 +46,7 @@ namespace AutomationEngine.Api
             _auditService = auditService;
             _jobValidationService = jobValidationService;
             _jobStatusService = jobStatusService;
+            _ntfyService = ntfyService;
         }
 
         /// <summary>
@@ -405,6 +408,22 @@ namespace AutomationEngine.Api
                         var result = await _runner.RunAsync(config, ct).ConfigureAwait(false);
                         var duration = DateTime.UtcNow - startTime;
                         await _stateManager.SaveJobRunAsync(job.JobId, result, startTime, duration).ConfigureAwait(false);
+
+                        // Send notification on failure if enabled
+                        if (!result.Success && job.OnFailureNotify)
+                        {
+                            try
+                            {
+                                await _ntfyService.SendFailureNotificationAsync(
+                                    job.DisplayName,
+                                    result.StdErr ?? "No error details available",
+                                    ct).ConfigureAwait(false);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex, "Failed to send ntfy notification for job {JobId}", jobId);
+                            }
+                        }
 
                         // Broadcast job completed event
                         await _hubContext.BroadcastJobCompletedAsync(jobId, result.Success, result.ExitCode, result.StdErr, (int)duration.TotalMilliseconds).ConfigureAwait(false);

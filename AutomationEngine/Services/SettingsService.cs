@@ -8,12 +8,12 @@ namespace AutomationEngine.Services
 {
     public class SettingsService : ISettingsService
     {
-        private readonly AutomationDbContext _dbContext;
+        private readonly IDbContextFactory<AutomationDbContext> _dbContextFactory;
         private readonly ILogger<SettingsService> _logger;
 
-        public SettingsService(AutomationDbContext dbContext, ILogger<SettingsService> logger)
+        public SettingsService(IDbContextFactory<AutomationDbContext> dbContextFactory, ILogger<SettingsService> logger)
         {
-            _dbContext = dbContext;
+            _dbContextFactory = dbContextFactory;
             _logger = logger;
         }
 
@@ -24,7 +24,8 @@ namespace AutomationEngine.Services
         {
             try
             {
-                var settings = await _dbContext.AppSettings.FirstOrDefaultAsync(a => a.Id == 1);
+                using var dbContext = _dbContextFactory.CreateDbContext();
+                var settings = await dbContext.AppSettings.FirstOrDefaultAsync(a => a.Id == 1);
 
                 if (settings is null)
                 {
@@ -37,7 +38,6 @@ namespace AutomationEngine.Services
                         LoggingLevel = "Information",
                         JobExecutionEnabled = true,
                         DefaultJobTimeoutSeconds = 300,
-                        EnableEmailNotifications = false,
                         EnableDetailedLogging = false,
                         MaxJobHistoryRecords = 1000,
                         ApplicationName = "Automation Engine",
@@ -45,8 +45,8 @@ namespace AutomationEngine.Services
                         UpdatedAt = DateTime.UtcNow
                     };
 
-                    _dbContext.AppSettings.Add(settings);
-                    await _dbContext.SaveChangesAsync();
+                    dbContext.AppSettings.Add(settings);
+                    await dbContext.SaveChangesAsync();
                 }
 
                 return MapToDto(settings);
@@ -65,12 +65,13 @@ namespace AutomationEngine.Services
         {
             try
             {
-                var settings = await _dbContext.AppSettings.FirstOrDefaultAsync(a => a.Id == 1);
+                using var dbContext = _dbContextFactory.CreateDbContext();
+                var settings = await dbContext.AppSettings.FirstOrDefaultAsync(a => a.Id == 1);
 
                 if (settings is null)
                 {
                     settings = new AppSettingsEntity { Id = 1 };
-                    _dbContext.AppSettings.Add(settings);
+                    dbContext.AppSettings.Add(settings);
                 }
 
                 // Update properties
@@ -78,15 +79,13 @@ namespace AutomationEngine.Services
                 settings.LoggingLevel = settingsDto.LoggingLevel;
                 settings.JobExecutionEnabled = settingsDto.JobExecutionEnabled;
                 settings.DefaultJobTimeoutSeconds = settingsDto.DefaultJobTimeoutSeconds;
-                settings.EnableEmailNotifications = settingsDto.EnableEmailNotifications;
-                settings.NotificationEmail = settingsDto.NotificationEmail;
                 settings.NtfyEndpoint = settingsDto.NtfyEndpoint;
                 settings.EnableDetailedLogging = settingsDto.EnableDetailedLogging;
                 settings.MaxJobHistoryRecords = settingsDto.MaxJobHistoryRecords;
                 settings.ApplicationName = settingsDto.ApplicationName;
                 settings.UpdatedAt = DateTime.UtcNow;
 
-                await _dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
                 _logger.LogInformation("Application settings updated");
 
                 return MapToDto(settings);
@@ -130,8 +129,6 @@ namespace AutomationEngine.Services
                 LoggingLevel = entity.LoggingLevel,
                 JobExecutionEnabled = entity.JobExecutionEnabled,
                 DefaultJobTimeoutSeconds = entity.DefaultJobTimeoutSeconds,
-                EnableEmailNotifications = entity.EnableEmailNotifications,
-                NotificationEmail = entity.NotificationEmail,
                 NtfyEndpoint = entity.NtfyEndpoint,
                 EnableDetailedLogging = entity.EnableDetailedLogging,
                 MaxJobHistoryRecords = entity.MaxJobHistoryRecords,

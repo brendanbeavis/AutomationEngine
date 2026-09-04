@@ -20,8 +20,6 @@ namespace AutomationEngine.Migrations
                     LoggingLevel = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false, defaultValue: "Information"),
                     JobExecutionEnabled = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true),
                     DefaultJobTimeoutSeconds = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 300),
-                    EnableEmailNotifications = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
-                    NotificationEmail = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
                     EnableDetailedLogging = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
                     MaxJobHistoryRecords = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 1000),
                     ApplicationName = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false, defaultValue: "Automation Engine"),
@@ -36,8 +34,8 @@ namespace AutomationEngine.Migrations
             // Insert default settings
             migrationBuilder.InsertData(
                 table: "AppSettings",
-                columns: new[] { "Id", "Theme", "LoggingLevel", "JobExecutionEnabled", "DefaultJobTimeoutSeconds", "EnableEmailNotifications", "NotificationEmail", "EnableDetailedLogging", "MaxJobHistoryRecords", "ApplicationName", "UpdatedAt", "CreatedAt" },
-                values: new object[] { 1, "cyberpunk", "Information", true, 300, false, null, false, 1000, "Automation Engine", DateTime.UtcNow, DateTime.UtcNow });
+                columns: new[] { "Id", "Theme", "LoggingLevel", "JobExecutionEnabled", "DefaultJobTimeoutSeconds", "EnableDetailedLogging", "MaxJobHistoryRecords", "ApplicationName", "UpdatedAt", "CreatedAt" },
+                values: new object[] { 1, "cyberpunk", "Information", true, 300, false, 1000, "Automation Engine", DateTime.UtcNow, DateTime.UtcNow });
         }
 
         /// <inheritdoc />

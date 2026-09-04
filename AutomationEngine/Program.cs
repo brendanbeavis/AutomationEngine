@@ -93,6 +93,9 @@ builder.Services.AddHttpClient<JobApiClient>(client =>
     client.BaseAddress = new Uri(serverConfig.LocalhostUrl);
 });
 
+// Add HttpClient for NtfyNotificationService
+builder.Services.AddHttpClient<NtfyNotificationService>();
+
 // Configure Polly resilience policies
 var retryPolicy = Policy<bool>
     .Handle<Exception>()
@@ -140,9 +143,6 @@ builder.Services.AddSingleton<ISecurityOptions>(sp => sp.GetRequiredService<IOpt
 builder.Services.Configure<ServerOptions>(builder.Configuration.GetSection(ServerOptions.SectionName));
 builder.Services.AddSingleton<IServerOptions>(sp => sp.GetRequiredService<IOptions<ServerOptions>>().Value);
 
-builder.Services.Configure<NtfyOptions>(builder.Configuration.GetSection(NtfyOptions.SectionName));
-builder.Services.AddSingleton<INtfyOptions>(sp => sp.GetRequiredService<IOptions<NtfyOptions>>().Value);
-
 // Register job management services following Single Responsibility Principle
 builder.Services.AddSingleton<IJobCache, JobCacheService>();
 builder.Services.AddSingleton<IJobRepository, JobRepository>();
@@ -156,7 +156,8 @@ builder.Services.AddSingleton<IJobValidationService, JobValidationService>();
 builder.Services.AddSingleton<IJobStatusService, JobStatusService>();
 
 builder.Services.AddSingleton<JobRunner>();
-builder.Services.AddScoped<SettingsService>();
+builder.Services.AddScoped<ISettingsService, SettingsService>();
+builder.Services.AddScoped<INtfyNotificationService, NtfyNotificationService>();
 builder.Services.AddSingleton<IAuditLogService, AuditLogService>();
 builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 builder.Services.AddHostedService<BackgroundTaskQueue>(sp => sp.GetRequiredService<IBackgroundTaskQueue>() as BackgroundTaskQueue ?? throw new InvalidOperationException("BackgroundTaskQueue not registered"));

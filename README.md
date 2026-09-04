@@ -8,14 +8,19 @@ AutomationEngine is a windows service for scheduling and triggering regular proc
 
 more theme options
 fix light theme
-annotate all dtos
-should DatabaseOptions have interface?
-bug where job has run but result colum on main table shows never run and last run column shows never
+
+
+
 saving a job that matches a id of a previously deleted job causes an errpr "Error saving job: BadRequest"
+
 What is Running JobsPanel?
 review models.cron structure
-OnFailureNotify exists but ntfy is not setup to actuly do anything - becuase nfty is defined in appsettings as well as per job and in in-app settings. also it only runs for schedule, not for manual trigger.
-updated schedule was not triggered, until after app restart
+
+ntfy payload:
+{"title":"Job failed: TestPS1 (Copy)","message":"Timed out"}
+when a scheduled backgroupnd job is running, why isnt dashboard updated to show as running
+
+
 
 •	Adding unit tests for the extension methods
 •	Creating additional domain-specific extensions if new features require it

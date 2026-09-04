@@ -1,9 +1,9 @@
 using Cronos;
 using AutomationEngine.Data.Entities;
 using AutomationEngine.Models;
+using AutomationEngine.Services.Abstractions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using AutomationEngine.Options.Interfaces;
 
 namespace AutomationEngine.Services
 {
@@ -11,17 +11,15 @@ namespace AutomationEngine.Services
     {
         private readonly ILogger<SchedulerService> _logger;
         private readonly IServiceProvider _services;
-        private readonly INtfyOptions _ntfyOptions;
         private readonly JobStateManager _stateManager;
         private readonly IBackgroundTaskQueue _backgroundTaskQueue;
         private readonly List<(JobEntity job, CronExpression? cron, TimeZoneInfo tz)> _jobs = new();
 
         public SchedulerService(ILogger<SchedulerService> logger, IServiceProvider services, 
-            INtfyOptions ntfyOptions, JobStateManager stateManager, IBackgroundTaskQueue backgroundTaskQueue)
+            JobStateManager stateManager, IBackgroundTaskQueue backgroundTaskQueue)
         {
             _logger = logger;
             _services = services;
-            _ntfyOptions = ntfyOptions;
             _stateManager = stateManager;
             _backgroundTaskQueue = backgroundTaskQueue;
         }
@@ -136,13 +134,11 @@ namespace AutomationEngine.Services
                 {
                     try
                     {
-                        if (_ntfyOptions.Enabled && !string.IsNullOrEmpty(_ntfyOptions.Endpoint))
-                        {
-                            var client = scope.ServiceProvider.GetRequiredService<System.Net.Http.HttpClient>();
-                            var payload = new { title = $"Job failed: {job.DisplayName}", message = result.StdErr ?? "" };
-                            var content = new System.Net.Http.StringContent(System.Text.Json.JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json");
-                            await client.PostAsync(_ntfyOptions.Endpoint, content, cancellationToken).ConfigureAwait(false);
-                        }
+                        var ntfyService = scope.ServiceProvider.GetRequiredService<INtfyNotificationService>();
+                        await ntfyService.SendFailureNotificationAsync(
+                            job.DisplayName,
+                            result.StdErr ?? "No error details available",
+                            cancellationToken).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {

@@ -35,17 +35,6 @@ namespace AutomationEngine.Data.Entities
         public int DefaultJobTimeoutSeconds { get; set; } = 300;
 
         /// <summary>
-        /// Enable email notifications for job failures
-        /// </summary>
-        public bool EnableEmailNotifications { get; set; } = false;
-
-        /// <summary>
-        /// Email address for notifications
-        /// </summary>
-        [MaxLength(255)]
-        public string? NotificationEmail { get; set; }
-
-        /// <summary>
         /// Ntfy endpoint URL for push notifications
         /// </summary>
         [MaxLength(512)]

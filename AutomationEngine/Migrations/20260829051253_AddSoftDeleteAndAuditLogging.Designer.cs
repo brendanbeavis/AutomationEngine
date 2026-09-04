@@ -40,9 +40,6 @@ namespace AutomationEngine.Migrations
                     b.Property<bool>("EnableDetailedLogging")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("EnableEmailNotifications")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("JobExecutionEnabled")
                         .HasColumnType("INTEGER");
 
@@ -54,9 +51,6 @@ namespace AutomationEngine.Migrations
                     b.Property<int>("MaxJobHistoryRecords")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("NotificationEmail")
-                        .HasMaxLength(255)
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("Theme")
                         .IsRequired()

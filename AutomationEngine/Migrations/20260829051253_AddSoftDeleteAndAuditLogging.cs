@@ -80,8 +80,6 @@ namespace AutomationEngine.Migrations
                     LoggingLevel = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     JobExecutionEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
                     DefaultJobTimeoutSeconds = table.Column<int>(type: "INTEGER", nullable: false),
-                    EnableEmailNotifications = table.Column<bool>(type: "INTEGER", nullable: false),
-                    NotificationEmail = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
                     EnableDetailedLogging = table.Column<bool>(type: "INTEGER", nullable: false),
                     MaxJobHistoryRecords = table.Column<int>(type: "INTEGER", nullable: false),
                     ApplicationName = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),

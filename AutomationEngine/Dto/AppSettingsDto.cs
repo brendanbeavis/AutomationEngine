@@ -45,17 +45,6 @@ namespace AutomationEngine.Dto
         public int DefaultJobTimeoutSeconds { get; set; } = 300;
 
         /// <summary>
-        /// Indicates whether email notifications are enabled.
-        /// </summary>
-        public bool EnableEmailNotifications { get; set; } = false;
-
-        /// <summary>
-        /// Email address for receiving notifications.
-        /// </summary>
-        [EmailAddress(ErrorMessage = "NotificationEmail must be a valid email address")]
-        public string? NotificationEmail { get; set; }
-
-        /// <summary>
         /// Ntfy service endpoint URL for push notifications.
         /// </summary>
         [Url(ErrorMessage = "NtfyEndpoint must be a valid URL")]
