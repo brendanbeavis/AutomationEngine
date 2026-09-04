@@ -4,19 +4,24 @@ AutomationEngine is a windows service for scheduling and triggering regular proc
 
 
 
+
+
+
 #TODO
 
 more theme options
-fix light theme
+fix light theme, remove glow from text, table has dark background
 
 
 
 What is Running JobsPanel?
-review models.cron structure
 
 ntfy payload:
 {"title":"Job failed: TestPS1 (Copy)","message":"Timed out"}
-when a scheduled backgroupnd job is running, why isnt dashboard updated to show as running
+
+
+
+
 
 
 

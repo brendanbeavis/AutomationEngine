@@ -2,6 +2,8 @@ using Cronos;
 using AutomationEngine.Data.Entities;
 using AutomationEngine.Models;
 using AutomationEngine.Services.Abstractions;
+using AutomationEngine.SignalR;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -13,15 +15,17 @@ namespace AutomationEngine.Services
         private readonly IServiceProvider _services;
         private readonly JobStateManager _stateManager;
         private readonly IBackgroundTaskQueue _backgroundTaskQueue;
+        private readonly IHubContext<JobStatusHub> _hubContext;
         private readonly List<(JobEntity job, CronExpression? cron, TimeZoneInfo tz)> _jobs = new();
 
         public SchedulerService(ILogger<SchedulerService> logger, IServiceProvider services, 
-            JobStateManager stateManager, IBackgroundTaskQueue backgroundTaskQueue)
+            JobStateManager stateManager, IBackgroundTaskQueue backgroundTaskQueue, IHubContext<JobStatusHub> hubContext)
         {
             _logger = logger;
             _services = services;
             _stateManager = stateManager;
             _backgroundTaskQueue = backgroundTaskQueue;
+            _hubContext = hubContext;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -51,6 +55,23 @@ namespace AutomationEngine.Services
 
                     var next = nextRunTimes[job.JobId];
                     if (next == null || next > now) continue;
+
+                    try
+                    {
+                        // Set job state to Running so dashboard immediately shows it as running
+                        await _stateManager.SetJobStateAsync(job.JobId, JobState.Running);
+
+                        // Broadcast job started event to connected clients via SignalR
+                        await _hubContext.BroadcastJobStartedAsync(job.JobId, job.DisplayName);
+
+                        // Broadcast jobs list updated to trigger dashboard refresh
+                        await _hubContext.BroadcastJobsListUpdatedAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Failed to update job state or broadcast started event | JobId: {JobId} | DisplayName: {DisplayName}", 
+                            job.JobId, job.DisplayName);
+                    }
 
                     // Queue job in background task queue for safe execution with proper exception handling
                     await _backgroundTaskQueue.QueueAsync(job.JobId, ct => RunJobAsync(job, ct));
@@ -129,6 +150,14 @@ namespace AutomationEngine.Services
                 // Save run result to database
                 var duration = DateTime.UtcNow - startTime;
                 await _stateManager.SaveJobRunAsync(job.JobId, result, startTime, duration);
+                await _hubContext.BroadcastJobCompletedAsync(
+                   job.JobId,
+                   result.Success,
+                   result.ExitCode,
+                   result.StdErr,
+                   (int)duration.TotalMilliseconds).ConfigureAwait(false);
+
+                await _hubContext.BroadcastJobsListUpdatedAsync().ConfigureAwait(false);
 
                 if (!result.Success && job.OnFailureNotify)
                 {
@@ -151,6 +180,8 @@ namespace AutomationEngine.Services
             {
                 _logger.LogError(ex, "Scheduler failed running job | JobId: {JobId} | DisplayName: {DisplayName}", 
                     job.JobId, job.DisplayName);
+                await _hubContext.BroadcastJobCompletedAsync(job.JobId, false, -1, ex.Message).ConfigureAwait(false);
+                await _hubContext.BroadcastJobsListUpdatedAsync().ConfigureAwait(false);
             }
         }
     }
