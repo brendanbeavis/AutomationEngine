@@ -26,14 +26,39 @@ html.theme-light .table-light {
     color: #333333;
 }
 
-html.theme-light .table-light thead {
+html.theme-light table {
+    background: #ffffff;
+    color: #333333;
+}
+
+html.theme-light .table-light thead,
+html.theme-light .table thead {
     background: rgba(0, 0, 0, 0.05);
+}
+
+html.theme-light .table-dark {
+    background: rgba(0, 0, 0, 0.05) !important;
+}
+
+html.theme-light .table-dark th {
+    background: rgba(0, 0, 0, 0.05);
+    color: #333333;
 }
 
 html.theme-light .table-light th,
 html.theme-light table th {
     color: #0066cc;
     border-color: rgba(0, 0, 0, 0.1);
+}
+
+html.theme-light .table tbody tr {
+    background: #ffffff;
+    color: #333333;
+}
+
+html.theme-light .table tbody td {
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #333333;
 }
 
 html.theme-light .table tbody tr:hover {
@@ -104,6 +129,12 @@ html.theme-light select:focus {
     box-shadow: 0 0 6px rgba(0, 102, 204, 0.2);
 }
 
+html.theme-light .nav-link {
+    color: #333333 !important;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+
 html.theme-light .neon-text {
     color: #0066cc;
     text-shadow: 0 0 4px rgba(0, 102, 204, 0.3);
@@ -142,6 +173,10 @@ html.theme-light h4,
 html.theme-light h5,
 html.theme-light h6 {
     color: #333333;
+}
+
+html.theme-light .page {
+    background-color: #ffffff;
 }
 
 html.theme-light .job-history-dashboard {
