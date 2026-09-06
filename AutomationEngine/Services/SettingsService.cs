@@ -3,6 +3,7 @@ using AutomationEngine.Data.Entities;
 using AutomationEngine.Dto;
 using AutomationEngine.Services.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace AutomationEngine.Services
 {
@@ -65,6 +66,10 @@ namespace AutomationEngine.Services
         {
             try
             {
+
+                ArgumentNullException.ThrowIfNull(settingsDto);
+                ValidateNtfyEndpoint(settingsDto);
+
                 using var dbContext = _dbContextFactory.CreateDbContext();
                 var settings = await dbContext.AppSettings.FirstOrDefaultAsync(a => a.Id == 1);
 
@@ -94,6 +99,21 @@ namespace AutomationEngine.Services
             {
                 _logger.LogError(ex, "Error updating application settings");
                 throw;
+            }
+        }
+
+        private static void ValidateNtfyEndpoint(AppSettingsDto settingsDto)
+        {
+            if (string.IsNullOrWhiteSpace(settingsDto.NtfyEndpoint))
+            {
+                settingsDto.NtfyEndpoint = null; // allow blank = disabled notifications
+                return;
+            }
+
+            if (!Uri.TryCreate(settingsDto.NtfyEndpoint, UriKind.Absolute, out var uri) ||
+                (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            {
+                throw new ValidationException("Ntfy Endpoint must be a valid absolute HTTP/HTTPS URL.");
             }
         }
 

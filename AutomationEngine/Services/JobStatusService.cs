@@ -31,13 +31,13 @@ namespace AutomationEngine.Services
 
                 if (job.IsRunning)
                 {
-                    statusParts.Add("Job is currently running");
+                    statusParts.Add("Job is currently running.");
                 }
 
                 var nextRun = GetNextExecutionTime(job);
                 if (nextRun.HasValue)
                 {
-                    statusParts.Add($"Next run: {nextRun.Value.ToLocalTime():yyyy-MM-dd HH:mm:ss}");
+                    statusParts.Add($"Next run: {nextRun.Value.ToLocalTime():yyyy-MM-dd HH:mm:ss}.");
                 }
 
                 if (!job.Enabled)
@@ -45,11 +45,11 @@ namespace AutomationEngine.Services
                     statusParts.Add("However job schedule is disabled!");
                 }
 
-                return string.Join("; ", statusParts) + (statusParts.Count > 0 ? "; " : "");
+                return string.Join(" ", statusParts) + (statusParts.Count > 0 ? " " : "");
             }
             catch
             {
-                return "Unable to determine job status";
+                return "Unable to determine job status.";
             }
         }
 
