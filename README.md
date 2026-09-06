@@ -16,8 +16,8 @@ fix light theme, remove glow from text, table has dark background
 
 What is Running JobsPanel?
 
-ntfy payload:
-{"title":"Job failed: TestPS1 (Copy)","message":"Timed out"}
+
+theres an exception in ntfy service.
 
 
 

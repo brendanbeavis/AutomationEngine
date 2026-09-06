@@ -25,7 +25,8 @@ namespace AutomationEngine.Api
         private readonly IAuditLogService _auditService;
         private readonly IJobValidationService _jobValidationService;
         private readonly IJobStatusService _jobStatusService;
-        private readonly INtfyNotificationService _ntfyService;
+        //private readonly INtfyNotificationService _ntfyService;
+        private readonly IServiceScopeFactory _scopeFactory;
 
         public JobsController(
             JobStateManager stateManager, 
@@ -36,7 +37,8 @@ namespace AutomationEngine.Api
             IAuditLogService auditService,
             IJobValidationService jobValidationService,
             IJobStatusService jobStatusService,
-            INtfyNotificationService ntfyService)
+            //INtfyNotificationService ntfyService,
+            IServiceScopeFactory scopeFactory)
         {
             _stateManager = stateManager;
             _runner = runner;
@@ -46,7 +48,8 @@ namespace AutomationEngine.Api
             _auditService = auditService;
             _jobValidationService = jobValidationService;
             _jobStatusService = jobStatusService;
-            _ntfyService = ntfyService;
+            //_ntfyService = ntfyService;
+            _scopeFactory = scopeFactory;
         }
 
         /// <summary>
@@ -414,7 +417,10 @@ namespace AutomationEngine.Api
                         {
                             try
                             {
-                                await _ntfyService.SendFailureNotificationAsync(
+                                using var scope = _scopeFactory.CreateScope();
+                                var ntfyService = scope.ServiceProvider.GetRequiredService<INtfyNotificationService>();
+
+                                await ntfyService.SendFailureNotificationAsync(
                                     job.DisplayName,
                                     result.StdErr ?? "No error details available",
                                     ct).ConfigureAwait(false);

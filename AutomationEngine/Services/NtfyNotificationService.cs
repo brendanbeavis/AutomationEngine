@@ -25,6 +25,13 @@ namespace AutomationEngine.Services
             _logger = logger;
         }
 
+        enum NtfyResult
+        {
+            Success,
+            Failure,
+            NotConfigured
+        }
+
         /// <summary>
         /// Send a failure notification via ntfy service
         /// </summary>
@@ -32,42 +39,24 @@ namespace AutomationEngine.Services
         {
             try
             {
-                // Get settings from database
                 var settings = await _settingsService.GetSettingsAsync();
 
-                // Exit early if ntfy endpoint is not configured
-                if (string.IsNullOrEmpty(settings.NtfyEndpoint))
+                if (string.IsNullOrWhiteSpace(settings.NtfyEndpoint))
                 {
-                    _logger.LogDebug("ntfy endpoint not configured, skipping notification");
+                    _logger.LogInformation("ntfy endpoint not configured, skipping notification");
                     return;
                 }
 
-                // Prepare notification payload
-                var payload = new
-                {
-                    title = $"Job failed: {jobDisplayName}",
-                    message = errorMessage ?? "No error details available"
-                };
+                var safeError = string.IsNullOrWhiteSpace(errorMessage)
+                    ? "No error details available"
+                    : errorMessage.Trim();
 
-                var jsonContent = JsonSerializer.Serialize(payload);
-                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                var markdownBody =
+                    $"## Job Failed\n\n" +
+                    $"**Job:** `{jobDisplayName}`\n\n" +
+                    $"**Error:**\n```text\n{safeError}\n```";
 
-                // Send notification
-                var response = await _httpClient.PostAsync(settings.NtfyEndpoint, content, cancellationToken)
-                    .ConfigureAwait(false);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    _logger.LogWarning(
-                        "ntfy notification failed with status {StatusCode} | JobName: {JobName}",
-                        response.StatusCode, jobDisplayName);
-                }
-                else
-                {
-                    _logger.LogInformation(
-                        "ntfy notification sent successfully | JobName: {JobName}",
-                        jobDisplayName);
-                }
+                await SendNotificationAsync(jobDisplayName, markdownBody, NtfyResult.Failure, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -76,6 +65,83 @@ namespace AutomationEngine.Services
                     "Failed to send ntfy notification | JobName: {JobName}",
                     jobDisplayName);
             }
+        }
+
+        /// <summary>
+        /// Send a success notification via ntfy service
+        /// </summary>
+        public async Task SendSuccessNotificationAsync(string jobDisplayName, string errorMessage, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var settings = await _settingsService.GetSettingsAsync();
+
+                if (string.IsNullOrWhiteSpace(settings.NtfyEndpoint))
+                {
+                    _logger.LogInformation("ntfy endpoint not configured, skipping notification");
+                    return;
+                }
+
+                var safeError = string.IsNullOrWhiteSpace(errorMessage)
+                    ? "No error details available"
+                    : errorMessage.Trim();
+
+                var markdownBody =
+                    $"## Job Failed\n\n" +
+                    $"**Job:** `{jobDisplayName}`\n\n" +
+                    $"**Error:**\n```text\n{safeError}\n```";
+
+                await SendNotificationAsync(jobDisplayName, markdownBody, NtfyResult.Success, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Failed to send ntfy notification | JobName: {JobName}",
+                    jobDisplayName);
+            }
+        }
+
+
+        /// <summary>
+        /// Send a notification via ntfy service
+        /// </summary>
+        private async Task SendNotificationAsync(string jobDisplayName, string markdownBody, NtfyResult result, CancellationToken cancellationToken = default)
+        {
+
+            var settings = await _settingsService.GetSettingsAsync();
+
+            if (string.IsNullOrWhiteSpace(settings.NtfyEndpoint))
+            {
+                _logger.LogInformation("ntfy endpoint not configured, skipping notification");
+                return;
+            }
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, settings.NtfyEndpoint)
+            {
+                Content = new StringContent(markdownBody, Encoding.UTF8, "text/plain")
+            };
+
+            request.Headers.TryAddWithoutValidation("Title", $"[AE] Job {result.ToString()}: {jobDisplayName}");
+            request.Headers.TryAddWithoutValidation("Priority", "high");
+            request.Headers.TryAddWithoutValidation("Tags", result == NtfyResult.Failure ? "warning" : result == NtfyResult.Success ? "white_check_mark" : "");
+            request.Headers.TryAddWithoutValidation("Markdown", "yes");
+
+            var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "ntfy notification failed with status {StatusCode} | JobName: {JobName}",
+                    response.StatusCode, jobDisplayName);
+            }
+            else
+            {
+                _logger.LogInformation(
+                    "ntfy notification sent successfully | JobName: {JobName}",
+                    jobDisplayName);
+            }
+
         }
     }
 }

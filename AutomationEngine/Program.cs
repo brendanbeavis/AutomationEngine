@@ -94,7 +94,8 @@ builder.Services.AddHttpClient<JobApiClient>(client =>
 });
 
 // Add HttpClient for NtfyNotificationService
-builder.Services.AddHttpClient<NtfyNotificationService>();
+//builder.Services.AddHttpClient<NtfyNotificationService>();
+builder.Services.AddHttpClient<INtfyNotificationService, NtfyNotificationService>();
 
 // Configure Polly resilience policies
 var retryPolicy = Policy<bool>
@@ -157,7 +158,7 @@ builder.Services.AddSingleton<IJobStatusService, JobStatusService>();
 
 builder.Services.AddSingleton<JobRunner>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
-builder.Services.AddScoped<INtfyNotificationService, NtfyNotificationService>();
+//builder.Services.AddScoped<INtfyNotificationService, NtfyNotificationService>();
 builder.Services.AddSingleton<IAuditLogService, AuditLogService>();
 builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 builder.Services.AddHostedService<BackgroundTaskQueue>(sp => sp.GetRequiredService<IBackgroundTaskQueue>() as BackgroundTaskQueue ?? throw new InvalidOperationException("BackgroundTaskQueue not registered"));
