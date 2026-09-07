@@ -141,7 +141,8 @@ namespace AutomationEngine.Services
                     Schedule = job.Schedule,
                     TimeoutSeconds = job.TimeoutSeconds,
                     Retry = job.Retry,
-                    OnFailureNotify = job.OnFailureNotify
+                    OnFailureNotify = job.OnFailureNotify,
+                    OnSuccessNotify = job.OnSuccessNotify
                 };
 
                 // Run the job once. Retries are handled inside JobRunner via Polly.
@@ -159,15 +160,28 @@ namespace AutomationEngine.Services
 
                 await _hubContext.BroadcastJobsListUpdatedAsync().ConfigureAwait(false);
 
-                if (!result.Success && job.OnFailureNotify)
+                if ((!result.Success && job.OnFailureNotify) || (result.Success && job.OnSuccessNotify))
                 {
                     try
                     {
                         var ntfyService = scope.ServiceProvider.GetRequiredService<INtfyNotificationService>();
-                        await ntfyService.SendFailureNotificationAsync(
-                            job.DisplayName,
-                            result.StdErr ?? "No error details available",
-                            cancellationToken).ConfigureAwait(false);
+
+                        if (result.Success)
+                        {
+                            await ntfyService.SendSuccessNotificationAsync(
+                                job.DisplayName,
+                                string.IsNullOrWhiteSpace(result.StdOut)
+                                    ? $"Exit code: {result.ExitCode}"
+                                    : result.StdOut,
+                                cancellationToken).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await ntfyService.SendFailureNotificationAsync(
+                                job.DisplayName,
+                                result.StdErr ?? "No error details available",
+                                cancellationToken).ConfigureAwait(false);
+                        }
                     }
                     catch (Exception ex)
                     {

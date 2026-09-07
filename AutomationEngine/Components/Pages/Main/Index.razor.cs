@@ -352,6 +352,7 @@ namespace AutomationEngine.Components.Pages.Main
                 TimeoutSeconds = job.TimeoutSeconds,
                 Retry = job.Retry,
                 OnFailureNotify = job.OnFailureNotify,
+                OnSuccessNotify = job.OnSuccessNotify,
                 Enabled = job.Enabled,
                 CreatedAt = job.CreatedAt,
                 UpdatedAt = job.UpdatedAt
@@ -447,6 +448,7 @@ namespace AutomationEngine.Components.Pages.Main
                 TimeoutSeconds = job.TimeoutSeconds,
                 Retry = job.Retry,
                 OnFailureNotify = job.OnFailureNotify,
+                OnSuccessNotify = job.OnSuccessNotify,
                 Enabled = job.Enabled
             };
             schedule = CronScheduleParser.FromExpression(job.Schedule);

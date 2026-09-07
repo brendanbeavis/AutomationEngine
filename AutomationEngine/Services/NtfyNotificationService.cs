@@ -70,7 +70,7 @@ namespace AutomationEngine.Services
         /// <summary>
         /// Send a success notification via ntfy service
         /// </summary>
-        public async Task SendSuccessNotificationAsync(string jobDisplayName, string errorMessage, CancellationToken cancellationToken = default)
+        public async Task SendSuccessNotificationAsync(string jobDisplayName, string details, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -82,14 +82,14 @@ namespace AutomationEngine.Services
                     return;
                 }
 
-                var safeError = string.IsNullOrWhiteSpace(errorMessage)
-                    ? "No error details available"
-                    : errorMessage.Trim();
+                var safeDetails = string.IsNullOrWhiteSpace(details)
+                    ? "No output details available"
+                    : details.Trim();
 
                 var markdownBody =
-                    $"## Job Failed\n\n" +
+                    $"## Job Succeeded\n\n" +
                     $"**Job:** `{jobDisplayName}`\n\n" +
-                    $"**Error:**\n```text\n{safeError}\n```";
+                    $"**Details:**\n```text\n{safeDetails}\n```";
 
                 await SendNotificationAsync(jobDisplayName, markdownBody, NtfyResult.Success, cancellationToken);
             }

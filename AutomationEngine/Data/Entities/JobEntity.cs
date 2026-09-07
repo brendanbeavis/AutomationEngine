@@ -45,6 +45,7 @@ namespace AutomationEngine.Data.Entities
 
         public int Retry { get; set; } = 0;
         public bool OnFailureNotify { get; set; } = false;
+        public bool OnSuccessNotify { get; set; } = false;
 
         public bool Enabled { get; set; } = true;
 

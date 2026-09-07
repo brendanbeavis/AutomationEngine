@@ -22,6 +22,7 @@ namespace AutomationEngine.Models
         public int TimeoutSeconds { get; set; } = 0; // 0 = no timeout
         public int Retry { get; set; } = 0;
         public bool OnFailureNotify { get; set; } = false;
+        public bool OnSuccessNotify { get; set; } = false;
 
         // FileCleanup job specific properties
         public string? TargetFolder { get; set; }

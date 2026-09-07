@@ -183,6 +183,7 @@ namespace AutomationEngine.Api
                     TimeoutSeconds = dto.TimeoutSeconds ?? 0,
                     Retry = dto.Retry,
                     OnFailureNotify = dto.OnFailureNotify,
+                    OnSuccessNotify = dto.OnSuccessNotify,
                     Enabled = dto.Enabled,
                     FileCleanup = fileCleanupOptions
                 };
@@ -404,7 +405,8 @@ namespace AutomationEngine.Api
                             Schedule = job.Schedule,
                             TimeoutSeconds = job.TimeoutSeconds,
                             Retry = job.Retry,
-                            OnFailureNotify = job.OnFailureNotify
+                            OnFailureNotify = job.OnFailureNotify,
+                            OnSuccessNotify = job.OnSuccessNotify
                         };
 
                         var startTime = DateTime.UtcNow;
@@ -412,18 +414,30 @@ namespace AutomationEngine.Api
                         var duration = DateTime.UtcNow - startTime;
                         await _stateManager.SaveJobRunAsync(job.JobId, result, startTime, duration).ConfigureAwait(false);
 
-                        // Send notification on failure if enabled
-                        if (!result.Success && job.OnFailureNotify)
+                        // Send notifications if enabled
+                        if ((!result.Success && job.OnFailureNotify) || (result.Success && job.OnSuccessNotify))
                         {
                             try
                             {
                                 using var scope = _scopeFactory.CreateScope();
                                 var ntfyService = scope.ServiceProvider.GetRequiredService<INtfyNotificationService>();
 
-                                await ntfyService.SendFailureNotificationAsync(
-                                    job.DisplayName,
-                                    result.StdErr ?? "No error details available",
-                                    ct).ConfigureAwait(false);
+                                if (result.Success)
+                                {
+                                    await ntfyService.SendSuccessNotificationAsync(
+                                        job.DisplayName,
+                                        string.IsNullOrWhiteSpace(result.StdOut)
+                                            ? $"Exit code: {result.ExitCode}"
+                                            : result.StdOut,
+                                        ct).ConfigureAwait(false);
+                                }
+                                else
+                                {
+                                    await ntfyService.SendFailureNotificationAsync(
+                                        job.DisplayName,
+                                        result.StdErr ?? "No error details available",
+                                        ct).ConfigureAwait(false);
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -521,6 +535,7 @@ namespace AutomationEngine.Api
                 TimeoutSeconds = job.TimeoutSeconds,
                 Retry = job.Retry,
                 OnFailureNotify = job.OnFailureNotify,
+                OnSuccessNotify = job.OnSuccessNotify,
                 Enabled = job.Enabled,
                 CreatedAt = job.CreatedAt,
                 UpdatedAt = job.UpdatedAt,

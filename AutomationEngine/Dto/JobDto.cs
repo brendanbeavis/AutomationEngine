@@ -89,6 +89,11 @@ namespace AutomationEngine.Dto
         public bool OnFailureNotify { get; set; } = false;
 
         /// <summary>
+        /// Indicates whether to send notifications when the job succeeds.
+        /// </summary>
+        public bool OnSuccessNotify { get; set; } = false;
+
+        /// <summary>
         /// Indicates whether the job is enabled and eligible for execution.
         /// </summary>
         public bool Enabled { get; set; } = true;

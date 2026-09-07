@@ -143,6 +143,7 @@ namespace AutomationEngine.Services
                         existing.TimeoutSeconds = request.TimeoutSeconds;
                         existing.Retry = request.Retry;
                         existing.OnFailureNotify = request.OnFailureNotify;
+                        existing.OnSuccessNotify = request.OnSuccessNotify;
                         existing.Enabled = request.Enabled;
                         existing.TargetFolder = request.FileCleanup?.TargetFolder;
                         existing.FileAgeInDays = request.FileCleanup?.FileAgeInDays ?? 0;
@@ -174,6 +175,7 @@ namespace AutomationEngine.Services
                             TimeoutSeconds = request.TimeoutSeconds,
                             Retry = request.Retry,
                             OnFailureNotify = request.OnFailureNotify,
+                            OnSuccessNotify = request.OnSuccessNotify,
                             Enabled = request.Enabled,
                             TargetFolder = request.FileCleanup?.TargetFolder,
                             FileAgeInDays = request.FileCleanup?.FileAgeInDays ?? 0,

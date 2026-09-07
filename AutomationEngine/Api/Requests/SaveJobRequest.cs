@@ -77,6 +77,11 @@ namespace AutomationEngine.Api.Requests
         public bool OnFailureNotify { get; set; } = false;
 
         /// <summary>
+        /// Whether to send notifications on success
+        /// </summary>
+        public bool OnSuccessNotify { get; set; } = false;
+
+        /// <summary>
         /// Whether the job is enabled
         /// </summary>
         public bool Enabled { get; set; } = true;
