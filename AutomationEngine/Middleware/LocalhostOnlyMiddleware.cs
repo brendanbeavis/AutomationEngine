@@ -1,8 +1,10 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using AutomationEngine.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace AutomationEngine.Middleware
 {
@@ -14,11 +16,16 @@ namespace AutomationEngine.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<LocalhostOnlyMiddleware> _logger;
+        private readonly SecurityOptions _securityOptions;
 
-        public LocalhostOnlyMiddleware(RequestDelegate next, ILogger<LocalhostOnlyMiddleware> logger)
+        public LocalhostOnlyMiddleware(
+            RequestDelegate next,
+            ILogger<LocalhostOnlyMiddleware> logger,
+            IOptions<SecurityOptions> securityOptions)
         {
             _next = next;
             _logger = logger;
+            _securityOptions = securityOptions.Value;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -26,9 +33,14 @@ namespace AutomationEngine.Middleware
             // Get the remote IP address
             var remoteIp = context.Connection.RemoteIpAddress;
 
+            if (!_securityOptions.LocalhostOnly)
+            {
+                await _next(context);
+                return;
+            }
+
             // Check if the request is from localhost
-            string ipStr = remoteIp?.ToString() ?? string.Empty;
-            bool isLocalhost = ipStr == "127.0.0.1" || ipStr == "::1" || ipStr == "localhost";
+            bool isLocalhost = remoteIp is not null && IPAddress.IsLoopback(remoteIp);
 
             if (!isLocalhost)
             {

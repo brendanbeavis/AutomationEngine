@@ -1,6 +1,45 @@
 # AutomationEngine
 AutomationEngine is a windows service for scheduling and triggering regular processes. Similar to native windows scheduled tasks.
 
+## Configuration (typed options)
+
+Configuration is consolidated into typed options bound from `AutomationEngine/appsettings*.json`.
+
+### Sections
+
+- `Database` -> `DatabaseOptions`
+- `Server` -> `ServerOptions`
+- `Security` -> `SecurityOptions`
+- `Ntfy` -> `NtfyOptions`
+- `Resilience` -> `ResilienceOptions`
+- `Scheduler` -> `SchedulerOptions`
+- `JobApi` -> `JobApiOptions`
+- `DesignTimeDatabase` -> `DesignTimeDatabaseOptions` (EF tooling overrides)
+
+### Validation behavior
+
+- Options are bound centrally in startup using `AddAutomationEngineOptions(...)`.
+- Validation is strict (`ValidateOnStart`) and startup fails fast for invalid/missing values.
+
+### Environment variable binding examples
+
+Use `__` for nested keys:
+
+- `Database__FilePath`
+- `Database__CommandTimeoutSeconds`
+- `Server__Port`
+- `Security__LocalhostOnly`
+- `Resilience__RetryAttempts`
+- `Scheduler__ReloadIntervalSeconds`
+- `JobApi__HistoryLimit`
+- `DesignTimeDatabase__FilePath`
+
+### EF Core design-time notes
+
+- `DesignTimeDbContextFactory` now loads `appsettings.json`, optional `appsettings.{ENV}.json`, and environment variables.
+- It binds `Database` and applies optional `DesignTimeDatabase` overrides.
+- `DesignTimeDatabase` is intended for migration/tooling-specific values (for example `db\\AutomationEngine.db`) without changing runtime `Database` settings.
+
 
 
 

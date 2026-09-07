@@ -1,6 +1,8 @@
 ﻿using AutomationEngine.Api;
 using AutomationEngine.Dto;
+using AutomationEngine.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace AutomationEngine.Services
 {
@@ -8,11 +10,13 @@ namespace AutomationEngine.Services
     {
         private readonly HttpClient _http;
         private readonly ILogger<JobApiClient> _logger;
+        private readonly JobApiOptions _jobApiOptions;
 
-        public JobApiClient(HttpClient http, ILogger<JobApiClient> logger)
+        public JobApiClient(HttpClient http, ILogger<JobApiClient> logger, IOptions<JobApiOptions> jobApiOptions)
         {
             _http = http;
             _logger = logger;
+            _jobApiOptions = jobApiOptions.Value;
         }
 
         public async Task<List<JobDto>?> GetJobsAsync()
@@ -85,7 +89,7 @@ namespace AutomationEngine.Services
             try
             {
                 _logger.LogDebug("Fetching job history via API | JobId: {JobId}", jobId);
-                var history = await _http.GetFromJsonAsync<List<JobRunDto>>($"api/jobs/{jobId}/history?limit=50");
+                var history = await _http.GetFromJsonAsync<List<JobRunDto>>($"api/jobs/{jobId}/history?limit={_jobApiOptions.HistoryLimit}");
                 _logger.LogDebug("Retrieved {RunCount} job runs | JobId: {JobId}", history?.Count ?? 0, jobId);
                 return history;
             }

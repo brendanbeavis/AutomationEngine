@@ -1,4 +1,5 @@
 using AutomationEngine.Options.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace AutomationEngine.Options
 {
@@ -20,6 +21,7 @@ namespace AutomationEngine.Options
         /// Can be overridden via appsettings.json Server:Port setting
         /// or via environment variable Server__Port
         /// </summary>
+        [Range(1, 65535)]
         public int Port { get; set; } = 5000;
 
         /// <summary>

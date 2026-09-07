@@ -1,11 +1,13 @@
 using Cronos;
 using AutomationEngine.Data.Entities;
 using AutomationEngine.Models;
+using AutomationEngine.Options;
 using AutomationEngine.Services.Abstractions;
 using AutomationEngine.SignalR;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace AutomationEngine.Services
 {
@@ -16,16 +18,19 @@ namespace AutomationEngine.Services
         private readonly JobStateManager _stateManager;
         private readonly IBackgroundTaskQueue _backgroundTaskQueue;
         private readonly IHubContext<JobStatusHub> _hubContext;
+        private readonly SchedulerOptions _schedulerOptions;
         private readonly List<(JobEntity job, CronExpression? cron, TimeZoneInfo tz)> _jobs = new();
 
-        public SchedulerService(ILogger<SchedulerService> logger, IServiceProvider services, 
-            JobStateManager stateManager, IBackgroundTaskQueue backgroundTaskQueue, IHubContext<JobStatusHub> hubContext)
+        public SchedulerService(ILogger<SchedulerService> logger, IServiceProvider services,
+            JobStateManager stateManager, IBackgroundTaskQueue backgroundTaskQueue, IHubContext<JobStatusHub> hubContext,
+            IOptions<SchedulerOptions> schedulerOptions)
         {
             _logger = logger;
             _services = services;
             _stateManager = stateManager;
             _backgroundTaskQueue = backgroundTaskQueue;
             _hubContext = hubContext;
+            _schedulerOptions = schedulerOptions.Value;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -42,8 +47,8 @@ namespace AutomationEngine.Services
                 nextRunTimes[job.JobId] = cron?.GetNextOccurrence(DateTimeOffset.Now, tz);
             }
 
-            // Reload jobs every 60 seconds to pick up changes
-            var reloadInterval = TimeSpan.FromSeconds(60);
+            // Reload jobs periodically to pick up changes
+            var reloadInterval = TimeSpan.FromSeconds(_schedulerOptions.ReloadIntervalSeconds);
             var lastReload = DateTime.UtcNow;
 
             while (!stoppingToken.IsCancellationRequested)
@@ -94,7 +99,7 @@ namespace AutomationEngine.Services
                     }
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(_schedulerOptions.LoopDelaySeconds), stoppingToken).ConfigureAwait(false);
             }
         }
 

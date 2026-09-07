@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Context;
 using System.Reflection;
+using System.ComponentModel.DataAnnotations;
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.Retry;
@@ -65,20 +66,37 @@ Log.Information("Host configuration: WindowsService enabled, Serilog logging con
 // - See docs/WINDOWS_SERVICE_SETUP.md for installation and management procedures
 
 // Add services
-// Configure typed database options from appsettings.json
-Log.Debug("Configuring database options from appsettings");
-builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection(DatabaseOptions.SectionName));
+Log.Debug("Configuring typed options from appsettings with startup validation");
+builder.Services.AddAutomationEngineOptions(builder.Configuration);
+
+static void ValidateOptionsObject<T>(T options, string optionsName)
+{
+    var context = new ValidationContext(options!);
+    var results = new List<ValidationResult>();
+    if (!Validator.TryValidateObject(options!, context, results, validateAllProperties: true))
+    {
+        var errors = string.Join("; ", results.Select(r => r.ErrorMessage));
+        throw new InvalidOperationException($"{optionsName} configuration is invalid: {errors}");
+    }
+}
 
 // Validate database configuration on startup
-var databaseOptionsSection = builder.Configuration.GetSection(DatabaseOptions.SectionName);
-var databaseOptions = new DatabaseOptions();
-databaseOptionsSection.Bind(databaseOptions);
+var databaseOptions = builder.Configuration.GetRequiredSection(DatabaseOptions.SectionName)
+    .Get<DatabaseOptions>() ?? throw new InvalidOperationException("Database configuration section is missing");
 
 if (!databaseOptions.IsValid(out var dbValidationError))
 {
     Log.Fatal("Database configuration is invalid: {Error}", dbValidationError);
     throw new InvalidOperationException($"Database configuration is invalid: {dbValidationError}");
 }
+
+var serverConfig = builder.Configuration.GetRequiredSection(ServerOptions.SectionName)
+    .Get<ServerOptions>() ?? throw new InvalidOperationException("Server configuration section is missing");
+ValidateOptionsObject(serverConfig, nameof(ServerOptions));
+
+var resilienceOptions = builder.Configuration.GetRequiredSection(ResilienceOptions.SectionName)
+    .Get<ResilienceOptions>() ?? throw new InvalidOperationException("Resilience configuration section is missing");
+ValidateOptionsObject(resilienceOptions, nameof(ResilienceOptions));
 
 // Build connection string using validated options
 var connectionString = ConnectionStringBuilder.Build(databaseOptions);
@@ -96,11 +114,6 @@ builder.Services.AddDbContextFactory<AutomationDbContext>(options =>
     });
 });
 
-// Configure Kestrel and all URLs based on Server:Port configuration
-// This makes the port a single source of truth - no duplication needed
-var serverConfig = builder.Configuration.GetSection(ServerOptions.SectionName)
-    .Get<ServerOptions>() ?? new ServerOptions();
-
 builder.Services.AddHttpClient<JobApiClient>(client =>
 {
     client.BaseAddress = new Uri(serverConfig.LocalhostUrl);
@@ -116,8 +129,8 @@ var retryPolicy = Policy<bool>
     .Handle<Exception>()
     .OrResult(r => !r)
     .WaitAndRetryAsync(
-        retryCount: Constants.Resilience.RetryAttempts,
-        sleepDurationProvider: attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)),
+        retryCount: resilienceOptions.RetryAttempts,
+        sleepDurationProvider: attempt => TimeSpan.FromSeconds(Math.Pow(resilienceOptions.BackoffBaseSeconds, attempt)),
         onRetry: (outcome, timespan, retryCount, context) =>
         {
             Log.Warning("Polly retry triggered. Attempt {RetryCount} after {Delay}ms. Exception: {Exception}",
@@ -128,8 +141,8 @@ var circuitBreakerPolicy = Policy<bool>
     .Handle<Exception>()
     .OrResult(r => !r)
     .CircuitBreakerAsync(
-        handledEventsAllowedBeforeBreaking: Constants.Resilience.CircuitBreakerThreshold,
-        durationOfBreak: TimeSpan.FromSeconds(Constants.Resilience.CircuitBreakerDurationSeconds),
+        handledEventsAllowedBeforeBreaking: resilienceOptions.CircuitBreakerThreshold,
+        durationOfBreak: TimeSpan.FromSeconds(resilienceOptions.CircuitBreakerDurationSeconds),
         onBreak: (outcome, timespan) =>
         {
             Log.Error("Circuit breaker opened due to repeated failures. Breaking for {Duration}ms", timespan.TotalMilliseconds);
@@ -155,11 +168,10 @@ Log.Debug("Kestrel configured to listen on {Url}", serverConfig.LocalhostUrl);
 
 // Configure typed options from configuration sections
 Log.Debug("Configuring SecurityOptions and ServerOptions");
-builder.Services.Configure<SecurityOptions>(builder.Configuration.GetSection(SecurityOptions.SectionName));
 builder.Services.AddSingleton<ISecurityOptions>(sp => sp.GetRequiredService<IOptions<SecurityOptions>>().Value);
 
-builder.Services.Configure<ServerOptions>(builder.Configuration.GetSection(ServerOptions.SectionName));
 builder.Services.AddSingleton<IServerOptions>(sp => sp.GetRequiredService<IOptions<ServerOptions>>().Value);
+builder.Services.AddSingleton<INtfyOptions>(sp => sp.GetRequiredService<IOptions<NtfyOptions>>().Value);
 
 // Register job management services following Single Responsibility Principle
 Log.Debug("Registering core job management services");
@@ -212,12 +224,8 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        // Get server options to use configured port in CORS origins
-        var serverOptions = builder.Configuration.GetSection(ServerOptions.SectionName)
-            .Get<ServerOptions>() ?? new ServerOptions();
-
         policy
-            .WithOrigins(serverOptions.LoopbackUrl, serverOptions.LocalhostUrl)
+            .WithOrigins(serverConfig.LoopbackUrl, serverConfig.LocalhostUrl)
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
@@ -245,7 +253,8 @@ try
     using (var scope = app.Services.CreateScope())
     {
         var validator = scope.ServiceProvider.GetRequiredService<DatabaseConnectionValidator>();
-        if (builder.Configuration.GetSection(DatabaseOptions.SectionName).Get<DatabaseOptions>()?.ValidateConnectionOnStartup ?? true)
+        var runtimeDatabaseOptions = scope.ServiceProvider.GetRequiredService<IOptions<DatabaseOptions>>().Value;
+        if (runtimeDatabaseOptions.ValidateConnectionOnStartup)
         {
             await validator.ValidateAndLogAsync();
         }

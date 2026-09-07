@@ -40,30 +40,5 @@ namespace AutomationEngine.Configuration
             public const string JobStatusHubPath = "/hubs/job-status";
         }
 
-        /// <summary>
-        /// Resilience policy thresholds (Polly circuit breaker and retry configurations)
-        /// </summary>
-        public static class Resilience
-        {
-            /// <summary>
-            /// Number of handled events (exceptions or failures) allowed before the circuit breaker opens.
-            /// After this threshold is reached, the circuit breaker will interrupt requests for the specified duration
-            /// to allow the backend service to recover from cascading failures.
-            /// </summary>
-            public const int CircuitBreakerThreshold = 5;
-
-            /// <summary>
-            /// Duration (in seconds) that the circuit breaker remains open after threshold is exceeded.
-            /// During this period, requests are rejected immediately without attempting to reach the backend.
-            /// After the duration expires, the circuit breaker enters half-open state to test if the service has recovered.
-            /// </summary>
-            public const int CircuitBreakerDurationSeconds = 30;
-
-            /// <summary>
-            /// Number of retry attempts for transient failures.
-            /// Used in conjunction with exponential backoff (2^attempt seconds) to handle temporary network/service issues.
-            /// </summary>
-            public const int RetryAttempts = 3;
-        }
     }
 }
