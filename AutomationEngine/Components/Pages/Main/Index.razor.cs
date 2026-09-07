@@ -95,8 +95,10 @@ namespace AutomationEngine.Components.Pages.Main
 
         protected override async Task OnInitializedAsync()
         {
+            _logger.LogInformation("Index component initializing");
             // Initialize SignalR connection
             await InitializeSignalRAsync();
+            _logger.LogInformation("Index component initialized successfully");
 
             await RefreshJobs();
         }

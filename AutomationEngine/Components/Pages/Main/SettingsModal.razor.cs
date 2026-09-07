@@ -44,6 +44,7 @@ namespace AutomationEngine.Components.Pages.Main
 
         protected override async Task OnParametersSetAsync()
         {
+            _logger.LogDebug("SettingsModal parameters updated | IsVisible: {IsVisible}", IsVisible);
             if (IsVisible && Settings == null)
             {
                 await LoadSettingsAsync();
@@ -54,9 +55,11 @@ namespace AutomationEngine.Components.Pages.Main
         {
             try
             {
+                _logger.LogDebug("Loading application settings");
                 ErrorMessage = null;
                 Settings = await SettingsService.GetSettingsAsync();
                 SelectedTheme = Settings.Theme;
+                _logger.LogDebug("Settings loaded successfully | Theme: {Theme}", Settings.Theme);
             }
             catch (Exception ex)
             {

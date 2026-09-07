@@ -23,7 +23,9 @@ namespace AutomationEngine.Services
 
         public List<JobEntity> GetAllJobs()
         {
-            return _cache.GetAll();
+            var jobs = _cache.GetAll();
+            _logger.LogDebug("Retrieved all jobs from cache | Count: {JobCount}", jobs.Count);
+            return jobs;
         }
 
         public JobEntity? GetJobById(string jobId)
@@ -33,9 +35,14 @@ namespace AutomationEngine.Services
 
         public List<JobEntity> GetRunningJobsByType(JobType jobType)
         {
-            return _cache.GetAll()
+            var jobs = _cache.GetAll()
                 .Where(j => j.Type == jobType && j.CurrentState == JobState.Running)
                 .ToList();
+            if (jobs.Any())
+            {
+                _logger.LogDebug("Found {RunningJobCount} running jobs of type {JobType}", jobs.Count, jobType);
+            }
+            return jobs;
         }
 
         public bool IsJobBusy(int id)
@@ -46,9 +53,11 @@ namespace AutomationEngine.Services
 
         public List<JobEntity> GetAllRunningJobs()
         {
-            return _cache.GetAll()
+            var jobs = _cache.GetAll()
                 .Where(j => j.CurrentState == JobState.Running)
                 .ToList();
+            _logger.LogDebug("Retrieved {RunningJobCount} running jobs from cache", jobs.Count);
+            return jobs;
         }
 
         public TimeSpan? GetJobRunningDuration(string jobId)
@@ -72,9 +81,11 @@ namespace AutomationEngine.Services
 
         public List<JobEntity> GetJobsByType(JobType jobType)
         {
-            return _cache.GetAll()
+            var jobs = _cache.GetAll()
                 .Where(j => j.Type == jobType)
                 .ToList();
+            _logger.LogDebug("Retrieved {JobCount} jobs of type {JobType}", jobs.Count, jobType);
+            return jobs;
         }
     }
 }

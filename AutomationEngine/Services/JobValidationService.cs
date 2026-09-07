@@ -4,6 +4,7 @@ using AutomationEngine.Configuration;
 using AutomationEngine.Dto;
 using AutomationEngine.Models;
 using AutomationEngine.Services.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace AutomationEngine.Services
 {
@@ -16,6 +17,12 @@ namespace AutomationEngine.Services
     /// </remarks>
     public class JobValidationService : IJobValidationService
     {
+        private readonly ILogger<JobValidationService> _logger;
+
+        public JobValidationService(ILogger<JobValidationService> logger)
+        {
+            _logger = logger;
+        }
         /// <summary>
         /// Validates a job DTO and returns any validation errors.
         /// </summary>
@@ -25,20 +32,28 @@ namespace AutomationEngine.Services
         {
             if (job == null)
             {
+                _logger.LogDebug("Job validation failed: job is null");
                 yield return new ValidationResult("Job cannot be null");
                 yield break;
             }
+
+            _logger.LogDebug("Validating job | JobId: {JobId} | Type: {JobType}", job.JobId, job.Type);
+            var errors = new List<ValidationResult>();
 
             // Type-specific validations
             if (job.Type == JobType.Process)
             {
                 if (string.IsNullOrWhiteSpace(job.Command))
                 {
-                    yield return new ValidationResult("Command is required for Process jobs", new[] { nameof(job.Command) });
+                    var error = new ValidationResult("Command is required for Process jobs", new[] { nameof(job.Command) });
+                    errors.Add(error);
+                    _logger.LogWarning("Job validation failed: Command is required | JobId: {JobId}", job.JobId);
                 }
                 else if (job.Command.Length > 500)
                 {
-                    yield return new ValidationResult("Command exceeds maximum length of 500 characters", new[] { nameof(job.Command) });
+                    var error = new ValidationResult("Command exceeds maximum length of 500 characters", new[] { nameof(job.Command) });
+                    errors.Add(error);
+                    _logger.LogWarning("Job validation failed: Command too long | JobId: {JobId}", job.JobId);
                 }
             }
 
@@ -46,11 +61,15 @@ namespace AutomationEngine.Services
             {
                 if (string.IsNullOrWhiteSpace(job.Script))
                 {
-                    yield return new ValidationResult("Script is required for PowerShell jobs", new[] { nameof(job.Script) });
+                    var error = new ValidationResult("Script is required for PowerShell jobs", new[] { nameof(job.Script) });
+                    errors.Add(error);
+                    _logger.LogWarning("Job validation failed: Script is required | JobId: {JobId}", job.JobId);
                 }
                 else if (job.Script.Length > Constants.Jobs.CommandMaxLength)
                 {
-                    yield return new ValidationResult($"Script exceeds maximum length of {Constants.Jobs.CommandMaxLength} characters", new[] { nameof(job.Script) });
+                    var error = new ValidationResult($"Script exceeds maximum length of {Constants.Jobs.CommandMaxLength} characters", new[] { nameof(job.Script) });
+                    errors.Add(error);
+                    _logger.LogWarning("Job validation failed: Script too long | JobId: {JobId}", job.JobId);
                 }
             }
 
@@ -58,11 +77,15 @@ namespace AutomationEngine.Services
             {
                 if (string.IsNullOrWhiteSpace(job.TargetFolder))
                 {
-                    yield return new ValidationResult("Target Folder is required for FileCleanup jobs", new[] { nameof(job.TargetFolder) });
+                    var error = new ValidationResult("Target Folder is required for FileCleanup jobs", new[] { nameof(job.TargetFolder) });
+                    errors.Add(error);
+                    _logger.LogWarning("Job validation failed: TargetFolder is required | JobId: {JobId}", job.JobId);
                 }
                 else if (!IsValidFilePath(job.TargetFolder))
                 {
-                    yield return new ValidationResult("Target Folder contains invalid path characters", new[] { nameof(job.TargetFolder) });
+                    var error = new ValidationResult("Target Folder contains invalid path characters", new[] { nameof(job.TargetFolder) });
+                    errors.Add(error);
+                    _logger.LogWarning("Job validation failed: Invalid path | JobId: {JobId} | Path: {Path}", job.JobId, job.TargetFolder);
                 }
             }
 
@@ -71,20 +94,41 @@ namespace AutomationEngine.Services
             {
                 if (!IsValidCronSchedule(job.Schedule, out string? cronError))
                 {
-                    yield return new ValidationResult($"Invalid cron schedule expression: {cronError}", new[] { nameof(job.Schedule) });
+                    var error = new ValidationResult($"Invalid cron schedule expression: {cronError}", new[] { nameof(job.Schedule) });
+                    errors.Add(error);
+                    _logger.LogWarning("Job validation failed: Invalid cron schedule | JobId: {JobId} | Schedule: {Schedule} | Error: {Error}", 
+                        job.JobId, job.Schedule, cronError);
                 }
             }
 
             // Working directory validation
             if (!string.IsNullOrWhiteSpace(job.WorkingDirectory) && !IsValidFilePath(job.WorkingDirectory))
             {
-                yield return new ValidationResult("WorkingDirectory contains invalid path characters", new[] { nameof(job.WorkingDirectory) });
+                var error = new ValidationResult("WorkingDirectory contains invalid path characters", new[] { nameof(job.WorkingDirectory) });
+                errors.Add(error);
+                _logger.LogWarning("Job validation failed: Invalid working directory | JobId: {JobId}", job.JobId);
             }
 
             // Arguments length check
             if (!string.IsNullOrWhiteSpace(job.Arguments) && job.Arguments.Length > 500)
             {
-                yield return new ValidationResult("Arguments exceed maximum length of 500 characters", new[] { nameof(job.Arguments) });
+                var error = new ValidationResult("Arguments exceed maximum length of 500 characters", new[] { nameof(job.Arguments) });
+                errors.Add(error);
+                _logger.LogWarning("Job validation failed: Arguments too long | JobId: {JobId}", job.JobId);
+            }
+
+            if (errors.Count == 0)
+            {
+                _logger.LogDebug("Job validation passed | JobId: {JobId}", job.JobId);
+            }
+            else
+            {
+                _logger.LogWarning("Job validation completed with {ErrorCount} errors | JobId: {JobId}", errors.Count, job.JobId);
+            }
+
+            foreach (var error in errors)
+            {
+                yield return error;
             }
         }
 

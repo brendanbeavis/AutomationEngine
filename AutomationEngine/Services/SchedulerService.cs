@@ -100,14 +100,19 @@ namespace AutomationEngine.Services
 
         private void ReloadJobsFromState()
         {
+            _logger.LogDebug("Reloading jobs from state manager");
             _jobs.Clear();
             var allJobs = _stateManager.GetAllJobs();
+            _logger.LogInformation("Loaded {JobCount} jobs from state manager", allJobs.Count);
+
             foreach (var job in allJobs)
             {
                 CronExpression? cron = null;
                 try
                 {
                     cron = CronExpression.Parse(job.Schedule, CronFormat.Standard);
+                    _logger.LogDebug("Parsed cron schedule successfully | JobId: {JobId} | Schedule: {Schedule}", 
+                        job.JobId, job.Schedule);
                 }
                 catch (Exception ex)
                 {
@@ -118,11 +123,16 @@ namespace AutomationEngine.Services
 
                 _jobs.Add((job, cron, TimeZoneInfo.Local));
             }
+
+            _logger.LogDebug("Scheduler now tracking {JobCount} enabled jobs", _jobs.Count(j => j.job.Enabled));
         }
 
         private async ValueTask RunJobAsync(JobEntity job, CancellationToken cancellationToken)
         {
             var startTime = DateTime.UtcNow;
+            _logger.LogInformation("Scheduler triggering job execution | JobId: {JobId} | DisplayName: {DisplayName}", 
+                job.JobId, job.DisplayName);
+
             try
             {
                 using var scope = _services.CreateScope();
@@ -150,6 +160,9 @@ namespace AutomationEngine.Services
 
                 // Save run result to database
                 var duration = DateTime.UtcNow - startTime;
+                _logger.LogInformation("Job execution completed | JobId: {JobId} | DisplayName: {DisplayName} | Success: {Success} | Duration: {Duration}ms", 
+                    job.JobId, job.DisplayName, result.Success, duration.TotalMilliseconds);
+
                 await _stateManager.SaveJobRunAsync(job.JobId, result, startTime, duration);
                 await _hubContext.BroadcastJobCompletedAsync(
                    job.JobId,
@@ -165,6 +178,9 @@ namespace AutomationEngine.Services
                     try
                     {
                         var ntfyService = scope.ServiceProvider.GetRequiredService<INtfyNotificationService>();
+
+                        _logger.LogDebug("Sending notification | JobId: {JobId} | Type: {NotificationType}",
+                            job.JobId, result.Success ? "Success" : "Failure");
 
                         if (result.Success)
                         {

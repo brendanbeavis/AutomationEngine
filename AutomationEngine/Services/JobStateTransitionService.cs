@@ -132,6 +132,12 @@ namespace AutomationEngine.Services
         public async Task<JobState?> GetCurrentStateAsync(string jobId)
         {
             var job = _cache.Get(jobId);
+            if (job == null)
+            {
+                _logger.LogDebug("Job not found in cache for state query | JobId: {JobId}", jobId);
+                return null;
+            }
+            _logger.LogDebug("Retrieved job state | JobId: {JobId} | State: {State}", jobId, job.CurrentState);
             return job?.CurrentState;
         }
 

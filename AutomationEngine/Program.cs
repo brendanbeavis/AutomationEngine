@@ -28,11 +28,20 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.WithProperty("Application", "AutomationEngine")
     .CreateLogger();
 
-var exePath = Assembly.GetExecutingAssembly().Location;
-var exeDirectory = Path.GetDirectoryName(exePath);
-Directory.SetCurrentDirectory(exeDirectory);
+try
+{
+    var exePath = Assembly.GetExecutingAssembly().Location;
+    var exeDirectory = Path.GetDirectoryName(exePath);
+    Directory.SetCurrentDirectory(exeDirectory);
+    Log.Debug("Application working directory set to {WorkingDirectory}", exeDirectory);
+}
+catch (Exception ex)
+{
+    Log.Warning(ex, "Failed to set working directory, continuing with default");
+}
 
 var builder = WebApplication.CreateBuilder(args);
+Log.Information("WebApplication builder created");
 //var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 //{
  //   Args = args,
@@ -43,6 +52,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host
     .UseWindowsService()
     .UseSerilog();
+
+Log.Information("Host configuration: WindowsService enabled, Serilog logging configured");
 
 // WINDOWS SERVICE CONFIGURATION:
 // The .UseWindowsService() call enables the application to run as a Windows service.
@@ -55,6 +66,7 @@ builder.Host
 
 // Add services
 // Configure typed database options from appsettings.json
+Log.Debug("Configuring database options from appsettings");
 builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection(DatabaseOptions.SectionName));
 
 // Validate database configuration on startup
@@ -75,6 +87,7 @@ Log.Information("Database configured: Provider={Provider}, Timeout={TimeoutSec}s
 
 // Use DbContextFactory for background job execution with singleton services
 // This allows thread-safe DbContext instances without manual scoping
+Log.Debug("Registering DbContextFactory for AutomationDbContext");
 builder.Services.AddDbContextFactory<AutomationDbContext>(options =>
 {
     options.UseSqlite(connectionString, sqliteOptions =>
@@ -98,6 +111,7 @@ builder.Services.AddHttpClient<JobApiClient>(client =>
 builder.Services.AddHttpClient<INtfyNotificationService, NtfyNotificationService>();
 
 // Configure Polly resilience policies
+Log.Debug("Configuring Polly resilience policies");
 var retryPolicy = Policy<bool>
     .Handle<Exception>()
     .OrResult(r => !r)
@@ -127,6 +141,7 @@ var circuitBreakerPolicy = Policy<bool>
 
 // Combine policies with wrap
 var combinedPolicy = Policy.WrapAsync(retryPolicy, circuitBreakerPolicy);
+Log.Debug("Resilience policies configured and registered");
 
 // Register policies as singletons for dependency injection
 builder.Services.AddSingleton(retryPolicy);
@@ -135,9 +150,11 @@ builder.Services.AddSingleton(combinedPolicy);
 
 // Configure Kestrel to listen on the URL derived from Server:Port
 builder.WebHost.UseUrls(serverConfig.LocalhostUrl);
+Log.Debug("Kestrel configured to listen on {Url}", serverConfig.LocalhostUrl);
 
 
 // Configure typed options from configuration sections
+Log.Debug("Configuring SecurityOptions and ServerOptions");
 builder.Services.Configure<SecurityOptions>(builder.Configuration.GetSection(SecurityOptions.SectionName));
 builder.Services.AddSingleton<ISecurityOptions>(sp => sp.GetRequiredService<IOptions<SecurityOptions>>().Value);
 
@@ -145,6 +162,7 @@ builder.Services.Configure<ServerOptions>(builder.Configuration.GetSection(Serve
 builder.Services.AddSingleton<IServerOptions>(sp => sp.GetRequiredService<IOptions<ServerOptions>>().Value);
 
 // Register job management services following Single Responsibility Principle
+Log.Debug("Registering core job management services");
 builder.Services.AddSingleton<IJobCache, JobCacheService>();
 builder.Services.AddSingleton<IJobRepository, JobRepository>();
 builder.Services.AddSingleton<IJobQueryService, JobQueryService>();
@@ -153,15 +171,18 @@ builder.Services.AddSingleton<IJobRunService, JobRunService>();
 builder.Services.AddSingleton<JobStateManager>();
 
 // Register job validation and status services
+Log.Debug("Registering job validation and status services");
 builder.Services.AddSingleton<IJobValidationService, JobValidationService>();
 builder.Services.AddSingleton<IJobStatusService, JobStatusService>();
 
 builder.Services.AddSingleton<JobRunner>();
+Log.Debug("Registering settings and audit services");
 builder.Services.AddScoped<ISettingsService, SettingsService>();
 //builder.Services.AddScoped<INtfyNotificationService, NtfyNotificationService>();
 builder.Services.AddSingleton<IAuditLogService, AuditLogService>();
 builder.Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 builder.Services.AddHostedService<BackgroundTaskQueue>(sp => sp.GetRequiredService<IBackgroundTaskQueue>() as BackgroundTaskQueue ?? throw new InvalidOperationException("BackgroundTaskQueue not registered"));
+Log.Debug("Registering hosted services: SchedulerService, JobHealthCheckService");
 builder.Services.AddHostedService<SchedulerService>();
 
 // Periodic health check service for validating running jobs have valid processes
@@ -169,6 +190,7 @@ builder.Services.AddHostedService<SchedulerService>();
 builder.Services.AddHostedService<JobHealthCheckService>();
 
 // ASP.NET Core services
+Log.Debug("Configuring ASP.NET Core services: Controllers, Razor Components, SignalR");
 builder.Services.AddControllers();
 builder.Services.AddRazorComponents(options =>
 {

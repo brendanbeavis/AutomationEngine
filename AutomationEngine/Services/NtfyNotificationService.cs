@@ -113,9 +113,12 @@ namespace AutomationEngine.Services
 
             if (string.IsNullOrWhiteSpace(settings.NtfyEndpoint))
             {
-                _logger.LogInformation("ntfy endpoint not configured, skipping notification");
+                _logger.LogDebug("ntfy endpoint not configured, skipping notification for job {JobName}", jobDisplayName);
                 return;
             }
+
+            _logger.LogDebug("Sending ntfy notification | JobName: {JobName} | Result: {Result} | Endpoint: {Endpoint}", 
+                jobDisplayName, result, settings.NtfyEndpoint);
 
             using var request = new HttpRequestMessage(HttpMethod.Post, settings.NtfyEndpoint)
             {
@@ -132,14 +135,14 @@ namespace AutomationEngine.Services
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning(
-                    "ntfy notification failed with status {StatusCode} | JobName: {JobName}",
-                    response.StatusCode, jobDisplayName);
+                    "ntfy notification failed with status {StatusCode} | JobName: {JobName} | Endpoint: {Endpoint}",
+                    response.StatusCode, jobDisplayName, settings.NtfyEndpoint);
             }
             else
             {
                 _logger.LogInformation(
-                    "ntfy notification sent successfully | JobName: {JobName}",
-                    jobDisplayName);
+                    "ntfy notification sent successfully | JobName: {JobName} | Result: {Result}",
+                    jobDisplayName, result);
             }
 
         }

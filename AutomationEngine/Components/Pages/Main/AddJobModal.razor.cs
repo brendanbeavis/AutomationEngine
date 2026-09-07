@@ -52,12 +52,15 @@ namespace AutomationEngine.Components.Pages.Main
 
         protected override void OnInitialized()
         {
+            _logger.LogDebug("AddJobModal component initialized | IsEdit: {IsEdit} | IsDupe: {IsDupe}", IsEdit, IsDupe);
             EditContext = new EditContext(Job);
             ScheduleValue = Schedule;
         }
 
         protected override void OnParametersSet()
         {
+            _logger.LogDebug("AddJobModal parameters updated | JobId: {JobId} | IsVisible: {IsVisible}", 
+                Job?.JobId, IsVisible);
             if (EditContext == null || EditContext.Model != Job)
             {
                 EditContext = new EditContext(Job);

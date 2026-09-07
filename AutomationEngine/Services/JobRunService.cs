@@ -36,6 +36,9 @@ namespace AutomationEngine.Services
         {
             try
             {
+                _logger.LogDebug("Saving job run result | JobId: {JobId} | Success: {Success} | Duration: {Duration}ms", 
+                    jobId, result.Success, duration.TotalMilliseconds);
+
                 var job = _cache.Get(jobId);
                 if (job is null)
                 {
@@ -86,6 +89,8 @@ namespace AutomationEngine.Services
                     result.StdErr?.Truncate(500),
                     new { exitCode = result.ExitCode, stdout_length = result.StdOut?.Length ?? 0, stderr_length = result.StdErr?.Length ?? 0 }
                 );
+
+                _logger.LogInformation("Job run saved and state updated | JobId: {JobId} | NewState: {NewState}", jobId, newState);
             }
             catch (Exception ex)
             {
@@ -95,7 +100,18 @@ namespace AutomationEngine.Services
 
         public async Task<List<JobRunEntity>> GetJobRunsAsync(string jobId, int limit = 50)
         {
-            return await _repository.GetJobRunsAsync(jobId, limit);
+            try
+            {
+                _logger.LogDebug("Retrieving job run history | JobId: {JobId} | Limit: {Limit}", jobId, limit);
+                var runs = await _repository.GetJobRunsAsync(jobId, limit);
+                _logger.LogDebug("Retrieved {RunCount} job runs | JobId: {JobId}", runs.Count, jobId);
+                return runs;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to retrieve job runs for {JobId}", jobId);
+                throw;
+            }
         }
 
         public async Task<JobRunEntity?> GetJobRunByIdAsync(int runId)
@@ -108,6 +124,7 @@ namespace AutomationEngine.Services
         {
             try
             {
+                _logger.LogDebug("Calculating job run statistics | JobId: {JobId}", jobId);
                 var runs = await GetJobRunsAsync(jobId, limit: 1000);
 
                 var stats = new JobRunStatistics
@@ -119,6 +136,10 @@ namespace AutomationEngine.Services
                     LastRunTime = runs.FirstOrDefault()?.CompletedAt,
                     LastRunSuccess = runs.FirstOrDefault()?.Success ?? false
                 };
+
+                _logger.LogDebug("Job run statistics calculated | JobId: {JobId} | Total: {Total} | Success: {Success} | Failed: {Failed} | AvgDuration: {AvgDuration}ms",
+                    jobId, stats.TotalRuns, stats.SuccessfulRuns, stats.FailedRuns, 
+                    stats.AverageDuration?.TotalMilliseconds ?? 0);
 
                 return stats;
             }
