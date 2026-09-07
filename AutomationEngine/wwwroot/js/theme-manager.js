@@ -19,6 +19,11 @@
         }
         // cyberpunk is default, no class needed
 
+        // Keep Bootstrap color mode in sync with selected theme
+        // Treat cyberpunk as dark for Bootstrap components
+        const bootstrapTheme = theme === 'light' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-bs-theme', bootstrapTheme);
+
         // Save to localStorage
         try {
             localStorage.setItem('automation-engine-theme', theme);

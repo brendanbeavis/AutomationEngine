@@ -51,6 +51,15 @@ html.theme-light table th {
     border-color: rgba(0, 0, 0, 0.1);
 }
 
+html.theme-light .table {
+    --bs-table-bg: #ffffff;
+    --bs-table-color: #333333;
+    --bs-table-striped-bg: rgba(0, 0, 0, 0.03);
+    --bs-table-striped-color: #333333;
+    --bs-table-hover-bg: rgba(0, 102, 204, 0.05);
+    --bs-table-hover-color: #333333;
+}
+
 html.theme-light .table tbody tr {
     background: #ffffff;
     color: #333333;
@@ -63,6 +72,26 @@ html.theme-light .table tbody td {
 
 html.theme-light .table tbody tr:hover {
     background: rgba(0, 102, 204, 0.05);
+}
+
+html.theme-light .table > :not(caption) > :not(thead) > tr > * {
+    background-color: #ffffff !important;
+    color: #333333 !important;
+}
+
+html.theme-light .table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: rgba(0, 0, 0, 0.03) !important;
+    color: #333333 !important;
+}
+
+html.theme-light .table.table-striped > tbody > tr:nth-of-type(even) > * {
+    background-color: #ffffff !important;
+    color: #333333 !important;
+}
+
+html.theme-light .table.table-hover > tbody > tr:hover > * {
+    background-color: rgba(0, 102, 204, 0.05) !important;
+    color: #333333 !important;
 }
 
 html.theme-light .btn {
@@ -137,7 +166,20 @@ html.theme-light .nav-link {
 
 html.theme-light .neon-text {
     color: #0066cc;
-    text-shadow: 0 0 4px rgba(0, 102, 204, 0.3);
+    text-shadow: none !important;
+    animation: none !important;
+}
+
+html.theme-light .neon-pink,
+html.theme-light .neon-purple,
+html.theme-light .neon-lime,
+html.theme-light .neon-orange {
+    text-shadow: none !important;
+}
+
+html.theme-light,
+html.theme-light * {
+    text-shadow: none !important;
 }
 
 html.theme-light .badge-success {
