@@ -145,7 +145,7 @@ else
                                                                 }
                                                                 else if (value is bool b)
                                                                 {
-                                                                    <span style="color: @(b ? "#39ff14" : "#ff2d95");">@(b ? "true" : "false")</span>
+                                                                    <span style="color: @b.ToBooleanDisplayColor();">@b.ToBooleanDisplayText()</span>
                                                                 }
                                                                 else if (value is string str && str.Length > 50)
                                                                 {

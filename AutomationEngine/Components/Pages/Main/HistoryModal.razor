@@ -92,14 +92,7 @@
                                             }
                                         </div>
                                         <div class="metric-info text-muted small mt-2">
-                                            @if (LastRunTime.HasValue)
-                                            {
-                                                <span>@LastRunTime.Value.ToLocalTime().ToString("g")</span>
-                                            }
-                                            else
-                                            {
-                                                <span>N/A</span>
-                                            }
+                                            <span>@LastRunTime.ToLocalDisplayOr("N/A")</span>
                                         </div>
                                     </div>
                                 </div>
@@ -123,11 +116,11 @@
                                     @foreach (var run in Runs.OrderByDescending(r => r.StartedAt))
                                     {
                                         <tr>
-                                            <td>@run.StartedAt.ToLocalTime().ToString("g")</td>
+                                            <td>@run.StartedAt.ToLocalDisplay()</td>
                                             <td>@(run.DurationMs.HasValue ? run.DurationMs.Value.MsToString() : "-")</td>
                                             <td>
-                                                <span class="badge @(run.Success ? "bg-success" : "bg-danger")">
-                                                    @(run.Success ? "✓ Success" : "✗ Failed")
+                                                <span class="badge @run.Success.ToHistoryStatusBadgeClass()">
+                                                    @run.Success.ToHistoryStatusText()
                                                 </span>
                                             </td>
                                             <td>@run.ExitCode</td>

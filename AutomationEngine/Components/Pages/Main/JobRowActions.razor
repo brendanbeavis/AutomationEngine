@@ -40,8 +40,8 @@
                     <Blazicon Svg="BootstrapIcon.StopFill"></Blazicon> Stop
                 </button>
                 <div class="dropdown-divider"></div>
-                <button type="button" class="dropdown-item @(Job.Enabled ? "text-secondary" : "text-success")" @onclick="HandleToggleEnabled">
-                    <Blazicon Svg="BootstrapIcon.Power"></Blazicon> @(Job.Enabled ? "Disable" : "Enable")
+                <button type="button" class="dropdown-item @Job.Enabled.ToToggleEnabledCssClass()" @onclick="HandleToggleEnabled">
+                    <Blazicon Svg="BootstrapIcon.Power"></Blazicon> @Job.Enabled.ToToggleEnabledText()
                 </button>
             </div>
         }

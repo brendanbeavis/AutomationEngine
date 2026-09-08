@@ -126,29 +126,14 @@ else
                         <td><code>@job.JobId</code></td>
                         <td>@job.DisplayName</td>
                         <td><code>@job.Schedule</code></td>
-                        <td><small>@(job.CreatedAt.ToLocalTime().ToString("g"))</small></td>
-                        <td><small>@(job.UpdatedAt?.ToLocalTime().ToString("g") ?? "Never")</small></td>
-                        <td><small>@(job.LastRun?.ToLocalTime().ToString("g") ?? "Never")</small></td>
+                        <td><small>@job.CreatedAt.ToLocalDisplay()</small></td>
+                        <td><small>@job.UpdatedAt.ToLocalDisplayOr()</small></td>
+                        <td><small>@job.LastRun.ToLocalDisplayOr()</small></td>
                         <td>
-                            @if (job.IsRunning)
-                            {
-                                <span class="neon-purple">Running...</span>
-                            }
-                            else if (job.LastRunSuccess == null)
-                            {
-                                <span class="neon-orange">Never run</span>
-                            }
-                            else if (job.LastRunSuccess.Value)
-                            {
-                                <span class="neon-lime">Success</span>
-                            }
-                            else
-                            {
-                                <span class="neon-pink">Failed</span>
-                            }
+                            <span class="@job.ToResultCssClass()">@job.ToResultText()</span>
                         </td>
                         <td>
-                            <button class="btn badge bg-lime-neon" disabled="@job.IsRunning" @onclick="() => TriggerJob(job)" title="@(job.IsRunning ? "Job Running..." : "Run Job Now")">
+                            <button class="btn badge bg-lime-neon" disabled="@job.IsRunning" @onclick="() => TriggerJob(job)" title="@job.ToRunButtonTitle()">
                                 <Blazicon Svg="@(job.IsRunning ? BootstrapIcon.ArrowClockwise.Animate(BlaziconAnimation.Spin) : BootstrapIcon.Play)"></Blazicon> Run
                             </button>
                         </td>

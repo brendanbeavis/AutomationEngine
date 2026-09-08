@@ -9,7 +9,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">@(IsEdit ? "Edit Job" : IsDupe ? "Duplicate Job" : "Add Job")</h5>
+                    <h5 class="modal-title">@IsEdit.ToModalTitle(IsDupe)</h5>
                     <button type="button" class="btn-close" aria-label="Close" @onclick="OnCloseClick"></button>
                 </div>
                 <EditForm EditContext="EditContext" OnValidSubmit="OnSubmitClick">
@@ -136,7 +136,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn badge bg-pink-neon" @onclick="OnCloseClick">✗ Cancel</button>
-                        <button type="submit" class="btn badge bg-lime-neon" disabled="@isSaving"><Blazicon Svg="@(isSaving ? BootstrapIcon.ArrowClockwise.Animate(BlaziconAnimation.Spin) : BootstrapIcon.Check)"></Blazicon> @(IsEdit ? "Update" : IsDupe ? "Save Copy" : "Add")</button>
+                        <button type="submit" class="btn badge bg-lime-neon" disabled="@isSaving"><Blazicon Svg="@(isSaving ? BootstrapIcon.ArrowClockwise.Animate(BlaziconAnimation.Spin) : BootstrapIcon.Check)"></Blazicon> @IsEdit.ToSaveButtonText(IsDupe)</button>
                     </div>
                 </EditForm>
             </div>
