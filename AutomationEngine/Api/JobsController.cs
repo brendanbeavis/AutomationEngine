@@ -1,9 +1,11 @@
 using AutomationEngine.Api.Requests;
+using AutomationEngine.Application.Abstractions;
 using AutomationEngine.Data.Entities;
+using AutomationEngine.Infrastructure.Observability;
 using AutomationEngine.Dto;
 using AutomationEngine.Models;
 using AutomationEngine.Services;
-using AutomationEngine.Services.Abstractions;
+using AutomationEngine.Application.Abstractions;
 using AutomationEngine.SignalR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -17,8 +19,8 @@ namespace AutomationEngine.Api
     [Route("api/jobs")]
     public class JobsController : ControllerBase
     {
-        private readonly JobStateManager _stateManager;
-        private readonly JobRunner _runner;
+        private readonly IJobStateManager _stateManager;
+        private readonly IJobRunner _runner;
         private readonly IHubContext<JobStatusHub> _hubContext;
         private readonly ILogger<JobsController> _logger;
         private readonly IBackgroundTaskQueue _backgroundTaskQueue;
@@ -29,8 +31,8 @@ namespace AutomationEngine.Api
         private readonly IServiceScopeFactory _scopeFactory;
 
         public JobsController(
-            JobStateManager stateManager, 
-            JobRunner runner, 
+            IJobStateManager stateManager, 
+            IJobRunner runner, 
             IHubContext<JobStatusHub> hubContext,
             ILogger<JobsController> logger,
             IBackgroundTaskQueue backgroundTaskQueue,
@@ -554,3 +556,4 @@ namespace AutomationEngine.Api
     }
 
 }
+

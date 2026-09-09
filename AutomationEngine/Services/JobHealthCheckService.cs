@@ -1,4 +1,4 @@
-using AutomationEngine.Services.Abstractions;
+using AutomationEngine.Application.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
@@ -71,3 +71,4 @@ namespace AutomationEngine.Services
         }
     }
 }
+

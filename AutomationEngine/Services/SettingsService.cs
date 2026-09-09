@@ -1,7 +1,8 @@
 using AutomationEngine.Data;
 using AutomationEngine.Data.Entities;
 using AutomationEngine.Dto;
-using AutomationEngine.Services.Abstractions;
+using AutomationEngine.Infrastructure.Persistence;
+using AutomationEngine.Application.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
@@ -172,3 +173,4 @@ namespace AutomationEngine.Services
         }
     }
 }
+

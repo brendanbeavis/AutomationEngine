@@ -1,4 +1,4 @@
-using AutomationEngine.Data;
+using AutomationEngine.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutomationEngine.Tests.Fixtures

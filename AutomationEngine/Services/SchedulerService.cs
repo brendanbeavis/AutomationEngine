@@ -1,8 +1,10 @@
 using Cronos;
+using AutomationEngine.Application.Abstractions;
 using AutomationEngine.Data.Entities;
+using AutomationEngine.Infrastructure.Observability;
 using AutomationEngine.Models;
 using AutomationEngine.Options;
-using AutomationEngine.Services.Abstractions;
+using AutomationEngine.Application.Abstractions;
 using AutomationEngine.SignalR;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
@@ -15,14 +17,14 @@ namespace AutomationEngine.Services
     {
         private readonly ILogger<SchedulerService> _logger;
         private readonly IServiceProvider _services;
-        private readonly JobStateManager _stateManager;
+        private readonly IJobStateManager _stateManager;
         private readonly IBackgroundTaskQueue _backgroundTaskQueue;
         private readonly IHubContext<JobStatusHub> _hubContext;
         private readonly SchedulerOptions _schedulerOptions;
         private readonly List<(JobEntity job, CronExpression? cron, TimeZoneInfo tz)> _jobs = new();
 
         public SchedulerService(ILogger<SchedulerService> logger, IServiceProvider services,
-            JobStateManager stateManager, IBackgroundTaskQueue backgroundTaskQueue, IHubContext<JobStatusHub> hubContext,
+            IJobStateManager stateManager, IBackgroundTaskQueue backgroundTaskQueue, IHubContext<JobStatusHub> hubContext,
             IOptions<SchedulerOptions> schedulerOptions)
         {
             _logger = logger;
@@ -221,3 +223,4 @@ namespace AutomationEngine.Services
         }
     }
 }
+

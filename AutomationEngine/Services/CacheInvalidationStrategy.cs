@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-using AutomationEngine.Services.Abstractions;
+using AutomationEngine.Application.Abstractions;
 
 namespace AutomationEngine.Services
 {
@@ -14,51 +14,6 @@ namespace AutomationEngine.Services
         public CacheInvalidationStrategy(ILogger logger)
         {
             _logger = logger;
-        }
-
-        /// <summary>
-        /// Represents the result of a cache operation
-        /// </summary>
-        public class CacheOperationResult
-        {
-            public bool Success { get; set; }
-            public string? Error { get; set; }
-            public CacheInconsistency? Inconsistency { get; set; }
-            public OperationType OperationType { get; set; }
-        }
-
-        /// <summary>
-        /// Represents detected cache inconsistency
-        /// </summary>
-        public class CacheInconsistency
-        {
-            public string JobId { get; set; } = "";
-            public string Description { get; set; } = "";
-            public InconsistencyType Type { get; set; }
-            public DateTime DetectedAt { get; set; }
-        }
-
-        /// <summary>
-        /// Types of cache operations
-        /// </summary>
-        public enum OperationType
-        {
-            Update,
-            Invalidate,
-            Refresh,
-            Remove
-        }
-
-        /// <summary>
-        /// Types of detected inconsistencies
-        /// </summary>
-        public enum InconsistencyType
-        {
-            StaleData,           // Cache data is outdated
-            MissingEntry,        // Entry should exist in cache but doesn't
-            ExtraEntry,          // Entry exists in cache but not in DB
-            DataMismatch,        // Cached data differs from DB
-            UnknownState         // Unable to determine consistency
         }
 
         /// <summary>
@@ -241,3 +196,4 @@ namespace AutomationEngine.Services
         }
     }
 }
+

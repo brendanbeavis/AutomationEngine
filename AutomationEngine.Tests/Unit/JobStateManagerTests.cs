@@ -1,4 +1,5 @@
 using AutomationEngine.Data.Entities;
+using AutomationEngine.Infrastructure.Persistence;
 using AutomationEngine.Models;
 using AutomationEngine.Tests.Fixtures;
 using FluentAssertions;
@@ -8,7 +9,7 @@ namespace AutomationEngine.Tests.Unit
 {
     public class JobStateManagerTests : IDisposable
     {
-        private readonly AutomationEngine.Data.AutomationDbContext _context;
+        private readonly AutomationDbContext _context;
 
         public JobStateManagerTests()
         {

@@ -1,5 +1,6 @@
-using AutomationEngine.Data;
+using AutomationEngine.Application.UseCases.Jobs;
 using AutomationEngine.Data.Entities;
+using AutomationEngine.Infrastructure.Persistence;
 using AutomationEngine.Models;
 using AutomationEngine.Services;
 using AutomationEngine.Tests.Fixtures;

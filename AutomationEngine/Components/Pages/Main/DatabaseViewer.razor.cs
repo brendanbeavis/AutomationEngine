@@ -1,5 +1,5 @@
-using AutomationEngine.Data;
 using AutomationEngine.Data.Entities;
+using AutomationEngine.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -9,7 +9,7 @@ namespace AutomationEngine.Components.Pages.Main
     public partial class DatabaseViewer
     {
         [Inject]
-        private AutomationDbContext DbContext { get; set; } = default!;
+        private IDbContextFactory<AutomationDbContext> DbContextFactory { get; set; } = default!;
 
         [Inject]
         private ILogger<DatabaseViewer> Logger { get; set; } = default!;
@@ -29,11 +29,12 @@ namespace AutomationEngine.Components.Pages.Main
         {
             try
             {
+                await using var dbContext = await DbContextFactory.CreateDbContextAsync();
                 IsLoading = true;
                 ErrorMessage = null;
                 Tables.Clear();
 
-                var dbSetProperties = DbContext.GetType()
+                var dbSetProperties = dbContext.GetType()
                     .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                     .Where(p => p.PropertyType.IsGenericType && 
                                 p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
@@ -54,7 +55,7 @@ namespace AutomationEngine.Components.Pages.Main
                     };
 
                     // Get row count using EF Core's CountAsync
-                    var dbSet = prop.GetValue(DbContext);
+                    var dbSet = prop.GetValue(dbContext);
                     if (dbSet is IQueryable query)
                     {
                         try
@@ -101,13 +102,14 @@ namespace AutomationEngine.Components.Pages.Main
         {
             try
             {
+                await using var dbContext = await DbContextFactory.CreateDbContextAsync();
                 SelectedTable = table;
                 ErrorMessage = null;
                 TableData.Clear();
 
-                var dbSet = DbContext.GetType()
+                var dbSet = dbContext.GetType()
                     .GetProperty(table.PropertyName)?
-                    .GetValue(DbContext) as IQueryable;
+                    .GetValue(dbContext) as IQueryable;
 
                 if (dbSet is not null)
                 {

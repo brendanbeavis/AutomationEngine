@@ -5,7 +5,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using AutomationEngine.Data;
 using AutomationEngine.Data.Entities;
-using AutomationEngine.Services.Abstractions;
+using AutomationEngine.Infrastructure.Persistence;
+using AutomationEngine.Application.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -239,3 +240,4 @@ namespace AutomationEngine.Services
         public DateTime? NewestAuditLog { get; set; }
     }
 }
+

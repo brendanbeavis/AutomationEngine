@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http;
 using AutomationEngine.Dto;
 using AutomationEngine.Services;
-using AutomationEngine.Services.Abstractions;
+using AutomationEngine.Application.Abstractions;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -80,3 +80,4 @@ namespace AutomationEngine.Tests.Unit
         }
     }
 }
+

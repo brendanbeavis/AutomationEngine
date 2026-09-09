@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 using AutomationEngine.Configuration;
 using AutomationEngine.Data.Entities;
 using AutomationEngine.Extensions;
+using AutomationEngine.Infrastructure.Observability;
 using AutomationEngine.Models;
-using AutomationEngine.Services.Abstractions;
-using AutomationEngine.SignalR;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
+using AutomationEngine.Application.Abstractions;
 using Microsoft.Extensions.Logging;
 using Polly;
 
@@ -28,15 +26,11 @@ namespace AutomationEngine.Services
     public class JobRunner : IJobRunner
     {
         private readonly ILogger<JobRunner> _logger;
-        private readonly JobStateManager? _stateManager;
-        private readonly IHubContext<JobStatusHub>? _hubContext;
-        private readonly AuditLogService? _auditService;
+        private readonly IAuditLogService? _auditService;
 
-        public JobRunner(ILogger<JobRunner> logger, JobStateManager? stateManager = null, IHubContext<JobStatusHub>? hubContext = null, AuditLogService? auditService = null)
+        public JobRunner(ILogger<JobRunner> logger, IAuditLogService? auditService = null)
         {
             _logger = logger;
-            _stateManager = stateManager;
-            _hubContext = hubContext;
             _auditService = auditService;
         }
 
@@ -119,6 +113,8 @@ namespace AutomationEngine.Services
 
             using (LoggingContext.CreateActivityScope(job.Id, "JobExecution"))
             {
+                _logger.LogInformation("Job execution pipeline started | JobId: {JobId} | DisplayName: {DisplayName} | Type: {Type} | Timeout: {TimeoutSeconds}s | Retries: {Retries}",
+                    job.Id, job.DisplayName, job.Type, job.TimeoutSeconds, job.Retry);
                 StructuredLogger.LogJobStarted(_logger, job.Id, job.DisplayName, job.Type.ToString());
 
                 try
@@ -153,6 +149,9 @@ namespace AutomationEngine.Services
                         .ConfigureAwait(false);
 
                     stopwatch.Stop();
+
+                    _logger.LogInformation("Job execution completed successfully | JobId: {JobId} | Duration: {DurationMs}ms | ExitCode: {ExitCode}",
+                        job.Id, stopwatch.ElapsedMilliseconds, result.ExitCode);
                     StructuredLogger.LogJobCompleted(_logger, job.Id, job.DisplayName, stopwatch.Elapsed, 
                         result.Success, result.StdOut);
 
@@ -161,6 +160,8 @@ namespace AutomationEngine.Services
                 catch (Exception ex)
                 {
                     stopwatch.Stop();
+                    _logger.LogError(ex, "Job execution pipeline failed | JobId: {JobId} | DisplayName: {DisplayName} | Duration: {DurationMs}ms",
+                        job.Id, job.DisplayName, stopwatch.ElapsedMilliseconds);
                     StructuredLogger.LogJobFailed(_logger, job.Id, job.DisplayName, ex);
                     throw;
                 }
@@ -270,7 +271,7 @@ namespace AutomationEngine.Services
                 process.OutputDataReceived += (sender, e) => { if (e.Data != null) { stdOut.AppendLine(e.Data); } };
                 process.ErrorDataReceived += (sender, e) => { if (e.Data != null) { stdErr.AppendLine(e.Data); } };
 
-                _logger.LogInformation("Process execution initiated | JobId: {JobId} | DisplayName: {DisplayName} | Command: {Command} | Type: {Type}", 
+                _logger.LogInformation("Process execution initiated | JobId: {JobId} | DisplayName: {DisplayName} | Command: {Command} | Type: {Type}",
                     job.Id, job.DisplayName, fileName, job.Type);
 
                 try
@@ -298,8 +299,10 @@ namespace AutomationEngine.Services
                 {
                     try
                     {
+                        _logger.LogWarning("Job timeout detected | JobId: {JobId} | ProcessId: {ProcessId} | TimeoutSeconds: {TimeoutSeconds} | ElapsedMs: {ElapsedMs}",
+                            job.Id, process.Id, job.TimeoutSeconds, stopwatch.ElapsedMilliseconds);
                         process.Kill(true);
-                        _logger.LogInformation("Process force-terminated due to timeout | JobId: {JobId} | ProcessId: {ProcessId}", 
+                        _logger.LogInformation("Process force-terminated due to timeout | JobId: {JobId} | ProcessId: {ProcessId}",
                             job.Id, process.Id);
                     }
                     catch (InvalidOperationException ex)
@@ -310,13 +313,14 @@ namespace AutomationEngine.Services
                     catch (Exception ex)
                     {
                         // Unexpected error during termination
-                        _logger.LogWarning(ex, "Failed to force-terminate process | JobId: {JobId} | ProcessId: {ProcessId}", 
+                        _logger.LogWarning(ex, "Failed to force-terminate process | JobId: {JobId} | ProcessId: {ProcessId}",
                             job.Id, process.Id);
                     }
                     result.Success = false;
                     result.ExitCode = -1;
                     result.StdErr = "Timed out" + stdErr.ToString();
-                    _logger.LogWarning("Job {JobId} timed out after {TimeoutSeconds}s", job.Id, job.TimeoutSeconds);
+                    _logger.LogWarning("Job {JobId} timed out after {TimeoutSeconds}s | Duration: {DurationMs}ms",
+                        job.Id, job.TimeoutSeconds, stopwatch.ElapsedMilliseconds);
                 }
                 else
                 {
@@ -324,6 +328,9 @@ namespace AutomationEngine.Services
                     result.StdOut = stdOut.ToString();
                     result.StdErr = stdErr.ToString();
                     result.Success = process.ExitCode == 0;
+
+                    _logger.LogInformation("Process execution completed successfully | JobId: {JobId} | ExitCode: {ExitCode} | Duration: {DurationMs}ms | OutputSize: {OutputSize}",
+                        job.Id, process.ExitCode, stopwatch.ElapsedMilliseconds, result.StdOut.Length);
 
                     StructuredLogger.LogProcessExecution(_logger, job.Id, fileName, arguments, process.ExitCode);
                 }
@@ -595,3 +602,4 @@ namespace AutomationEngine.Services
         }
     }
 }
+

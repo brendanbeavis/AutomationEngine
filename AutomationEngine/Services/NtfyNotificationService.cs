@@ -1,7 +1,7 @@
 using System.Net.Http;
 using System.Text.Json;
 using System.Text;
-using AutomationEngine.Services.Abstractions;
+using AutomationEngine.Application.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace AutomationEngine.Services
@@ -148,3 +148,4 @@ namespace AutomationEngine.Services
         }
     }
 }
+

@@ -1,6 +1,6 @@
 using AutomationEngine.Data.Entities;
 using AutomationEngine.Models;
-using AutomationEngine.Services.Abstractions;
+using AutomationEngine.Application.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace AutomationEngine.Services
@@ -89,3 +89,4 @@ namespace AutomationEngine.Services
         }
     }
 }
+

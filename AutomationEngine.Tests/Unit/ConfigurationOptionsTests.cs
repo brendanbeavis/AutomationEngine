@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using AutomationEngine.Middleware;
+using AutomationEngine.Infrastructure.Security.Middleware;
 using AutomationEngine.Options;
 using AutomationEngine.Services;
 using FluentAssertions;

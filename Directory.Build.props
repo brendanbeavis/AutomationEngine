@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+	<LangVersion>preview</LangVersion>
+	<Nullable>enable</Nullable>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<AnalysisLevel>latest-recommended</AnalysisLevel>
+	<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+	<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+	<GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+</Project>

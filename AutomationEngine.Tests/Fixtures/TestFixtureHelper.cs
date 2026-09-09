@@ -1,6 +1,8 @@
-using AutomationEngine.Data;
+using AutomationEngine.Application.UseCases.Jobs;
+using AutomationEngine.Data.Entities;
+using AutomationEngine.Infrastructure.Persistence;
 using AutomationEngine.Services;
-using Microsoft.Extensions.DependencyInjection;
+using AutomationEngine.Application.Abstractions;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -24,29 +26,55 @@ namespace AutomationEngine.Tests.Fixtures
         /// </summary>
         public static JobStateManager CreateMockJobStateManager(AutomationDbContext context)
         {
-            var mockServiceProvider = new Mock<IServiceProvider>();
             var mockLogger = CreateMockLogger<JobStateManager>();
+            var mockRepository = new Mock<IJobRepository>();
+            var mockCache = new Mock<IJobCache>();
+            var mockStateTransition = new Mock<IJobStateTransitionService>();
+            var mockRunService = new Mock<IJobRunService>();
+            var mockQueryService = new Mock<IJobQueryService>();
+            var mockAudit = new Mock<IAuditLogService>();
 
-            // Setup service provider to return our context
-            mockServiceProvider
-                .Setup(sp => sp.GetService(typeof(AutomationDbContext)))
-                .Returns(context);
+            mockRepository
+                .Setup(r => r.LoadAllActiveJobsAsync())
+                .ReturnsAsync(context.Jobs.ToList());
 
-            mockServiceProvider
-                .Setup(sp => sp.GetService(typeof(ILogger<JobStateManager>)))
-                .Returns(mockLogger.Object);
+            mockRepository
+                .Setup(r => r.GetJobByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync((string jobId) => context.Jobs.FirstOrDefault(j => j.JobId == jobId));
 
-            // Setup CreateScope
-            var mockScope = new Mock<IServiceScope>();
-            mockScope
-                .Setup(s => s.ServiceProvider.GetService(typeof(AutomationDbContext)))
-                .Returns(context);
+            mockRepository
+                .Setup(r => r.CreateJobAsync(It.IsAny<JobEntity>()))
+                .ReturnsAsync((JobEntity job) =>
+                {
+                    context.Jobs.Add(job);
+                    context.SaveChanges();
+                    return job;
+                });
 
-            mockServiceProvider
-                .Setup(sp => sp.CreateScope())
-                .Returns(mockScope.Object);
+            mockRepository
+                .Setup(r => r.UpdateJobAsync(It.IsAny<JobEntity>()))
+                .ReturnsAsync((JobEntity job) =>
+                {
+                    context.SaveChanges();
+                    return job;
+                });
 
-            return new JobStateManager(mockServiceProvider.Object, mockLogger.Object);
+            mockQueryService
+                .Setup(q => q.GetAllJobs())
+                .Returns(() => context.Jobs.ToList());
+
+            mockQueryService
+                .Setup(q => q.GetJobById(It.IsAny<string>()))
+                .Returns((string jobId) => context.Jobs.FirstOrDefault(j => j.JobId == jobId));
+
+            return new JobStateManager(
+                mockRepository.Object,
+                mockCache.Object,
+                mockStateTransition.Object,
+                mockRunService.Object,
+                mockQueryService.Object,
+                mockAudit.Object,
+                mockLogger.Object);
         }
 
         /// <summary>
@@ -104,3 +132,4 @@ namespace AutomationEngine.Tests.Fixtures
         }
     }
 }
+

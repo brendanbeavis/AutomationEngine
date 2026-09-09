@@ -3,7 +3,7 @@ using Cronos;
 using AutomationEngine.Configuration;
 using AutomationEngine.Dto;
 using AutomationEngine.Models;
-using AutomationEngine.Services.Abstractions;
+using AutomationEngine.Application.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace AutomationEngine.Services
@@ -204,3 +204,4 @@ namespace AutomationEngine.Services
         }
     }
 }
+

@@ -1,6 +1,6 @@
 using AutomationEngine.Dto;
 using AutomationEngine.Services;
-using AutomationEngine.Services.Abstractions;
+using AutomationEngine.Application.Abstractions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
@@ -144,3 +144,4 @@ namespace AutomationEngine.Components.Pages.Main
         }
     }
 }
+

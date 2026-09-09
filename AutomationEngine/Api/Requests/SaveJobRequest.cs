@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using AutomationEngine.Application.Validation;
 using AutomationEngine.Models;
 
 namespace AutomationEngine.Api.Requests
@@ -7,13 +8,13 @@ namespace AutomationEngine.Api.Requests
     /// Parameter object for SaveJobAsync operation.
     /// Encapsulates all job save parameters with type-safe structure.
     /// </summary>
-    public class SaveJobRequest
+    public class SaveJobRequest : IValidatableObject
     {
         /// <summary>
         /// Unique identifier for the job
         /// </summary>
         [Required(ErrorMessage = "JobId is required")]
-        [StringLength(255, MinimumLength = 1, ErrorMessage = "JobId must be between 1 and 255 characters")]
+        [StringLength(JobValidationRules.JobIdMaxLength, MinimumLength = JobValidationRules.JobIdMinLength, ErrorMessage = "JobId must be between 1 and 20 characters")]
         [RegularExpression(@"^[a-zA-Z0-9_-]+$", ErrorMessage = "JobId can only contain alphanumeric characters, hyphens, and underscores")]
         public required string JobId { get; set; }
 
@@ -21,7 +22,7 @@ namespace AutomationEngine.Api.Requests
         /// Display name for the job
         /// </summary>
         [Required(ErrorMessage = "DisplayName is required")]
-        [StringLength(500, MinimumLength = 1, ErrorMessage = "DisplayName must be between 1 and 500 characters")]
+        [StringLength(JobValidationRules.DisplayNameMaxLength, MinimumLength = JobValidationRules.DisplayNameMinLength, ErrorMessage = "DisplayName must be between 1 and 200 characters")]
         public required string DisplayName { get; set; }
 
         /// <summary>
@@ -33,19 +34,19 @@ namespace AutomationEngine.Api.Requests
         /// <summary>
         /// Command to execute for Process jobs
         /// </summary>
-        [StringLength(1000)]
+        [StringLength(JobValidationRules.CommandMaxLength)]
         public string? Command { get; set; }
 
         /// <summary>
         /// Arguments to pass to the command
         /// </summary>
-        [StringLength(2000)]
+        [StringLength(JobValidationRules.ArgumentsMaxLength)]
         public string? Arguments { get; set; }
 
         /// <summary>
         /// Working directory for job execution
         /// </summary>
-        [StringLength(500)]
+        [StringLength(JobValidationRules.WorkingDirectoryMaxLength)]
         public string? WorkingDirectory { get; set; }
 
         /// <summary>
@@ -56,19 +57,19 @@ namespace AutomationEngine.Api.Requests
         /// <summary>
         /// CRON schedule expression
         /// </summary>
-        [StringLength(100)]
+        [StringLength(JobValidationRules.ScheduleMaxLength)]
         public string? Schedule { get; set; }
 
         /// <summary>
         /// Timeout for job execution in seconds
         /// </summary>
-        [Range(0, 3600, ErrorMessage = "TimeoutSeconds must be between 0 and 3600")]
+        [Range(JobValidationRules.TimeoutMinSeconds, JobValidationRules.TimeoutMaxSeconds, ErrorMessage = "TimeoutSeconds must be between 0 and 86400")]
         public int TimeoutSeconds { get; set; } = 0;
 
         /// <summary>
         /// Number of retries on failure
         /// </summary>
-        [Range(0, 10, ErrorMessage = "Retry must be between 0 and 10")]
+        [Range(JobValidationRules.RetryMin, JobValidationRules.RetryMax, ErrorMessage = "Retry must be between 0 and 100")]
         public int Retry { get; set; } = 0;
 
         /// <summary>
@@ -145,13 +146,13 @@ namespace AutomationEngine.Api.Requests
         /// <summary>
         /// Target folder for file cleanup
         /// </summary>
-        [StringLength(500, MinimumLength = 1, ErrorMessage = "TargetFolder must be between 1 and 500 characters")]
+        [StringLength(JobValidationRules.TargetFolderMaxLength, MinimumLength = 1, ErrorMessage = "TargetFolder must be between 1 and 500 characters")]
         public string? TargetFolder { get; set; }
 
         /// <summary>
         /// Age of files in days (delete files older than this)
         /// </summary>
-        [Range(1, 36500, ErrorMessage = "FileAgeInDays must be between 1 and 36500")]
+        [Range(JobValidationRules.FileAgeMinDays, JobValidationRules.FileAgeMaxDays, ErrorMessage = "FileAgeInDays must be between 0 and 36500")]
         public int FileAgeInDays { get; set; } = 30;
 
         /// <summary>
@@ -162,7 +163,7 @@ namespace AutomationEngine.Api.Requests
         /// <summary>
         /// File filter pattern (e.g., "*.log")
         /// </summary>
-        [StringLength(255)]
+        [StringLength(JobValidationRules.FileFilterMaxLength)]
         public string? FileFilter { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+using AutomationEngine.Infrastructure.Persistence;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
