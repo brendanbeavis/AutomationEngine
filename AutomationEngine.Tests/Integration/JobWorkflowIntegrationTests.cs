@@ -221,12 +221,13 @@ namespace AutomationEngine.Tests.Integration
             var beforeDelete = _context.Jobs.FirstOrDefault(j => j.JobId == jobId);
             beforeDelete.Should().NotBeNull();
 
-            // Act - Delete job
+            // Act - Delete job (soft delete)
             await _stateManager.DeleteJobAsync(jobId);
 
-            // Assert
+            // Assert - Job record still exists but marked as deleted (soft delete)
             var afterDelete = _context.Jobs.FirstOrDefault(j => j.JobId == jobId);
-            afterDelete.Should().BeNull();
+            afterDelete.Should().NotBeNull();
+            afterDelete!.DeletedAt.Should().NotBeNull();
         }
 
         [Fact]

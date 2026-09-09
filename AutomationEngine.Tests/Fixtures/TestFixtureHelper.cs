@@ -34,9 +34,10 @@ namespace AutomationEngine.Tests.Fixtures
             var mockQueryService = new Mock<IJobQueryService>();
             var mockAudit = new Mock<IAuditLogService>();
 
+            // Use callback to defer evaluation until the mock is invoked
             mockRepository
                 .Setup(r => r.LoadAllActiveJobsAsync())
-                .ReturnsAsync(context.Jobs.ToList());
+                .ReturnsAsync(() => context.Jobs.ToList());
 
             mockRepository
                 .Setup(r => r.GetJobByIdAsync(It.IsAny<string>()))
@@ -59,6 +60,20 @@ namespace AutomationEngine.Tests.Fixtures
                     return job;
                 });
 
+            mockRepository
+                .Setup(r => r.DeleteJobAsync(It.IsAny<string>()))
+                .Callback((string jobId) =>
+                {
+                    var job = context.Jobs.FirstOrDefault(j => j.JobId == jobId && j.DeletedAt == null);
+                    if (job is not null)
+                    {
+                        job.DeletedAt = DateTime.UtcNow;
+                        context.SaveChanges();
+                    }
+                })
+                .Returns(Task.CompletedTask);
+
+            // Use Callback to defer evaluation
             mockQueryService
                 .Setup(q => q.GetAllJobs())
                 .Returns(() => context.Jobs.ToList());

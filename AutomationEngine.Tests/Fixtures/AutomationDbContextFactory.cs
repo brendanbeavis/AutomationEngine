@@ -9,19 +9,23 @@ namespace AutomationEngine.Tests.Fixtures
     /// </summary>
     public class AutomationDbContextFactory
     {
-        private static int _dbCounter = 0;
-
         /// <summary>
         /// Creates a new isolated in-memory database context for each test
+        /// Uses file-based SQLite with unique names to avoid table locking issues with :memory:
         /// </summary>
         public static AutomationDbContext CreateInMemoryContext()
         {
+            // Use file-based SQLite instead of :memory: to avoid shared database issues
+            var dbFileName = Path.Combine(Path.GetTempPath(), $"test_memory_{Guid.NewGuid()}.db");
             var options = new DbContextOptionsBuilder<AutomationDbContext>()
-                .UseSqlite($"Data Source=:memory:;")
+                .UseSqlite($"Data Source={dbFileName};")
+                .EnableSensitiveDataLogging()
                 .Options;
 
             var context = new AutomationDbContext(options);
+            context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
+
             return context;
         }
 
@@ -33,10 +37,13 @@ namespace AutomationEngine.Tests.Fixtures
             var dbPath = Path.Combine(Path.GetTempPath(), $"test_db_{Guid.NewGuid()}.db");
             var options = new DbContextOptionsBuilder<AutomationDbContext>()
                 .UseSqlite($"Data Source={dbPath};")
+                .EnableSensitiveDataLogging()
                 .Options;
 
             var context = new AutomationDbContext(options);
+            context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
+
             return context;
         }
 

@@ -244,7 +244,8 @@ namespace AutomationEngine.Tests.Unit
 
             // Assert
             var deletedJob = _context.Jobs.FirstOrDefault(j => j.JobId == "delete-job");
-            deletedJob.Should().BeNull();
+            deletedJob.Should().NotBeNull();
+            deletedJob!.DeletedAt.Should().NotBeNull(); // Soft delete: DeletedAt is set
         }
 
         [Fact]

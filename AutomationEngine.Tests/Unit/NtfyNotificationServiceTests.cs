@@ -38,10 +38,10 @@ namespace AutomationEngine.Tests.Unit
             handler.Request.Headers.GetValues("Title").Should().ContainSingle().Which.Should().Be("[AE] Job Success: Nightly Import");
             handler.Request.Headers.GetValues("Tags").Should().ContainSingle().Which.Should().Be("white_check_mark");
 
-            var body = await handler.Request.Content!.ReadAsStringAsync();
-            body.Should().Contain("## Job Succeeded");
-            body.Should().Contain("Nightly Import");
-            body.Should().Contain("Processed 42 records");
+            handler.RequestBody.Should().NotBeNullOrEmpty();
+            handler.RequestBody.Should().Contain("## Job Succeeded");
+            handler.RequestBody.Should().Contain("Nightly Import");
+            handler.RequestBody.Should().Contain("Processed 42 records");
         }
 
         [Fact]
@@ -71,11 +71,19 @@ namespace AutomationEngine.Tests.Unit
         private sealed class RecordingHttpMessageHandler : HttpMessageHandler
         {
             public HttpRequestMessage? Request { get; private set; }
+            public string? RequestBody { get; private set; }
 
-            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
                 Request = request;
-                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
+
+                // Read content before it's disposed
+                if (request.Content is not null)
+                {
+                    RequestBody = await request.Content.ReadAsStringAsync(cancellationToken);
+                }
+
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
         }
     }

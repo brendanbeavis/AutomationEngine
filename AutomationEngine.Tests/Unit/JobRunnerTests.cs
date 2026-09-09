@@ -212,8 +212,24 @@ namespace AutomationEngine.Tests.Unit
         {
             // Arrange
             _testDirectory = TestFixtureHelper.CreateTestDirectory("filecleanup");
-            TestFixtureHelper.CreateTestFilesWithAge(_testDirectory, 5, 10); // 5 files, 10 days old
-            TestFixtureHelper.CreateTestFilesWithAge(_testDirectory, 3, 2); // 3 files, 2 days old
+            // Create 2 old files (>5 days old) and 1 new file (<5 days old)
+            var oldFiles = new List<string>();
+            var newFiles = new List<string>();
+
+            // Create 2 old files
+            for (int i = 0; i < 2; i++)
+            {
+                var fileName = Path.Combine(_testDirectory, $"old_file_{i}.log");
+                File.WriteAllText(fileName, $"Old content {i}");
+                File.SetLastWriteTime(fileName, DateTime.Now.AddDays(-10));
+                oldFiles.Add(fileName);
+            }
+
+            // Create 1 new file (not old enough to delete)
+            var newFileName = Path.Combine(_testDirectory, "new_file.log");
+            File.WriteAllText(newFileName, "New content");
+            File.SetLastWriteTime(newFileName, DateTime.Now.AddDays(-2));
+            newFiles.Add(newFileName);
 
             var job = new JobConfig
             {
@@ -232,8 +248,9 @@ namespace AutomationEngine.Tests.Unit
             // Assert
             result.Should().NotBeNull();
             result.Success.Should().BeTrue();
-            result.StdOut.Should().Contain("5 file(s)");
-            Directory.GetFiles(_testDirectory, "*.log").Length.Should().Be(3);
+            result.StdOut.Should().Contain("2 file(s)"); // 2 old files deleted
+            Directory.GetFiles(_testDirectory, "*.log").Length.Should().Be(1); // 1 new file remains
+            File.Exists(newFileName).Should().BeTrue();
         }
 
         [Fact]
