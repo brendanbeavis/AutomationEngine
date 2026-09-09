@@ -1,30 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="SetupAutomationEngine" Language="1033" Version="1.0.0.0" Manufacturer="" UpgradeCode="dbe6f9e4-c51d-40ec-926c-74623143b0de">
+	<Product Id="*" Name="AutomationEngine" Language="1033" Version="1.0.0.0" Manufacturer="" UpgradeCode="dbe6f9e4-c51d-40ec-926c-74623143b0de">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate />
 
-		<Feature Id="ProductFeature" Title="SetupAutomationEngine" Level="1">
-			<ComponentGroupRef Id="ProductComponents" />
+		<Feature Id="ProductFeature" Title="AutomationEngine" Level="1">
+			<ComponentGroupRef Id="AutomationEnginePublishedFiles" />
 		</Feature>
 	</Product>
 
 	<Fragment>
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="ProgramFilesFolder">
-				<Directory Id="INSTALLFOLDER" Name="SetupAutomationEngine" />
+				<Directory Id="INSTALLFOLDER" Name="AutomationEngine" />
 			</Directory>
 		</Directory>
-	</Fragment>
-
-	<Fragment>
-		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
-			<!-- <Component Id="ProductComponent"> -->
-				<!-- TODO: Insert files, registry keys, and other resources here. -->
-			<!-- </Component> -->
-		</ComponentGroup>
 	</Fragment>
 </Wix>
