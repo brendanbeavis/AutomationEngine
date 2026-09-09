@@ -1,0 +1,145 @@
+@using AutomationEngine.Dto
+@using AutomationEngine.Models
+@using AutomationEngine.Models.Cron
+@using Microsoft.AspNetCore.Components.Forms
+
+@if (IsVisible)
+{
+    <div class="modal modal-lg fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.4);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@IsEdit.ToModalTitle(IsDupe)</h5>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="OnCloseClick"></button>
+                </div>
+                <EditForm EditContext="EditContext" OnValidSubmit="OnSubmitClick">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="modal-body">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                @if (!string.IsNullOrEmpty(ErrorMessage))
+                                {
+                                    <div class="alert alert-danger">@ErrorMessage</div>
+                                }
+                                <div class="mb-2 row">
+                                <div class="col">
+                                    <label class="form-label">Job ID *</label>
+                                    <InputText class="@FieldClass(nameof(Job.JobId))" @bind-Value="Job.JobId" disabled="@IsEdit" />
+                                    <ValidationMessage For="@(() => Job.JobId)" />
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">Display Name *</label>
+                                    <InputText class="@FieldClass(nameof(Job.DisplayName))" @bind-Value="Job.DisplayName" />
+                                    <ValidationMessage For="@(() => Job.DisplayName)" />
+                                </div>
+                                    <div class="col">
+                                        <label class="form-label">Type</label>
+                                        <InputSelect class="@FieldClass(nameof(Job.Type))" @bind-Value="Job.Type" @bind-Value:after="OnJobTypeChanged">
+                                            @foreach (var status in Enum.GetValues<JobType>())
+                                            {
+                                                <option value="@status">@status.ToString()</option>
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label class="form-label">Command *</label>
+                                    <InputText class="@FieldClass(nameof(Job.Command))" @bind-Value="Job.Command" disabled="@(Job.Type == AutomationEngine.Models.JobType.PowerShell)" />
+                                    <ValidationMessage For="@(() => Job.Command)" />
+                                </div>
+
+                                @if (Job.Type == AutomationEngine.Models.JobType.Process)
+                                {
+                                    <div class="mb-2">
+                                        <label class="form-label">Arguments</label>
+                                        <InputText class="@FieldClass(nameof(Job.Arguments))" @bind-Value="Job.Arguments" />
+                                        <ValidationMessage For="@(() => Job.Arguments)" />
+                                    </div>
+                                }
+                                else if (Job.Type == AutomationEngine.Models.JobType.PowerShell)
+                                {
+                                    <div class="mb-2">
+                                        <label class="form-label">Script</label>
+                                        <InputTextArea class="@FieldClass(nameof(Job.Script))" @bind-Value="Job.Script" Rows="4" />
+                                        <ValidationMessage For="@(() => Job.Script)" />
+                                    </div>
+                                }
+                                else if (Job.Type == AutomationEngine.Models.JobType.FileCleanup)
+                                {
+                                    <div class="mb-2 row">
+                                        <div class="col">
+                                        <label class="form-label">Target Folder *</label>
+                                        <InputText class="@FieldClass(nameof(Job.TargetFolder))" @bind-Value="Job.TargetFolder" />
+                                        <ValidationMessage For="@(() => Job.TargetFolder)" />
+                                    </div>
+                                        <div class="col">
+                                        <label class="form-label">File Filter (e.g., *.log)</label>
+                                        <InputText class="@FieldClass(nameof(Job.FileFilter))" @bind-Value="Job.FileFilter" />
+                                        <ValidationMessage For="@(() => Job.FileFilter)" />
+                                        </div>
+                                    </div>
+                                    <div class="mb-2 row">
+                                        <div class="col">
+                                            <label class="form-label">File Age (days)</label>
+                                            <InputNumber class="@FieldClass(nameof(Job.FileAgeInDays))" @bind-Value="Job.FileAgeInDays" min="0" />
+                                        </div>
+                                        <div class="col">
+                                            <InputCheckbox class="@FieldClass(nameof(Job.Recurse), true)" @bind-Value="Job.Recurse" />
+                                            <label class="form-check-label">Search subdirectories</label>
+                                        </div>
+                                    </div>
+                                }
+
+                                <div class="mb-2">
+                                    <label class="form-label">Working Directory</label>
+                                    <InputText class="@FieldClass(nameof(Job.WorkingDirectory))" @bind-Value="Job.WorkingDirectory" />
+                                    <ValidationMessage For="@(() => Job.WorkingDirectory)" />
+                                </div>
+                                <div class="mb-2 row">
+                                    <div class="col">
+                                        <label class="form-label">Timeout (s)</label>
+                                        <InputNumber class="@FieldClass(nameof(Job.TimeoutSeconds))" @bind-Value="Job.TimeoutSeconds" />
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-label">Retry</label>
+                                        <InputNumber class="@FieldClass(nameof(Job.Retry))" @bind-Value="Job.Retry" min="0" max="100" />
+                                    </div>
+                                </div>
+                                <div class="mb-2 row">
+                                    <div class="col">
+                                        <InputCheckbox class="@FieldClass(nameof(Job.OnFailureNotify), true)" @bind-Value="Job.OnFailureNotify" />
+                                        <label class="form-check-label">Notify on failure</label>
+                                    </div>
+                                    <div class="col">
+                                        <InputCheckbox class="@FieldClass(nameof(Job.OnSuccessNotify), true)" @bind-Value="Job.OnSuccessNotify" />
+                                        <label class="form-check-label">Notify on success</label>
+                                    </div>
+                                    <div class="col">
+                                        <InputCheckbox class="@FieldClass(nameof(Job.Enabled), true)" @bind-Value="Job.Enabled" />
+                                        <label class="form-check-label">Enabled</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+
+                                <div class="mb-2">
+                                    <label class="form-label">Schedule Expression</label>
+                                    <InputText class="@FieldClass(nameof(Job.Schedule))" @bind-Value="Job.Schedule" disabled="false" />
+                                    <ValidationMessage For="@(() => Job.Schedule)" />
+                                </div>
+                                <CronScheduleBuilder Schedule="ScheduleValue" ScheduleChanged="OnScheduleChanged" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn badge bg-pink-neon" @onclick="OnCloseClick">✗ Cancel</button>
+                        <button type="submit" class="btn badge bg-lime-neon" disabled="@isSaving"><Blazicon Svg="@(isSaving ? BootstrapIcon.ArrowClockwise.Animate(BlaziconAnimation.Spin) : BootstrapIcon.Check)"></Blazicon> @IsEdit.ToSaveButtonText(IsDupe)</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,17 @@
+@using System.Reflection
+@using Microsoft.AspNetCore.Components.Routing
+@using AutomationEngine.Components.Layout
+
+<Router AppAssembly="@typeof(Program).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <div>
+                <h1>Not Found</h1>
+                <p>The requested page could not be found.</p>
+            </div>
+        </LayoutView>
+    </NotFound>
+</Router>

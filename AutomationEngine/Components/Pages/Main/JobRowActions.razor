@@ -1,0 +1,49 @@
+@using AutomationEngine.Dto
+@inject IJSRuntime JS
+
+@if (Job is not null)
+{
+    <div class="job-row-actions">
+        <button type="button"
+                class="btn badge dropdown-toggle bg-cyan-neon"
+                aria-expanded="@isMenuOpen"
+                @onclick="ToggleMenu"
+                @ref="triggerRef">
+            Actions
+        </button>
+
+        @if (isMenuOpen)
+        {
+            <button type="button"
+                    class="job-row-actions-backdrop"
+                    aria-label="Close actions menu"
+                    @onclick="CloseMenuAsync">
+            </button>
+
+            <div class="job-row-actions-menu dropdown-menu dropdown-menu-end show"
+                 @ref="menuRef"
+                 @onclick:stopPropagation="true">
+                <button type="button" class="dropdown-item" @onclick="HandleEdit">
+                    <Blazicon Svg="BootstrapIcon.PencilSquare"></Blazicon> Edit
+                </button>
+                <button type="button" class="dropdown-item" @onclick="HandleHistory">
+                    <Blazicon Svg="BootstrapIcon.Clipboard2Data"></Blazicon> History
+                </button>
+                <button type="button" class="dropdown-item" @onclick="HandleDuplicate">
+                    <Blazicon Svg="BootstrapIcon.Copy"></Blazicon> Duplicate
+                </button>
+                <div class="dropdown-divider"></div>
+                <button type="button" class="dropdown-item text-danger" disabled="@IsDeleteDisabled" @onclick="HandleDelete">
+                    <Blazicon Svg="BootstrapIcon.Trash"></Blazicon> Delete
+                </button>
+                <button type="button" class="dropdown-item text-warning" disabled="@IsStopDisabled" @onclick="HandleStop">
+                    <Blazicon Svg="BootstrapIcon.StopFill"></Blazicon> Stop
+                </button>
+                <div class="dropdown-divider"></div>
+                <button type="button" class="dropdown-item @Job.Enabled.ToToggleEnabledCssClass()" @onclick="HandleToggleEnabled">
+                    <Blazicon Svg="BootstrapIcon.Power"></Blazicon> @Job.Enabled.ToToggleEnabledText()
+                </button>
+            </div>
+        }
+    </div>
+}

@@ -1,0 +1,252 @@
+@using AutomationEngine.Dto
+@using AutomationEngine.Services
+
+@if (IsVisible)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.4);">
+        <div class="modal-dialog modal-xl" style="max-width: 90%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <Blazicon Svg="BootstrapIcon.Gear"></Blazicon> Application Settings
+                    </h5>
+                    <button type="button" class="btn-close cp-btn neon" aria-label="Close" @onclick="OnCloseClick"></button>
+                </div>
+
+                <!-- Error/Success Messages -->
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+                        <Blazicon Svg="BootstrapIcon.ExclamationTriangle"></Blazicon>
+                        @ErrorMessage
+                        <button type="button" class="btn-close" @onclick="() => ErrorMessage = null"></button>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(SuccessMessage))
+                {
+                    <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+                        <Blazicon Svg="BootstrapIcon.CheckCircle"></Blazicon>
+                        @SuccessMessage
+                        <button type="button" class="btn-close" @onclick="() => SuccessMessage = null"></button>
+                    </div>
+                }
+
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs settings-tabs" role="tablist" style="margin: 0 1.5rem; border-bottom: 2px solid var(--cp-border);">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link badge  @ActiveTab.ToTabBadgeClass(0)"
+                                @onclick="() => SetActiveTab(0)" 
+                                type="button" role="tab">
+                            <Blazicon Svg="BootstrapIcon.Sliders"></Blazicon> Settings
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link badge  @ActiveTab.ToTabBadgeClass(1)"
+                                @onclick="() => SetActiveTab(1)" 
+                                type="button" role="tab">
+                            <Blazicon Svg="BootstrapIcon.Palette"></Blazicon> Theme
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link badge  @ActiveTab.ToTabBadgeClass(2)"
+                                @onclick="() => SetActiveTab(2)" 
+                                type="button" role="tab">
+                            <Blazicon Svg="BootstrapIcon.DatabaseFill"></Blazicon> Database
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="modal-body">
+                    @if (Settings == null)
+                    {
+                        <p><em>Loading settings...</em></p>
+                    }
+                    else
+                    {
+                        <!-- TAB 1: General Settings -->
+                        @if (ActiveTab == 0)
+                        {
+                            <div class="settings-section">
+                                <h6 class="neon-text mb-3" style="letter-spacing: 1px;">GLOBAL CONFIGURATION</h6>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="appName" class="form-label">Application Name</label>
+                                        <input type="text" class="form-control" id="appName" 
+                                               @bind="Settings.ApplicationName" 
+                                               placeholder="Application Name" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="loggingLevel" class="form-label">Logging Level</label>
+                                        <select class="form-select" id="loggingLevel" @bind="Settings.LoggingLevel">
+                                            <option value="Trace">Trace - Most detailed</option>
+                                            <option value="Debug">Debug</option>
+                                            <option value="Information">Information - Default</option>
+                                            <option value="Warning">Warning</option>
+                                            <option value="Error">Error</option>
+                                            <option value="Critical">Critical - Only critical errors</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="defaultTimeout" class="form-label">Default Job Timeout (seconds)</label>
+                                        <input type="number" class="form-control" id="defaultTimeout" 
+                                               @bind="Settings.DefaultJobTimeoutSeconds" 
+                                               min="0" max="3600" />
+                                        <small class="form-text text-muted">0 = No timeout</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="maxHistory" class="form-label">Max Job History Records per Job</label>
+                                        <input type="number" class="form-control" id="maxHistory" 
+                                               @bind="Settings.MaxJobHistoryRecords" 
+                                               min="10" max="100000" />
+                                    </div>
+                                </div>
+
+                                <hr style="border-color: var(--cp-border);" />
+                                <h6 class="neon-text mb-3" style="letter-spacing: 1px;">JOB EXECUTION</h6>
+
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="jobExecution" 
+                                           @bind="Settings.JobExecutionEnabled" />
+                                    <label class="form-check-label" for="jobExecution">
+                                        Enable Job Execution (enables all job schedules)
+                                    </label>
+                                </div>
+
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="detailedLogging" 
+                                           @bind="Settings.EnableDetailedLogging" />
+                                    <label class="form-check-label" for="detailedLogging">
+                                        Enable Detailed Logging for Job Runs
+                                    </label>
+                                </div>
+
+                                <hr style="border-color: var(--cp-border);" />
+                                <h6 class="neon-text mb-3" style="letter-spacing: 1px;">NOTIFICATIONS</h6>
+
+                                <div class="mb-3">
+                                    <label for="ntfyEndpoint" class="form-label">Ntfy Endpoint URL (for push notifications on job failure)</label>
+                                    <input type="url" class="form-control" id="ntfyEndpoint" 
+                                           @bind="Settings.NtfyEndpoint" 
+                                           placeholder="https://ntfy.sh/your-topic-name" />
+                                    <small class="form-text text-muted">Enter your Ntfy endpoint URL to receive push notifications when jobs fail. Leave empty to disable notifications.</small>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- TAB 2: Theme Selection -->
+                        @if (ActiveTab == 1)
+                        {
+                            <div class="settings-section">
+                                <h6 class="neon-text mb-4" style="letter-spacing: 1px;">THEME SELECTION</h6>
+                                <div class="row">
+                                    @foreach (var (name, value, description) in Themes)
+                                    {
+                                        <div class="col-md-4 mb-3">
+                                            <div class="@SelectedTheme.ToThemeCardCssClass(value)" 
+                                                 @onclick="() => SelectThemeAsync(value)"
+                                                 style="cursor: pointer; padding: 1.5rem; border: 2px solid @SelectedTheme.ToThemeCardBorderColor(value); border-radius: 8px; transition: all 0.3s ease; background: @GetThemePreviewBg(value);">
+
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <h6 class="mb-0" style="color: @GetThemePreviewColor(value); font-weight: bold;">@name</h6>
+                                                    @if (SelectedTheme == value)
+                                                    {
+                                                        <Blazicon Svg="BootstrapIcon.CheckCircleFill" style="color: var(--cp-accent-cyan);"></Blazicon>
+                                                    }
+                                                </div>
+
+                                                <p class="mb-3" style="font-size: 0.85rem; color: @GetThemePreviewTextColor(value);">
+                                                    @description
+                                                </p>
+
+                                                <!-- Theme Preview Dots -->
+                                                <div class="d-flex gap-2">
+                                                    @foreach (var color in GetThemeColors(value))
+                                                    {
+                                                        <div style="width: 20px; height: 20px; border-radius: 50%; background: @color; border: 1px solid rgba(255,255,255,0.1);"></div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="alert alert-info mt-4">
+                                    <Blazicon Svg="BootstrapIcon.InfoCircle"></Blazicon>
+                                    <strong>Theme Preview:</strong> Your selected theme will be applied immediately and saved automatically.
+                                </div>
+                            </div>
+                        }
+
+                        <!-- TAB 3: Database Viewer -->
+                        @if (ActiveTab == 2)
+                        {
+                            <div class="settings-section">
+                                <DatabaseViewer />
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn badge bg-pink-neon" @onclick="OnCloseClick">✗ Close</button>
+                    @if (ActiveTab != 2) // Don't show save button for database viewer
+                    {
+                        <button class="btn badge bg-lime-neon"
+                                @onclick="SaveSettingsAsync" 
+                                disabled="@IsSaving">
+                            @if (IsSaving)
+                            {
+                                <Blazicon Svg="BootstrapIcon.ArrowClockwise.Animate(BlaziconAnimation.Spin)"></Blazicon>
+                                <span>Saving...</span>
+                            }
+                            else
+                            {
+                                <Blazicon Svg="BootstrapIcon.Check"></Blazicon>
+                                <span>Save Settings</span>
+                            }
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private string GetThemePreviewBg(string theme) => theme switch
+    {
+        "cyberpunk" => "linear-gradient(135deg, rgba(122,0,255,0.1), rgba(0,255,246,0.05))",
+        "dark" => "linear-gradient(135deg, rgba(50,50,50,0.3), rgba(40,40,40,0.3))",
+        "light" => "linear-gradient(135deg, rgba(240,240,240,0.3), rgba(250,250,250,0.3))",
+        _ => "transparent"
+    };
+
+    private string GetThemePreviewColor(string theme) => theme switch
+    {
+        "cyberpunk" => "#00fff6",
+        "dark" => "#888888",
+        "light" => "#333333",
+        _ => "currentColor"
+    };
+
+    private string GetThemePreviewTextColor(string theme) => theme switch
+    {
+        "cyberpunk" => "rgba(230,247,255,0.7)",
+        "dark" => "rgba(200,200,200,0.7)",
+        "light" => "rgba(100,100,100,0.7)",
+        _ => "currentColor"
+    };
+
+    private List<string> GetThemeColors(string theme) => theme switch
+    {
+        "cyberpunk" => new() { "#00fff6", "#ff2d95", "#7a00ff", "#39ff14" },
+        "dark" => new() { "#555555", "#888888", "#333333", "#666666" },
+        "light" => new() { "#333333", "#666666", "#999999", "#cccccc" },
+        _ => new()
+    };
+}

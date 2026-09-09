@@ -1,0 +1,109 @@
+.cron-builder {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 500px;
+}
+
+.cron-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.cron-label {
+    font-weight: 600;
+}
+
+.cron-select,
+.cron-expression,
+.cron-number {
+    padding: 0.45rem 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.cron-select {
+    max-width: 200px;
+}
+
+.cron-number {
+    width: 75px;
+}
+
+.cron-expression {
+    font-family: monospace;
+    width: 100%;
+}
+
+.cron-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.cron-days {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.cron-day {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.65rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+    .cron-day:has(input:checked) {
+        font-weight: 600;
+    }
+
+.cron-preview {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 1rem;
+    /*background: #f8f8f8;*/
+}
+
+.cron-preview-title {
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+
+.cron-description {
+    margin-bottom: 0.75rem;
+}
+
+.cron-expression-preview {
+    margin-bottom: 1rem;
+}
+
+    .cron-expression-preview code {
+        display: inline-block;
+        padding: 0.4rem 0.6rem;
+        background: #111;
+        border-radius: 4px;
+        font-family: monospace;
+    }
+
+.cron-next {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.cron-occurrence {
+    font-family: monospace;
+}
+
+.cron-error {
+    padding: 0.75rem;
+    border: 1px solid #d33;
+    border-radius: 4px;
+}

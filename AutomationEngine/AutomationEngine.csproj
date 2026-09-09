@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-AutomationEngine-190f7b04-9178-4680-af1e-34c9502c1e4e</UserSecretsId>
+    <RequiresAspNetWebAssets>true</RequiresAspNetWebAssets>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\NewFolder\**" />
+    <Compile Remove="scripts\**" />
+    <Content Remove="Models\NewFolder\**" />
+    <Content Remove="scripts\**" />
+    <EmbeddedResource Remove="Models\NewFolder\**" />
+    <EmbeddedResource Remove="scripts\**" />
+    <None Remove="Models\NewFolder\**" />
+    <None Remove="scripts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazicons" />
+    <PackageReference Include="Blazicons.Bootstrap" />
+    <PackageReference Include="Cronos" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" />
+    <PackageReference Include="OpenTelemetry.Exporter.Console" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Polly" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Logs\" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,21 @@
+@if (IsVisible)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.4);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Stop Job</h5>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="OnCloseClick"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to stop job <strong>@JobDisplayName</strong> (<code>@JobId</code>)?</p>
+                    <p class="text-muted"><small>This will terminate the running process immediately.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn badge bg-pink-neon" @onclick="OnCloseClick">✗ Cancel</button>
+                    <button class="btn badge bg-orange-neon" @onclick="OnConfirmClick"><Blazicon Svg="BootstrapIcon.StopFill"></Blazicon> Stop Job</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
