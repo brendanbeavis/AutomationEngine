@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="AutomationEngine" Language="1033" Version="1.0.0.0" Manufacturer="" UpgradeCode="dbe6f9e4-c51d-40ec-926c-74623143b0de">
+	<Product Id="*" Name="AutomationEngine" Language="1033" Version="1.0.0.0" Manufacturer="AutomationEngine" UpgradeCode="dbe6f9e4-c51d-40ec-926c-74623143b0de">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
-		<MediaTemplate />
+		<MediaTemplate EmbedCab="yes" />
 
 		<Feature Id="ProductFeature" Title="AutomationEngine" Level="1">
 			<ComponentGroupRef Id="AutomationEnginePublishedFiles" />
+			<ComponentRef Id="AutomationEngineServiceComponent" />
 		</Feature>
 	</Product>
 
@@ -17,5 +18,29 @@
 				<Directory Id="INSTALLFOLDER" Name="AutomationEngine" />
 			</Directory>
 		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<DirectoryRef Id="INSTALLFOLDER">
+			<Component Id="AutomationEngineServiceComponent" Guid="*">
+				<File Id="AutomationEngineServiceExe" Source="$(var.AutomationEnginePublishDir)AutomationEngine.exe" KeyPath="yes" />
+				<ServiceInstall
+					Id="AutomationEngineServiceInstall"
+					Name="AutomationEngine"
+					DisplayName="AutomationEngine"
+					Description="AutomationEngine background service"
+					Type="ownProcess"
+					Start="auto"
+					ErrorControl="normal"
+					Vital="yes" />
+				<ServiceControl
+					Id="AutomationEngineServiceControl"
+					Name="AutomationEngine"
+					Start="install"
+					Stop="both"
+					Remove="uninstall"
+					Wait="yes" />
+			</Component>
+		</DirectoryRef>
 	</Fragment>
 </Wix>

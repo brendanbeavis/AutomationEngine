@@ -1,0 +1,654 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="INSTALLFOLDER">
+            <Directory Id="dirFF7B98771B91AAE585FE52B7EFB34AF9" Name="BlazorDebugProxy" />
+            <Directory Id="dirCF01D5040FD9778C6964A1321276CBAE" Name="Logs" />
+            <Directory Id="dir58E8247E2885C01898CAD009F9EFD8BA" Name="runtimes" />
+            <Directory Id="dir3D83A529A2122889D4016E7D784625D5" Name="wwwroot" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="AutomationEnginePublishedFiles">
+            <Component Id="cmpA0863526952F7834E7C922F065E4C8A8" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="filC04B02D0CCC2D5CCC1013B35DE86DB29" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\appsettings.Development.json" />
+            </Component>
+            <Component Id="cmpF82FCA80BBAF44D285C97F10993DEEE6" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil840B80AC19861C7F9F04FBDCFAE331CE" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\appsettings.json" />
+            </Component>
+            <Component Id="cmp7DF5E7986ED95CEFB373DCB05DA60767" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil3408B1D5558C0FD62CEFDA51909B5439" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\AutomationEngine.deps.json" />
+            </Component>
+            <Component Id="cmp56E7DD728ECECD05CBA386B435348EF0" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil49B67361F0D334ACD433C12A8274D6AE" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\AutomationEngine.dll" />
+            </Component>
+            
+            <Component Id="cmp5619C3AC272A19989FADD4AB02B8B25A" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil6DAD51F3609C1039CBE66907BCE5CF58" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\AutomationEngine.pdb" />
+            </Component>
+            <Component Id="cmpD4C7BFF7DF22BD126CA699F876E2F4F6" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil1F9CFA341B54AA7A46073EA93C688CF6" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\AutomationEngine.runtimeconfig.json" />
+            </Component>
+            <Component Id="cmp0E880EA020E410652979F9466ECFC306" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil6E4B821588000791AD23337509149AAD" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\AutomationEngine.staticwebassets.endpoints.json" />
+            </Component>
+            <Component Id="cmpBC10692E849FC01C2507678CA9643CD2" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="filD0BDC5A320C7B1C9E7F9888C1940C9E9" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Blazicons.Bootstrap.dll" />
+            </Component>
+            <Component Id="cmp055F20BCB0D320F8795A6AC0881BF49B" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil79E5622B3654EFCFAFFC4B0A5F4AB222" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Blazicons.dll" />
+            </Component>
+            <Component Id="cmpDD86AE491A887A8FE029F367FF5484D7" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil367C386FF862F4D6DEFE999DDBF7E65D" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\BlazorComponentUtilities.dll" />
+            </Component>
+            <Component Id="cmpA0B169AA6A878A1A740CD5F52C76A0C7" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil024F5FA5F6F75226C4570E1FDC25D5EE" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Cronos.dll" />
+            </Component>
+            <Component Id="cmpDF4C205418A6D7FE6FEA71F3B8998FAC" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="filC4C0674046FF1CB3C507EAB882BF2E34" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Microsoft.AspNetCore.Components.WebAssembly.dll" />
+            </Component>
+            <Component Id="cmpDA8B0BBD16E996DE615D6861DBA6442F" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil05438E5B6FC074FE194163CB964F6591" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Microsoft.AspNetCore.Components.WebAssembly.Server.dll" />
+            </Component>
+            <Component Id="cmp08C3B3DBF1C427767053F4120ABC92B7" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil3C92D4ECD026170F29D6B86EE8866971" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Microsoft.AspNetCore.Http.Connections.Client.dll" />
+            </Component>
+            <Component Id="cmpE1E09B6DDC64C85D83FAB62D029B7F4F" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil58F0FB9DF15BEF1709CA32BE97845336" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Microsoft.AspNetCore.SignalR.Client.Core.dll" />
+            </Component>
+            <Component Id="cmp32FCF5E0265FA9A524F3CAF451100391" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="filEB5B3B14368420179246FD2CA21064C7" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Microsoft.AspNetCore.SignalR.Client.dll" />
+            </Component>
+            <Component Id="cmpB14CC8B154928EA6225F174BDE107F6B" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="filB459F36ECC4A67FE3864BCBC2F0D640D" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Microsoft.Data.Sqlite.dll" />
+            </Component>
+            <Component Id="cmpF6638B4348C85D6A2F1219A3502A560F" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil41A831787271EAF16C45C5BCB537E199" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Microsoft.EntityFrameworkCore.Abstractions.dll" />
+            </Component>
+            <Component Id="cmp8ECB45C87038A07C9C036DACB12BD3D3" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="filFEE672B37FD89848D8A45C0C8751EECD" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Microsoft.EntityFrameworkCore.dll" />
+            </Component>
+            <Component Id="cmp3D0A5CB47707279B9AED9C4655BA24DD" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil4C803CF4486F15F8392710290E97A2D4" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Microsoft.EntityFrameworkCore.Relational.dll" />
+            </Component>
+            <Component Id="cmpD3186AEB38530EBF5D93FB5DF1525945" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil65B42FC009489C480135C6D18393272F" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Microsoft.EntityFrameworkCore.Sqlite.dll" />
+            </Component>
+            <Component Id="cmp828BABCAA179DFEF8C123894E628FE4B" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="filF6E569B7A4467871DC459846AD8CAB0C" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Microsoft.Extensions.DependencyModel.dll" />
+            </Component>
+            <Component Id="cmpFD16E629F3B1C17887ACD3B97583CB13" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="filEFB595E81CA62CF58EF39208C76F7F06" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Microsoft.Extensions.Hosting.WindowsServices.dll" />
+            </Component>
+            <Component Id="cmpCF0F711637230B4D1AE41109C02C9142" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil5E6F1BBD1CE0D66ADA7274CC42146536" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Microsoft.JSInterop.WebAssembly.dll" />
+            </Component>
+            <Component Id="cmp6168926393B82908A7C57A5FE2636131" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil108D15E877B6118E4C1D8766EC425C23" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\OpenTelemetry.Api.dll" />
+            </Component>
+            <Component Id="cmp3C3E91914EDC1DE7A160122C23C08609" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil19D6F4670A64FFCED85367A30EC00B15" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\OpenTelemetry.Api.ProviderBuilderExtensions.dll" />
+            </Component>
+            <Component Id="cmp5718DEFA9D0EF3414FAD2ECE13E74079" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil85CC9CD703394BA2A56AC66F3000AD82" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\OpenTelemetry.dll" />
+            </Component>
+            <Component Id="cmp04F45B90BDDD640841B50D2ABB7930AE" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil9C5BE9A1A0AAA2EFC4CD15BCF80C8888" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\OpenTelemetry.Exporter.Console.dll" />
+            </Component>
+            <Component Id="cmpB1F956AF4F658F5BBD52E17A09D53CDE" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil91B7C00EB6323B91DFABACD0CEC870B1" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\OpenTelemetry.Extensions.Hosting.dll" />
+            </Component>
+            <Component Id="cmpDCC96B41AECB28140AE875BFC50377C0" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="filCDF93272BB94C61F31122ACFEC075068" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Polly.Core.dll" />
+            </Component>
+            <Component Id="cmp57D17D6F6AC98A3AD60AE14211A59A0F" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil96AB0A2FC278F3594C376F5CE0F64273" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Polly.dll" />
+            </Component>
+            <Component Id="cmp6F76674123E31ADA0CB0373827395329" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil24340B036E07AE74D4CB0089D07A83D2" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Serilog.AspNetCore.dll" />
+            </Component>
+            <Component Id="cmp74A2C73F11C177073B0A672936A0D5EB" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil1CF141D24266A4E5F331DDFE02166A27" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Serilog.dll" />
+            </Component>
+            <Component Id="cmp214710B2088B640AA2C8ECD80E170376" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="filE72D6FFBC556E18D146AC0CA92CF450B" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Serilog.Extensions.Hosting.dll" />
+            </Component>
+            <Component Id="cmpA9CD02E2996345805AE749B403FD0E7A" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil56CB5FAFD9298B97D060AE19F2DB1B10" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Serilog.Extensions.Logging.dll" />
+            </Component>
+            <Component Id="cmpC08CEB1C24E4A6DA79EE83CFD8BDCD60" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="filD89F64F083730E2B8CC0DEE7002EF506" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Serilog.Formatting.Compact.dll" />
+            </Component>
+            <Component Id="cmp0E9DAA4C1F27CA840B7893F6337CDC29" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil3908D6B667B492BF06F390753E52341D" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Serilog.Settings.Configuration.dll" />
+            </Component>
+            <Component Id="cmp539EB192BE11EA8C5B17EFB0CC1DDCEB" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="filB637049630FB5D2AC00236DBD60DD2BE" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Serilog.Sinks.Console.dll" />
+            </Component>
+            <Component Id="cmp54D178BF4B123B0F7249047E7AA7FE7F" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="filB1D7D8DE3D3E218CF70D1265B59FC7F6" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Serilog.Sinks.Debug.dll" />
+            </Component>
+            <Component Id="cmp49818C715FF04B8E95F7B53BDDD323EF" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil1A12B15365165DDBE60433B150808BEE" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Serilog.Sinks.File.dll" />
+            </Component>
+            <Component Id="cmp64C05AA1C43E0D9DBAD9C14A66C00F23" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil5AAF8D55B9964F995719180C0C280633" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\SQLitePCLRaw.batteries_v2.dll" />
+            </Component>
+            <Component Id="cmp9E349E891D154ADBFB83038532027A46" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil64FA3FA0141690B101C8E041EB30B810" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\SQLitePCLRaw.core.dll" />
+            </Component>
+            <Component Id="cmpBF8809ED33815FD076E06377CDD76FBC" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil56DF007369EFF5DF7AED8BD5CD383E2A" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\SQLitePCLRaw.provider.e_sqlite3.dll" />
+            </Component>
+            <Component Id="cmp3C5190B580EDFB87D0BC5E835BB950DE" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="fil0B6369FF78F990F18A525D5F0CC6D1AB" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\System.ServiceProcess.ServiceController.dll" />
+            </Component>
+            <Component Id="cmpB139B49DF4DF8F44C525B449EA8187F7" Directory="INSTALLFOLDER" Guid="*">
+                <File Id="filE7A3E65CC622C2E3B9B57707B12C9645" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\web.config" />
+            </Component>
+            <Component Id="cmp5B65C45828B950384B8C5C76AB9F6EF0" Directory="dirFF7B98771B91AAE585FE52B7EFB34AF9" Guid="*">
+                <File Id="fil0EF0F550322CD17C7C714E44E83269EA" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\BlazorDebugProxy\BrowserDebugHost.dll" />
+            </Component>
+            <Component Id="cmp5A9228A102598245A49CC73E4B42BFFD" Directory="dirFF7B98771B91AAE585FE52B7EFB34AF9" Guid="*">
+                <File Id="filD8595B9CBE5DD5D704F01D48491D318A" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\BlazorDebugProxy\BrowserDebugHost.runtimeconfig.json" />
+            </Component>
+            <Component Id="cmp0B11C97F8D96134C5A582DAA9D362721" Directory="dirFF7B98771B91AAE585FE52B7EFB34AF9" Guid="*">
+                <File Id="fil4E80FEBEAB64C6B7394572A11AEE0A1A" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\BlazorDebugProxy\BrowserDebugProxy.dll" />
+            </Component>
+            <Component Id="cmp22B9B089D6F03FEB02531ECB35C82F8E" Directory="dirFF7B98771B91AAE585FE52B7EFB34AF9" Guid="*">
+                <File Id="fil6055CEB7DE0EF0D0757B75192036CECF" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\BlazorDebugProxy\Microsoft.CodeAnalysis.CSharp.dll" />
+            </Component>
+            <Component Id="cmpB30B171A4C658F95C706CC282BC3B5B0" Directory="dirFF7B98771B91AAE585FE52B7EFB34AF9" Guid="*">
+                <File Id="fil828B9E9A121B87668F4175B3D2A39159" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\BlazorDebugProxy\Microsoft.CodeAnalysis.CSharp.Scripting.dll" />
+            </Component>
+            <Component Id="cmp958171B03EC06C56FB11A52D468E5F57" Directory="dirFF7B98771B91AAE585FE52B7EFB34AF9" Guid="*">
+                <File Id="filBE547A9559A6D9185621EABC8B529677" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\BlazorDebugProxy\Microsoft.CodeAnalysis.dll" />
+            </Component>
+            <Component Id="cmp66EEF2170A554377B611A2425BACD700" Directory="dirFF7B98771B91AAE585FE52B7EFB34AF9" Guid="*">
+                <File Id="fil9B3117029F0A50A824FB44029112358F" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\BlazorDebugProxy\Microsoft.CodeAnalysis.Scripting.dll" />
+            </Component>
+            <Component Id="cmpA0AF27470CE510016A8FD945AB968272" Directory="dirFF7B98771B91AAE585FE52B7EFB34AF9" Guid="*">
+                <File Id="filDEA41BC5BF818BD43144467A30C3E9BF" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\BlazorDebugProxy\Microsoft.FileFormats.dll" />
+            </Component>
+            <Component Id="cmp4816BC6CEF90D2DE7058487354C7675F" Directory="dirFF7B98771B91AAE585FE52B7EFB34AF9" Guid="*">
+                <File Id="fil1FADCCA3D9894B90C1492236258D47BF" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\BlazorDebugProxy\Microsoft.NET.WebAssembly.Webcil.dll" />
+            </Component>
+            <Component Id="cmpD1F14AA8331EBD86897F3614BD0B0B9A" Directory="dirFF7B98771B91AAE585FE52B7EFB34AF9" Guid="*">
+                <File Id="fil05D257DB849C834792EE37B20F62FF41" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\BlazorDebugProxy\Microsoft.SymbolStore.dll" />
+            </Component>
+            <Component Id="cmpB322B77CE8D40EBAD199D45D0E4F25F0" Directory="dirFF7B98771B91AAE585FE52B7EFB34AF9" Guid="*">
+                <File Id="fil28DEDB3F6C20AB880B95B684491580B0" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\BlazorDebugProxy\Newtonsoft.Json.dll" />
+            </Component>
+            <Component Id="cmpF7B4CEEEF8F03A694F8A61972F92436A" Directory="dirCF01D5040FD9778C6964A1321276CBAE" Guid="*">
+                <File Id="fil69F999E577DA69C1D9C3310967D57C98" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Logs\automation-structured-20260903.json" />
+            </Component>
+            <Component Id="cmp24CCC62A311C38B27561D6187C65F55B" Directory="dirCF01D5040FD9778C6964A1321276CBAE" Guid="*">
+                <File Id="fil1293FA8BD6576573FCD81AC79F489552" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Logs\automation-structured-20260904.json" />
+            </Component>
+            <Component Id="cmp8A260717CB01A26D1C7487196AE247A6" Directory="dirCF01D5040FD9778C6964A1321276CBAE" Guid="*">
+                <File Id="fil52B4E5E94351819110FAB1C161132AB1" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Logs\automation-structured-20260906.json" />
+            </Component>
+            <Component Id="cmp708303AF7D6DBD6AEAD9B57C08756C67" Directory="dirCF01D5040FD9778C6964A1321276CBAE" Guid="*">
+                <File Id="fil45B99F8CD2BF4A48BEE0DC53E539D1F7" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Logs\automation-structured-20260907.json" />
+            </Component>
+            <Component Id="cmpA8F7C0D49CA1D4002ADDE7C4FE301297" Directory="dirCF01D5040FD9778C6964A1321276CBAE" Guid="*">
+                <File Id="filCEAB30F2F344CB0D4457C98D7EC5E734" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Logs\automation-structured-20260908.json" />
+            </Component>
+            <Component Id="cmp3F5ABFE859AF04E0F4D66D172A6571E0" Directory="dirCF01D5040FD9778C6964A1321276CBAE" Guid="*">
+                <File Id="fil5A0C58177CFDE481B231B2F16E9FF889" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Logs\automation-structured-20260909.json" />
+            </Component>
+            <Component Id="cmpDED211F31E8A2F3F3E16852E39874FD8" Directory="dirC3E9579629FD686887F346B09C280A94" Guid="*">
+                <File Id="filC3EF11E0830AC21595D48E212D2BEE1A" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\browser-wasm\nativeassets\net9.0\e_sqlite3.a" />
+            </Component>
+            <Component Id="cmpB7009B0474FB9B6971F5B3DEF75E92BD" Directory="dirDE2B6474A7AE43169B31CD69645DD47A" Guid="*">
+                <File Id="filE002D3CB3B23B1868787E964E241BFD7" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\linux-arm\native\libe_sqlite3.so" />
+            </Component>
+            <Component Id="cmp9610396A30E278178332CAFB8008E496" Directory="dirD4D406B0649E8BA45C0D436FC1C3D7B7" Guid="*">
+                <File Id="filB3B8AB9E39F4DDB1DC995E05E88ECBB8" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\linux-arm64\native\libe_sqlite3.so" />
+            </Component>
+            <Component Id="cmp27A87AA75E3F85D47A0A4270EC26C4AA" Directory="dirD74A970094F17ABF99BEB555E46D909F" Guid="*">
+                <File Id="fil0228161978605FB6B8CF025A0DB592C8" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\linux-armel\native\libe_sqlite3.so" />
+            </Component>
+            <Component Id="cmp5DF8A80689066A55576FEB424E592FB3" Directory="dir5CA2FC65245C76AFE89CF82A52205E7C" Guid="*">
+                <File Id="filE213347E4D10110E7F638EF6CFABACFC" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\linux-mips64\native\libe_sqlite3.so" />
+            </Component>
+            <Component Id="cmp99D95B65524BFC849377CD605BC2D914" Directory="dirD76ACF565EA9B10D70DB2C8FF98995D4" Guid="*">
+                <File Id="fil49319ADF4C48D5E28D0E63C77E24A1A4" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\linux-musl-arm\native\libe_sqlite3.so" />
+            </Component>
+            <Component Id="cmp6714E4DD9F6931DCC2D424E087860C40" Directory="dir6063A5EA4028D1C926F2099FA576EEF6" Guid="*">
+                <File Id="fil79BD8821DCE84481D985A01E23B3E2A3" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\linux-musl-arm64\native\libe_sqlite3.so" />
+            </Component>
+            <Component Id="cmp2B90134B331ABE02ACEE2C4FAAE7B632" Directory="dirEF649F1DB1CE948EAAC8F3C7030C1039" Guid="*">
+                <File Id="fil0724E85ECC753545B61FE7D6F3EE79D5" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\linux-musl-riscv64\native\libe_sqlite3.so" />
+            </Component>
+            <Component Id="cmp6E13B3947D27E15374C24CD4DC61788D" Directory="dirE9A84D503931B39AEB65E2658B23C423" Guid="*">
+                <File Id="filE153DA2743E4031DDCB52CD40F5D647C" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\linux-musl-s390x\native\libe_sqlite3.so" />
+            </Component>
+            <Component Id="cmp9E9BD460222227BAE2178BA20D0D2CE9" Directory="dir45A4D9035B4FF6D574E71B5F5E92BDDF" Guid="*">
+                <File Id="filC6026E8CF197D9CFC854B38E9F032BF7" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\linux-musl-x64\native\libe_sqlite3.so" />
+            </Component>
+            <Component Id="cmpAF2D42B950338A16DF27953B0FE03907" Directory="dir2BD906521C675BFD60DA65D8F7B02C24" Guid="*">
+                <File Id="filB9AB18D292FF21526BC67CC08D9C17C7" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\linux-ppc64le\native\libe_sqlite3.so" />
+            </Component>
+            <Component Id="cmpF4ADB532F2A52C48BAE2D20ED244106B" Directory="dirC81FB208002940C19E7DE796A3583C31" Guid="*">
+                <File Id="fil371C00E1EDDBC6391554898B2A49E114" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\linux-riscv64\native\libe_sqlite3.so" />
+            </Component>
+            <Component Id="cmp8D93181EDC8201D278538F0C157D2537" Directory="dirE478170B124CF86212F900385E32E859" Guid="*">
+                <File Id="filF4FBDD3EAEB685D1D12B1AEF46B0B62E" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\linux-s390x\native\libe_sqlite3.so" />
+            </Component>
+            <Component Id="cmp8F4BDFEEE9AF85C20F40DD34017FCEFE" Directory="dirE1E651EB5B4F1522E5E10B81FEA70677" Guid="*">
+                <File Id="fil65C9A12BB9BC4C6DD2573C55B28F7A47" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\linux-x64\native\libe_sqlite3.so" />
+            </Component>
+            <Component Id="cmp327A6E270479B6EF4FC84584F0E57DD4" Directory="dir0EDA4459BC820EC0980B27A47C7CF5AA" Guid="*">
+                <File Id="filFCBC96ECC71CDC910BD5EC6E35F1FF8B" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\linux-x86\native\libe_sqlite3.so" />
+            </Component>
+            <Component Id="cmpD4529B527F857C189B1AE07EDE9F6D19" Directory="dir061EED55DBD8BA28EE353FBFFD24DFCA" Guid="*">
+                <File Id="filFD599462758D66ACD77B9F3C158F8A83" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\maccatalyst-arm64\native\libe_sqlite3.dylib" />
+            </Component>
+            <Component Id="cmpD7662722970A0AE7E0B5E29D4A7D8274" Directory="dir316CE79B45BEC2BDBCE1198C353C9208" Guid="*">
+                <File Id="fil873E529DBBE2B1DB5E2800DF8C613505" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\maccatalyst-x64\native\libe_sqlite3.dylib" />
+            </Component>
+            <Component Id="cmp4B0E6F097DBB16CADE5367A2D01712F0" Directory="dir2A5033986A8D1FF1B6E317B1A9949571" Guid="*">
+                <File Id="fil9E86824B3127083357CEA2CADD124C06" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\osx-arm64\native\libe_sqlite3.dylib" />
+            </Component>
+            <Component Id="cmpD30EB815E1BB7C781EBC4B2C74DFD3A4" Directory="dir71D0D403061D4DE071C64AEB774E16CF" Guid="*">
+                <File Id="fil28FF9350DD7649A23360C4913868DFA7" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\osx-x64\native\libe_sqlite3.dylib" />
+            </Component>
+            <Component Id="cmpE202CD973EE21370AA3A2476CE5DF7EF" Directory="dir44D8724A1BECE91FFC26B75F7ED2AE05" Guid="*">
+                <File Id="filDC77559068D5F7EE09A5A6F4FF14D831" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\win\lib\net10.0\System.ServiceProcess.ServiceController.dll" />
+            </Component>
+            <Component Id="cmp5B80613EDA6D1987B36876340787DE50" Directory="dir65EC979D52EB501E3A656AA03EE4F2F5" Guid="*">
+                <File Id="filA441D8B3B8F271B05C97169A28079BFE" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\win-arm64\native\e_sqlite3.dll" />
+            </Component>
+            <Component Id="cmpA9FE95CFE68BB3A9037D1155AED6FAD7" Directory="dir1F9DF9DD2FB29AE2942604FAC206D5C4" Guid="*">
+                <File Id="fil0B331E0491A1A27C58D92DDCDB266DC2" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\win-x64\native\e_sqlite3.dll" />
+            </Component>
+            <Component Id="cmp33D08136382ADFFC5979284E4701D9C6" Directory="dir2B43AAE918D399CEF13EC6CBA2D3D5EA" Guid="*">
+                <File Id="fil7A70FE8106C6D5315BF2EBA10C487BF2" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\win-x86\native\e_sqlite3.dll" />
+            </Component>
+            <Component Id="cmpB12F749595003EC401240B0E91391C9E" Directory="dir3D83A529A2122889D4016E7D784625D5" Guid="*">
+                <File Id="fil21D4F8C2CE1ABE58A9771E336992FE0F" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\AutomationEngine.styles.css" />
+            </Component>
+            <Component Id="cmpBFC849DC56A67D5E81307DDC3423E9D3" Directory="dir3D83A529A2122889D4016E7D784625D5" Guid="*">
+                <File Id="fil3F15707A9F8B9749F4F007503105B752" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\AutomationEngine.styles.css.br" />
+            </Component>
+            <Component Id="cmp32EE97CBE4DF470D6A2BD5B20FB7B8BF" Directory="dir3D83A529A2122889D4016E7D784625D5" Guid="*">
+                <File Id="fil733FF195E7D94FA0287F3CC28C782ACE" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\AutomationEngine.styles.css.gz" />
+            </Component>
+            <Component Id="cmp6A573805E6F545A7F37C18527646950E" Directory="dir3D83A529A2122889D4016E7D784625D5" Guid="*">
+                <File Id="fil4340641EF92B44F5306114E3F1D36462" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\favicon.ico" />
+            </Component>
+            <Component Id="cmp4C429EA63DB86105A524A71A613AE31F" Directory="dir3D83A529A2122889D4016E7D784625D5" Guid="*">
+                <File Id="filFA62A8EEE4EC4DB6C7E10B99ACC6DC5E" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\favicon.ico.br" />
+            </Component>
+            <Component Id="cmpC314FB6216AB1D9A941541D0773AD614" Directory="dir3D83A529A2122889D4016E7D784625D5" Guid="*">
+                <File Id="fil3185F5DBF9FA2174EAD9593638AAE945" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\favicon.ico.gz" />
+            </Component>
+            <Component Id="cmp087AEDA3ECF7BE8C1137AADA0E56E0A6" Directory="dirED733C34DE106D43E47F9049837C7E99" Guid="*">
+                <File Id="filD9477D05D41C78519460D2E399A53D86" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\css\app.css" />
+            </Component>
+            <Component Id="cmp0B04819E03D1E16E773AFF05A0E0CC31" Directory="dirED733C34DE106D43E47F9049837C7E99" Guid="*">
+                <File Id="filF1EFBFC55F5D4F11A8E340FDBEC04586" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\css\app.css.br" />
+            </Component>
+            <Component Id="cmpA338FFFD1D496060E4A8ACDFA39E38A1" Directory="dirED733C34DE106D43E47F9049837C7E99" Guid="*">
+                <File Id="filA5BFC3D061E46DBE6A5BAB072A46150F" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\css\app.css.gz" />
+            </Component>
+            <Component Id="cmp552A8DF681CFC78780D266236207783E" Directory="dirED733C34DE106D43E47F9049837C7E99" Guid="*">
+                <File Id="fil43E5753B0F5D122913B9BF2BD5EC7EBF" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\css\cyberpunk.css" />
+            </Component>
+            <Component Id="cmp4589C47E95F736E358F052268CE5D6C4" Directory="dirED733C34DE106D43E47F9049837C7E99" Guid="*">
+                <File Id="fil95EB41B57189212FD2D2BAA6E3E7E0B6" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\css\cyberpunk.css.br" />
+            </Component>
+            <Component Id="cmpA384B5D4DB00A554B339366E9888B676" Directory="dirED733C34DE106D43E47F9049837C7E99" Guid="*">
+                <File Id="filC8C683D726E638B310C898DD4A1312BF" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\css\cyberpunk.css.gz" />
+            </Component>
+            <Component Id="cmp3834D18D202AA5522F8B41272F00F201" Directory="dirED733C34DE106D43E47F9049837C7E99" Guid="*">
+                <File Id="fil27C986093E461A69A36C83AED5802C4C" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\css\themes.css" />
+            </Component>
+            <Component Id="cmp179E60744E03334EDE723B0E533D641E" Directory="dirED733C34DE106D43E47F9049837C7E99" Guid="*">
+                <File Id="fil92A667AF1220F30BEE38081A20335509" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\css\themes.css.br" />
+            </Component>
+            <Component Id="cmp97DCEAD0BCF7317D7B47E439E8D333DB" Directory="dirED733C34DE106D43E47F9049837C7E99" Guid="*">
+                <File Id="fil9105CFCE8E982C344CDD32D55A02711B" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\css\themes.css.gz" />
+            </Component>
+            <Component Id="cmpEBA035EA7685839B21FA1B833C2D781C" Directory="dir578587A376B13655DF93D8D190D09E38" Guid="*">
+                <File Id="fil9246F4C21320DCC254AAEC2B6CA201E8" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\css\bootstrap\bootstrap.min.css" />
+            </Component>
+            <Component Id="cmp1FF1C898467CA8EAA6E30AA982A8796F" Directory="dir578587A376B13655DF93D8D190D09E38" Guid="*">
+                <File Id="fil0E24AADECDDCF065E95A47FB0164B89B" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\css\bootstrap\bootstrap.min.css.br" />
+            </Component>
+            <Component Id="cmp321BC9C44C00EA1F35D865E53A47E0E0" Directory="dir578587A376B13655DF93D8D190D09E38" Guid="*">
+                <File Id="fil35BBEECCAEB9A2A639FA000CA0CD1540" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\css\bootstrap\bootstrap.min.css.gz" />
+            </Component>
+            <Component Id="cmp4431D998120AF548463171D67337F023" Directory="dirFA58F40E6724D998B95F259B94637964" Guid="*">
+                <File Id="fil9A4BB0A75476DD119E452F75417D392D" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\js\job-row-actions.js" />
+            </Component>
+            <Component Id="cmp9B408674BDBAFC12C7F2E30CE767514F" Directory="dirFA58F40E6724D998B95F259B94637964" Guid="*">
+                <File Id="fil106CF8CAD1509EF3BECF58056630FE14" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\js\job-row-actions.js.br" />
+            </Component>
+            <Component Id="cmp1C22069D1CA1F39793978B15AAFF98CC" Directory="dirFA58F40E6724D998B95F259B94637964" Guid="*">
+                <File Id="filF2B51A2041ACE7E30F3BA51D98988708" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\js\job-row-actions.js.gz" />
+            </Component>
+            <Component Id="cmp1A5C9B41860BCC1BA5B2249ADF6D504B" Directory="dirFA58F40E6724D998B95F259B94637964" Guid="*">
+                <File Id="fil9372C7EEC7442D98AF507B13664C14A5" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\js\theme-manager.js" />
+            </Component>
+            <Component Id="cmpFC4D7AF6F9D73B5A3EAC7AAAB0FCDA75" Directory="dirFA58F40E6724D998B95F259B94637964" Guid="*">
+                <File Id="fil5C4B63B012EF725AA2A6F596D38FE522" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\js\theme-manager.js.br" />
+            </Component>
+            <Component Id="cmp84C3582BFCADC755404B3E3170D4A50D" Directory="dirFA58F40E6724D998B95F259B94637964" Guid="*">
+                <File Id="fil0B02B5565E237E9BE01FFC6FABA04A6A" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\js\theme-manager.js.gz" />
+            </Component>
+            <Component Id="cmpAD237FF5B4336470D97F8C584C2B38F2" Directory="dir578F5E006B1C97EDD0798CC488DAAF78" Guid="*">
+                <File Id="filCAEBE286E4F193268B05E57A6662C632" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\_content\Blazicons\Blazicons.886t4n1lry.bundle.scp.css" />
+            </Component>
+            <Component Id="cmpD8DF6AD0A1D37A0149F219AF3231EDEB" Directory="dir578F5E006B1C97EDD0798CC488DAAF78" Guid="*">
+                <File Id="filB580112D92A1DF7C8433DCBE514FC545" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\_content\Blazicons\Blazicons.886t4n1lry.bundle.scp.css.br" />
+            </Component>
+            <Component Id="cmpEC1C6D0C2D7ED4557F4EA7BAA7A373A5" Directory="dir578F5E006B1C97EDD0798CC488DAAF78" Guid="*">
+                <File Id="filBB8BDCBC26CF00E6F8427D6B7FCA66E2" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\_content\Blazicons\Blazicons.886t4n1lry.bundle.scp.css.gz" />
+            </Component>
+            <Component Id="cmp519F4F914EA612585725C58CFAAE781C" Directory="dir56F587BD8E8E41FD39A4CEEBB4111618" Guid="*">
+                <File Id="fil4F9FA09FCFB3BE58EA4B948995C41175" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\_content\Blazicons\css\blazicons.min.css" />
+            </Component>
+            <Component Id="cmp2FB4F72A2F685F140A0862ED2A3D2CD6" Directory="dir56F587BD8E8E41FD39A4CEEBB4111618" Guid="*">
+                <File Id="filC9796DB5E789615E42E92A87C5130F17" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\_content\Blazicons\css\blazicons.min.css.br" />
+            </Component>
+            <Component Id="cmpD24A535F3F625F3B042377BB9266AD4D" Directory="dir56F587BD8E8E41FD39A4CEEBB4111618" Guid="*">
+                <File Id="filD8541DA9620D5A19EA0473358BD3E2E2" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\_content\Blazicons\css\blazicons.min.css.gz" />
+            </Component>
+            <Component Id="cmpE56FA5178E20AEA5EFC1C025F61861F8" Directory="dir2456A1A1C6D6186A96473C7CCDFCB992" Guid="*">
+                <File Id="filF210DE64C16E815330B9D6CA214AB89F" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\_framework\blazor.server.js" />
+            </Component>
+            <Component Id="cmp5527D9D2ABA99E92932521F0B216EC3A" Directory="dir2456A1A1C6D6186A96473C7CCDFCB992" Guid="*">
+                <File Id="filAD3FF1A8FE67C6D3A1975B09589DCC51" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\_framework\blazor.server.js.br" />
+            </Component>
+            <Component Id="cmpB39DB999E65B81F4C0ADFA4990E211B2" Directory="dir2456A1A1C6D6186A96473C7CCDFCB992" Guid="*">
+                <File Id="fil987848BE1764577360B6F4B41588CE94" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\_framework\blazor.server.js.gz" />
+            </Component>
+            <Component Id="cmp10216EE0DB311A342EFB57E31916C366" Directory="dir2456A1A1C6D6186A96473C7CCDFCB992" Guid="*">
+                <File Id="fil67DEE79706741828DC7E2BBD39D1F601" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\_framework\blazor.web.js" />
+            </Component>
+            <Component Id="cmp9B35D93F230F254FDBD7F74545C535C1" Directory="dir2456A1A1C6D6186A96473C7CCDFCB992" Guid="*">
+                <File Id="filA91C10961247E8FDA07AFAFAFD74EAB6" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\_framework\blazor.web.js.br" />
+            </Component>
+            <Component Id="cmp894D7C1954E7AC11D7B417ADE7B56A11" Directory="dir2456A1A1C6D6186A96473C7CCDFCB992" Guid="*">
+                <File Id="fil34FA51B8DFACF139180B9919CEB8A71D" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\wwwroot\_framework\blazor.web.js.gz" />
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dirD99FDB93EE0FF8EBF475D423F347AC92">
+            <Directory Id="dir061EED55DBD8BA28EE353FBFFD24DFCA" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir08F1499A5EC08F149FEC7D1452B8E871" Name="linux-mips64" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dirC0CA974BC478884507E349436F81698C">
+            <Directory Id="dir0EDA4459BC820EC0980B27A47C7CF5AA" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir1316D55A8FC55CB339BC20F207B25AB2" Name="browser-wasm" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dirB9C75524282911E40C3C964A8836A714">
+            <Directory Id="dir1F9DF9DD2FB29AE2942604FAC206D5C4" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir230A8FA1033089CAF6EBAA0538709AEF" Name="linux-s390x" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir3D83A529A2122889D4016E7D784625D5">
+            <Directory Id="dir2456A1A1C6D6186A96473C7CCDFCB992" Name="_framework" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir2F16A789372805F097C242E23779E164">
+            <Directory Id="dir2A5033986A8D1FF1B6E317B1A9949571" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir92F336DAA82E5A629052407A3F87EF27">
+            <Directory Id="dir2B43AAE918D399CEF13EC6CBA2D3D5EA" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dirECD0BBC95AFFC9DBA9C9F962A35DEFFF">
+            <Directory Id="dir2BD906521C675BFD60DA65D8F7B02C24" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir2F16A789372805F097C242E23779E164" Name="osx-arm64" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir725C710B19977C76374038BEBFE449A4">
+            <Directory Id="dir316CE79B45BEC2BDBCE1198C353C9208" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir42B901FB10752B2744AE05D46EAF35EC" Name="osx-x64" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir4368456DE80A31A0FABEF422CF868A74" Name="linux-arm64" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir43C41CC727670B5306674FCA0856E156" Name="linux-musl-x64" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dirD19B0610952D1EE2D417EB5361695989">
+            <Directory Id="dir44D8724A1BECE91FFC26B75F7ED2AE05" Name="net10.0" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir43C41CC727670B5306674FCA0856E156">
+            <Directory Id="dir45A4D9035B4FF6D574E71B5F5E92BDDF" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir578F5E006B1C97EDD0798CC488DAAF78">
+            <Directory Id="dir56F587BD8E8E41FD39A4CEEBB4111618" Name="css" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dirED733C34DE106D43E47F9049837C7E99">
+            <Directory Id="dir578587A376B13655DF93D8D190D09E38" Name="bootstrap" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir78B1C881B6089CF784B2675F506AA737">
+            <Directory Id="dir578F5E006B1C97EDD0798CC488DAAF78" Name="Blazicons" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir5A82E1B4CD9A0049E60DF9F72B629F26" Name="linux-armel" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir5BE37EC4232A57C0854704140E5534C8" Name="linux-riscv64" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir08F1499A5EC08F149FEC7D1452B8E871">
+            <Directory Id="dir5CA2FC65245C76AFE89CF82A52205E7C" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dirBFEF8EBA4AB9946902F3931E45A1DAAC">
+            <Directory Id="dir6063A5EA4028D1C926F2099FA576EEF6" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dirFF6AADC4B618984E1542CDA5FCBD7BB1">
+            <Directory Id="dir65EC979D52EB501E3A656AA03EE4F2F5" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir6F75383DB633D8F130457F52F58EA410" Name="linux-arm" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir42B901FB10752B2744AE05D46EAF35EC">
+            <Directory Id="dir71D0D403061D4DE071C64AEB774E16CF" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir725C710B19977C76374038BEBFE449A4" Name="maccatalyst-x64" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir3D83A529A2122889D4016E7D784625D5">
+            <Directory Id="dir78B1C881B6089CF784B2675F506AA737" Name="_content" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir92F336DAA82E5A629052407A3F87EF27" Name="win-x86" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir935E11F584F779AC1699B3DA3E731742" Name="linux-musl-s390x" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir986BEF73997BE02DCDBC34E856C19B36" Name="linux-x64" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dir9BE9104649A116CC7BCCF4D9CCD3331B" Name="win" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dirA428313306DAC7804456AE497823A13C" Name="linux-musl-arm" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dirB20C473CB3638D835DD59255072FC0B8" Name="linux-musl-riscv64" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dirB9C75524282911E40C3C964A8836A714" Name="win-x64" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dirBFEF8EBA4AB9946902F3931E45A1DAAC" Name="linux-musl-arm64" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dirC0CA974BC478884507E349436F81698C" Name="linux-x86" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dirD515A5531794D80BFE72E434C05D6382">
+            <Directory Id="dirC3E9579629FD686887F346B09C280A94" Name="net9.0" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir5BE37EC4232A57C0854704140E5534C8">
+            <Directory Id="dirC81FB208002940C19E7DE796A3583C31" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir9BE9104649A116CC7BCCF4D9CCD3331B">
+            <Directory Id="dirD19B0610952D1EE2D417EB5361695989" Name="lib" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir4368456DE80A31A0FABEF422CF868A74">
+            <Directory Id="dirD4D406B0649E8BA45C0D436FC1C3D7B7" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir1316D55A8FC55CB339BC20F207B25AB2">
+            <Directory Id="dirD515A5531794D80BFE72E434C05D6382" Name="nativeassets" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir5A82E1B4CD9A0049E60DF9F72B629F26">
+            <Directory Id="dirD74A970094F17ABF99BEB555E46D909F" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dirA428313306DAC7804456AE497823A13C">
+            <Directory Id="dirD76ACF565EA9B10D70DB2C8FF98995D4" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dirD99FDB93EE0FF8EBF475D423F347AC92" Name="maccatalyst-arm64" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir6F75383DB633D8F130457F52F58EA410">
+            <Directory Id="dirDE2B6474A7AE43169B31CD69645DD47A" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir986BEF73997BE02DCDBC34E856C19B36">
+            <Directory Id="dirE1E651EB5B4F1522E5E10B81FEA70677" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir230A8FA1033089CAF6EBAA0538709AEF">
+            <Directory Id="dirE478170B124CF86212F900385E32E859" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir935E11F584F779AC1699B3DA3E731742">
+            <Directory Id="dirE9A84D503931B39AEB65E2658B23C423" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dirECD0BBC95AFFC9DBA9C9F962A35DEFFF" Name="linux-ppc64le" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir3D83A529A2122889D4016E7D784625D5">
+            <Directory Id="dirED733C34DE106D43E47F9049837C7E99" Name="css" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dirB20C473CB3638D835DD59255072FC0B8">
+            <Directory Id="dirEF649F1DB1CE948EAAC8F3C7030C1039" Name="native" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir3D83A529A2122889D4016E7D784625D5">
+            <Directory Id="dirFA58F40E6724D998B95F259B94637964" Name="js" />
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <DirectoryRef Id="dir58E8247E2885C01898CAD009F9EFD8BA">
+            <Directory Id="dirFF6AADC4B618984E1542CDA5FCBD7BB1" Name="win-arm64" />
+        </DirectoryRef>
+    </Fragment>
+</Wix>

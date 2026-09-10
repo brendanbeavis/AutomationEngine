@@ -3,14 +3,6 @@
     <Platform Name="Any CPU" />
     <Platform Name="x86" />
   </Configurations>
-  <Folder Name="/scripts/">
-    <File Path="scripts/AV.ps1" />
-    <File Path="scripts/backup.ps1" />
-    <File Path="scripts/cleaner.ps1" />
-    <File Path="scripts/CleanupSecurityCameraRecordings.ps1" />
-    <File Path="scripts/HealthChecker.ps1" />
-    <File Path="scripts/OpenRGB.ps1" />
-  </Folder>
   <Folder Name="/Solution Items/" />
   <Project Path="AutomationEngine.Tests/AutomationEngine.Tests.csproj" />
   <Project Path="AutomationEngine/AutomationEngine.csproj" />

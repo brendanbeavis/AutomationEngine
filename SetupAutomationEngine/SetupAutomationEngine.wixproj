@@ -6,27 +6,40 @@
     <ProductVersion>3.10</ProductVersion>
     <ProjectGuid>f1a20f08-6c31-48f9-88b2-2e41fb5a533b</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>SetupAutomationEngine</OutputName>
+    <OutputName>AutomationEngine 1.0</OutputName>
     <OutputType>Package</OutputType>
     <AutomationEngineProject>..\AutomationEngine\AutomationEngine.csproj</AutomationEngineProject>
     <AutomationEnginePublishDir>$(IntermediateOutputPath)AutomationEngine\publish\</AutomationEnginePublishDir>
     <AutomationEngineComponentGroup>AutomationEnginePublishedFiles</AutomationEngineComponentGroup>
+    <AutomationEngineHarvestFile>$(IntermediateOutputPath)HarvestedAutomationEngine.wxs</AutomationEngineHarvestFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug</DefineConstants>
+    <DefineConstants>Debug;AutomationEnginePublishDir=$(AutomationEnginePublishDir)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>AutomationEnginePublishDir=$(AutomationEnginePublishDir)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
+    <Compile Include="$(AutomationEngineHarvestFile)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ExcludeAutomationEngineExe.xslt" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
+  <Target Name="HarvestAutomationEngine" BeforeTargets="BeforeBuild">
+    <Exec Command="dotnet publish &quot;$(AutomationEngineProject)&quot; -c $(Configuration) -o &quot;$(AutomationEnginePublishDir)&quot;" />
+    <HeatDirectory RunAsSeparateProcess="true" Directory="$(AutomationEnginePublishDir)" DirectoryRefId="INSTALLFOLDER" ComponentGroupName="$(AutomationEngineComponentGroup)" OutputFile="$(AutomationEngineHarvestFile)" PreprocessorVariable="var.AutomationEnginePublishDir" SuppressCom="true" SuppressRegistry="true" SuppressRootDirectory="true" Transforms="$(MSBuildProjectDirectory)\ExcludeAutomationEngineExe.xslt" AutogenerateGuids="true" GenerateGuidsNow="false" ToolPath="$(WixToolPath)" />
+  </Target>
   <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
     <Error Text="The WiX Toolset v3.11 build tools must be installed to build this project. To download the WiX Toolset, see https://wixtoolset.org/releases/v3.11/stable" />
   </Target>
 </Project>
+
+
+
