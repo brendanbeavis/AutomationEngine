@@ -58,6 +58,12 @@ public partial class CronScheduleBuilder : ComponentBase
     }
 
 
+    protected override void OnParametersSet()
+    {
+        Update();
+    }
+
+
     protected async Task OnTypeChanged(ChangeEventArgs args)
     {
         if (Enum.TryParse<CronScheduleType>(

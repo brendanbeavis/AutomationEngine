@@ -65,6 +65,11 @@ namespace AutomationEngine.Components.Pages.Main
             {
                 EditContext = new EditContext(Job);
             }
+
+            if (!ReferenceEquals(ScheduleValue, Schedule))
+            {
+                ScheduleValue = Schedule;
+            }
         }
 
         private string FieldClass(string fieldName, bool isCheckbox = false)

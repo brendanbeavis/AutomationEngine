@@ -330,11 +330,16 @@ namespace AutomationEngine.Components.Pages.Main
                 Schedule = job.Schedule,
                 TimeoutSeconds = job.TimeoutSeconds,
                 Retry = job.Retry,
+                SuccessExitCodes = job.SuccessExitCodes,
                 OnFailureNotify = job.OnFailureNotify,
                 OnSuccessNotify = job.OnSuccessNotify,
                 Enabled = job.Enabled,
                 CreatedAt = job.CreatedAt,
-                UpdatedAt = job.UpdatedAt
+                UpdatedAt = job.UpdatedAt,
+                TargetFolder = job.TargetFolder,
+                FileAgeInDays = job.FileAgeInDays,
+                Recurse = job.Recurse,
+                FileFilter = job.FileFilter
             };
             schedule = CronScheduleParser.FromExpression(job.Schedule);
             editContext = new EditContext(newJob);
@@ -426,9 +431,14 @@ namespace AutomationEngine.Components.Pages.Main
                 Schedule = job.Schedule,
                 TimeoutSeconds = job.TimeoutSeconds,
                 Retry = job.Retry,
+                SuccessExitCodes = job.SuccessExitCodes,
                 OnFailureNotify = job.OnFailureNotify,
                 OnSuccessNotify = job.OnSuccessNotify,
-                Enabled = job.Enabled
+                Enabled = job.Enabled,
+                TargetFolder = job.TargetFolder,
+                FileAgeInDays = job.FileAgeInDays,
+                Recurse = job.Recurse,
+                FileFilter = job.FileFilter
             };
             schedule = CronScheduleParser.FromExpression(job.Schedule);
             editContext = new EditContext(newJob);

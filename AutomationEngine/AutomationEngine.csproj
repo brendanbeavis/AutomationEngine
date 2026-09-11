@@ -6,17 +6,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-AutomationEngine-190f7b04-9178-4680-af1e-34c9502c1e4e</UserSecretsId>
     <RequiresAspNetWebAssets>true</RequiresAspNetWebAssets>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <AssemblyVersion>1.3.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Models\NewFolder\**" />
-    <Compile Remove="scripts\**" />
-    <Content Remove="Models\NewFolder\**" />
-    <Content Remove="scripts\**" />
-    <EmbeddedResource Remove="Models\NewFolder\**" />
-    <EmbeddedResource Remove="scripts\**" />
-    <None Remove="Models\NewFolder\**" />
-    <None Remove="scripts\**" />
+    <Content Include="icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,7 +36,4 @@
     <PackageReference Include="Polly" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Logs\" />
-  </ItemGroup>
 </Project>

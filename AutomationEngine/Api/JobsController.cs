@@ -184,6 +184,7 @@ namespace AutomationEngine.Api
                     Schedule = dto.Schedule ?? "0 0 * * 0",
                     TimeoutSeconds = dto.TimeoutSeconds ?? 0,
                     Retry = dto.Retry,
+                    SuccessExitCodes = dto.SuccessExitCodes,
                     OnFailureNotify = dto.OnFailureNotify,
                     OnSuccessNotify = dto.OnSuccessNotify,
                     Enabled = dto.Enabled,
@@ -392,6 +393,8 @@ namespace AutomationEngine.Api
                 // Queue job execution in background task queue for safe, observable execution
                 await _backgroundTaskQueue.QueueAsync(jobId, async ct =>
                 {
+                    var startTime = DateTime.UtcNow;
+
                     try
                     {
                         var config = new Models.JobConfig
@@ -407,11 +410,15 @@ namespace AutomationEngine.Api
                             Schedule = job.Schedule,
                             TimeoutSeconds = job.TimeoutSeconds,
                             Retry = job.Retry,
+                            SuccessExitCodes = job.SuccessExitCodes,
                             OnFailureNotify = job.OnFailureNotify,
-                            OnSuccessNotify = job.OnSuccessNotify
+                            OnSuccessNotify = job.OnSuccessNotify,
+                            TargetFolder = job.TargetFolder,
+                            FileAgeInDays = job.FileAgeInDays,
+                            Recurse = job.Recurse,
+                            FileFilter = job.FileFilter
                         };
 
-                        var startTime = DateTime.UtcNow;
                         var result = await _runner.RunAsync(config, ct).ConfigureAwait(false);
                         var duration = DateTime.UtcNow - startTime;
                         await _stateManager.SaveJobRunAsync(job.JobId, result, startTime, duration).ConfigureAwait(false);
@@ -453,8 +460,20 @@ namespace AutomationEngine.Api
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Error executing triggered job {JobId}", jobId);
+
+                        var failedResult = new JobResult
+                        {
+                            Success = false,
+                            ExitCode = -1,
+                            StdErr = ex.Message,
+                            StdOut = string.Empty
+                        };
+
+                        var duration = DateTime.UtcNow - startTime;
+                        await _stateManager.SaveJobRunAsync(job.JobId, failedResult, startTime, duration).ConfigureAwait(false);
+
                         // Broadcast error state
-                        await _hubContext.BroadcastJobCompletedAsync(jobId, false, -1, ex.Message).ConfigureAwait(false);
+                        await _hubContext.BroadcastJobCompletedAsync(jobId, false, -1, ex.Message, (int)duration.TotalMilliseconds).ConfigureAwait(false);
                     }
                     finally
                     {
@@ -536,6 +555,7 @@ namespace AutomationEngine.Api
                 Schedule = job.Schedule,
                 TimeoutSeconds = job.TimeoutSeconds,
                 Retry = job.Retry,
+                SuccessExitCodes = job.SuccessExitCodes,
                 OnFailureNotify = job.OnFailureNotify,
                 OnSuccessNotify = job.OnSuccessNotify,
                 Enabled = job.Enabled,

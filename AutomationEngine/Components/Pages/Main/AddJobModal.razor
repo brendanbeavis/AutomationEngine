@@ -45,14 +45,13 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-2">
-                                    <label class="form-label">Command *</label>
-                                    <InputText class="@FieldClass(nameof(Job.Command))" @bind-Value="Job.Command" disabled="@(Job.Type == AutomationEngine.Models.JobType.PowerShell)" />
-                                    <ValidationMessage For="@(() => Job.Command)" />
-                                </div>
-
                                 @if (Job.Type == AutomationEngine.Models.JobType.Process)
                                 {
+                                    <div class="mb-2">
+                                        <label class="form-label">Command *</label>
+                                        <InputText class="@FieldClass(nameof(Job.Command))" @bind-Value="Job.Command" />
+                                        <ValidationMessage For="@(() => Job.Command)" />
+                                    </div>
                                     <div class="mb-2">
                                         <label class="form-label">Arguments</label>
                                         <InputText class="@FieldClass(nameof(Job.Arguments))" @bind-Value="Job.Arguments" />
@@ -72,7 +71,7 @@
                                     <div class="mb-2 row">
                                         <div class="col">
                                         <label class="form-label">Target Folder *</label>
-                                        <InputText class="@FieldClass(nameof(Job.TargetFolder))" @bind-Value="Job.TargetFolder" />
+                                        <InputText class="@FieldClass(nameof(Job.TargetFolder))" @bind-Value="Job.TargetFolder"  />
                                         <ValidationMessage For="@(() => Job.TargetFolder)" />
                                     </div>
                                         <div class="col">
@@ -98,6 +97,14 @@
                                     <InputText class="@FieldClass(nameof(Job.WorkingDirectory))" @bind-Value="Job.WorkingDirectory" />
                                     <ValidationMessage For="@(() => Job.WorkingDirectory)" />
                                 </div>
+                                @if (Job.Type != AutomationEngine.Models.JobType.FileCleanup)
+                                {
+                                    <div class="mb-2">
+                                        <label class="form-label">Success Exit Codes</label>
+                                        <InputText class="@FieldClass(nameof(Job.SuccessExitCodes))" @bind-Value="Job.SuccessExitCodes" placeholder="0,5" />
+                                        <ValidationMessage For="@(() => Job.SuccessExitCodes)" />
+                                    </div>
+                                }
                                 <div class="mb-2 row">
                                     <div class="col">
                                         <label class="form-label">Timeout (s)</label>

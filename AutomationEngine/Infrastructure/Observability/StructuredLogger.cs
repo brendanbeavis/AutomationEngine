@@ -56,13 +56,13 @@ namespace AutomationEngine.Infrastructure.Observability
         /// Logs a process execution event.
         /// </summary>
         public static void LogProcessExecution<T>(ILogger<T> logger, string jobId, string fileName,
-            string arguments, int exitCode) where T : class
+            string arguments, int exitCode, bool success) where T : class
         {
-            if (exitCode == 0)
+            if (success)
             {
                 logger.LogInformation(
-                    "Process execution succeeded | JobId: {JobId} | Command: {FileName} | Arguments: {Arguments}",
-                    jobId, fileName, arguments);
+                    "Process execution succeeded | JobId: {JobId} | Command: {FileName} | Arguments: {Arguments} | ExitCode: {ExitCode}",
+                    jobId, fileName, arguments, exitCode);
             }
             else
             {
