@@ -17,14 +17,26 @@ namespace AutomationEngine.Application.Abstractions
     public interface IJobStatusService
     {
         /// <summary>
-        /// Generates a human-readable status string describing the job's current state and next execution.
+        /// Generates a human-readable date string of the job's next execution.
         /// </summary>
         /// <param name="job">The job DTO to get status for.</param>
-        /// <returns>A formatted string containing job status information including running state, next scheduled run, and enabled status.</returns>
+        /// <returns>A formatted string containing next scheduled run.</returns>
+        /// <remarks>
+        /// Returns a string with the following components:
+        /// - "[DateTime]"
+        /// 
+        /// Example: "15/10/2024 04:30 AM"
+        /// </remarks>
+        string GetNextRun(JobDto job);
+
+        /// <summary>
+        /// Generates a human-readable status string describing the job's current state.
+        /// </summary>
+        /// <param name="job">The job DTO to get status for.</param>
+        /// <returns>A formatted string containing job status information including running state and enabled status.</returns>
         /// <remarks>
         /// Returns a concatenated string with one or more of the following components:
         /// - "Job is currently running; " (if IsRunning is true)
-        /// - "Next run: [DateTime]; " (if Schedule is valid and next occurrence exists)
         /// - "However job schedule is disabled!; " (if Enabled is false)
         /// 
         /// Example: "Next run: 2024-10-15 14:30:00; However job schedule is disabled!; "

@@ -110,9 +110,9 @@ else
                     <th>Job ID</th>
                     <th>Display Name</th>
                     <th>Schedule</th>
-                    <th>Created At</th>
                     <th>Updated At</th>
                     <th>Last Run</th>
+                    <th>Next Run</th>
                     <th>Result</th>
                     <th>Run Job</th>
                     <th>Actions</th>
@@ -126,9 +126,9 @@ else
                         <td><code>@job.JobId</code></td>
                         <td>@job.DisplayName</td>
                         <td><code>@job.Schedule</code></td>
-                        <td><small>@job.CreatedAt.ToLocalDisplay()</small></td>
                         <td><small>@job.UpdatedAt.ToLocalDisplayOr()</small></td>
                         <td><small>@job.LastRun.ToLocalDisplayOr()</small></td>
+                        <td><small>@JobStatusService.GetNextRun(job)</small></td>
                         <td>
                             <span class="@job.ToResultCssClass()">@job.ToResultText()</span>
                         </td>

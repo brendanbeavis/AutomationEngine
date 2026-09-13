@@ -22,6 +22,13 @@ namespace AutomationEngine.Services
             _logger = logger;
         }
 
+        public string GetNextRun(JobDto job)
+        {
+            var nextRun = GetNextExecutionTime(job);
+            return nextRun.HasValue ? nextRun.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm tt") : "N/A";
+        }
+
+
         /// <summary>
         /// Generates a human-readable status string describing the job's current state and next execution.
         /// </summary>
@@ -47,15 +54,9 @@ namespace AutomationEngine.Services
                     statusParts.Add("Job is currently running.");
                 }
 
-                var nextRun = GetNextExecutionTime(job);
-                if (nextRun.HasValue)
-                {
-                    statusParts.Add($"Next run: {nextRun.Value.ToLocalTime():yyyy-MM-dd HH:mm:ss}.");
-                }
-
                 if (!job.Enabled)
                 {
-                    statusParts.Add("However job schedule is disabled!");
+                    statusParts.Add("Job schedule is disabled!");
                 }
 
                 var status = string.Join(" ", statusParts) + (statusParts.Count > 0 ? " " : "");
