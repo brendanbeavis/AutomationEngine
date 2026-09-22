@@ -73,6 +73,12 @@ namespace AutomationEngine.Api.Requests
         public int Retry { get; set; } = 0;
 
         /// <summary>
+        /// Comma-separated list of process exit codes that should be treated as successful
+        /// </summary>
+        [StringLength(JobValidationRules.SuccessExitCodesMaxLength)]
+        public string? SuccessExitCodes { get; set; }
+
+        /// <summary>
         /// Whether to send notifications on failure
         /// </summary>
         public bool OnFailureNotify { get; set; } = false;

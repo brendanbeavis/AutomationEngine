@@ -21,6 +21,7 @@ namespace AutomationEngine.Models
         public string Schedule { get; set; } = string.Empty; // cron expression (seconds supported by Cronos)
         public int TimeoutSeconds { get; set; } = 0; // 0 = no timeout
         public int Retry { get; set; } = 0;
+        public string? SuccessExitCodes { get; set; }
         public bool OnFailureNotify { get; set; } = false;
         public bool OnSuccessNotify { get; set; } = false;
 

@@ -145,6 +145,7 @@ namespace AutomationEngine.Application.UseCases.Jobs
                         existing.Schedule = request.Schedule;
                         existing.TimeoutSeconds = request.TimeoutSeconds;
                         existing.Retry = request.Retry;
+                        existing.SuccessExitCodes = request.SuccessExitCodes;
                         existing.OnFailureNotify = request.OnFailureNotify;
                         existing.OnSuccessNotify = request.OnSuccessNotify;
                         existing.Enabled = request.Enabled;
@@ -177,6 +178,7 @@ namespace AutomationEngine.Application.UseCases.Jobs
                             Schedule = request.Schedule,
                             TimeoutSeconds = request.TimeoutSeconds,
                             Retry = request.Retry,
+                            SuccessExitCodes = request.SuccessExitCodes,
                             OnFailureNotify = request.OnFailureNotify,
                             OnSuccessNotify = request.OnSuccessNotify,
                             Enabled = request.Enabled,
@@ -242,6 +244,7 @@ namespace AutomationEngine.Application.UseCases.Jobs
             int retry,
             bool onFailureNotify,
             bool enabled,
+            string? successExitCodes = null,
             bool onSuccessNotify = false,
             string? targetFolder = null,
             int fileAgeInDays = 0,
@@ -272,6 +275,7 @@ namespace AutomationEngine.Application.UseCases.Jobs
                 Schedule = schedule,
                 TimeoutSeconds = timeoutSeconds,
                 Retry = retry,
+                SuccessExitCodes = successExitCodes,
                 OnFailureNotify = onFailureNotify,
                 OnSuccessNotify = onSuccessNotify,
                 Enabled = enabled,

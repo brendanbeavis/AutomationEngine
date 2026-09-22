@@ -85,6 +85,12 @@ namespace AutomationEngine.Dto
         public int Retry { get; set; } = 0;
 
         /// <summary>
+        /// Comma-separated list of process exit codes that should be treated as successful.
+        /// </summary>
+        [StringLength(JobValidationRules.SuccessExitCodesMaxLength, ErrorMessage = "SuccessExitCodes is limited to 100 characters")]
+        public string? SuccessExitCodes { get; set; }
+
+        /// <summary>
         /// Indicates whether to send notifications when the job fails.
         /// </summary>
         public bool OnFailureNotify { get; set; } = false;

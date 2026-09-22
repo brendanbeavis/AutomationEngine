@@ -14,6 +14,7 @@ public static class JobValidationRules
     public const int TimeoutMaxSeconds = 86400;
     public const int RetryMin = 0;
     public const int RetryMax = 100;
+    public const int SuccessExitCodesMaxLength = 100;
     public const int TargetFolderMaxLength = 500;
     public const int FileFilterMaxLength = 100;
     public const int FileAgeMinDays = 0;

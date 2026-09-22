@@ -3,7 +3,6 @@
     <Fragment>
         <DirectoryRef Id="INSTALLFOLDER">
             <Directory Id="dirFF7B98771B91AAE585FE52B7EFB34AF9" Name="BlazorDebugProxy" />
-            <Directory Id="dirCF01D5040FD9778C6964A1321276CBAE" Name="Logs" />
             <Directory Id="dir58E8247E2885C01898CAD009F9EFD8BA" Name="runtimes" />
             <Directory Id="dir3D83A529A2122889D4016E7D784625D5" Name="wwwroot" />
         </DirectoryRef>
@@ -178,24 +177,6 @@
             </Component>
             <Component Id="cmpB322B77CE8D40EBAD199D45D0E4F25F0" Directory="dirFF7B98771B91AAE585FE52B7EFB34AF9" Guid="*">
                 <File Id="fil28DEDB3F6C20AB880B95B684491580B0" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\BlazorDebugProxy\Newtonsoft.Json.dll" />
-            </Component>
-            <Component Id="cmpF7B4CEEEF8F03A694F8A61972F92436A" Directory="dirCF01D5040FD9778C6964A1321276CBAE" Guid="*">
-                <File Id="fil69F999E577DA69C1D9C3310967D57C98" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Logs\automation-structured-20260903.json" />
-            </Component>
-            <Component Id="cmp24CCC62A311C38B27561D6187C65F55B" Directory="dirCF01D5040FD9778C6964A1321276CBAE" Guid="*">
-                <File Id="fil1293FA8BD6576573FCD81AC79F489552" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Logs\automation-structured-20260904.json" />
-            </Component>
-            <Component Id="cmp8A260717CB01A26D1C7487196AE247A6" Directory="dirCF01D5040FD9778C6964A1321276CBAE" Guid="*">
-                <File Id="fil52B4E5E94351819110FAB1C161132AB1" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Logs\automation-structured-20260906.json" />
-            </Component>
-            <Component Id="cmp708303AF7D6DBD6AEAD9B57C08756C67" Directory="dirCF01D5040FD9778C6964A1321276CBAE" Guid="*">
-                <File Id="fil45B99F8CD2BF4A48BEE0DC53E539D1F7" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Logs\automation-structured-20260907.json" />
-            </Component>
-            <Component Id="cmpA8F7C0D49CA1D4002ADDE7C4FE301297" Directory="dirCF01D5040FD9778C6964A1321276CBAE" Guid="*">
-                <File Id="filCEAB30F2F344CB0D4457C98D7EC5E734" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Logs\automation-structured-20260908.json" />
-            </Component>
-            <Component Id="cmp3F5ABFE859AF04E0F4D66D172A6571E0" Directory="dirCF01D5040FD9778C6964A1321276CBAE" Guid="*">
-                <File Id="fil5A0C58177CFDE481B231B2F16E9FF889" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\Logs\automation-structured-20260909.json" />
             </Component>
             <Component Id="cmpDED211F31E8A2F3F3E16852E39874FD8" Directory="dirC3E9579629FD686887F346B09C280A94" Guid="*">
                 <File Id="filC3EF11E0830AC21595D48E212D2BEE1A" KeyPath="yes" Source="$(var.AutomationEnginePublishDir)\runtimes\browser-wasm\nativeassets\net9.0\e_sqlite3.a" />

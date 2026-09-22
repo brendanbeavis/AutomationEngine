@@ -3,6 +3,7 @@ using System;
 using AutomationEngine.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutomationEngine.Migrations
 {
     [DbContext(typeof(AutomationDbContext))]
-    partial class AutomationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260911014454_AddSuccessExitCodesToJobs")]
+    partial class AddSuccessExitCodesToJobs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.12");

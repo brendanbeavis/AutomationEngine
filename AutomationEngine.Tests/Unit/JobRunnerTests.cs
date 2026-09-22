@@ -68,6 +68,29 @@ namespace AutomationEngine.Tests.Unit
         }
 
         [Fact]
+        public async Task RunAsync_ProcessJob_WithConfiguredSuccessExitCode_ShouldSucceed()
+        {
+            // Arrange
+            var job = new JobConfig
+            {
+                Id = "test-process-alt-success",
+                DisplayName = "Test Process Alternate Success",
+                Type = JobType.Process,
+                Command = "cmd.exe",
+                Arguments = "/c exit 5",
+                SuccessExitCodes = "0,5"
+            };
+
+            // Act
+            var result = await _jobRunner.RunAsync(job, CancellationToken.None);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Success.Should().BeTrue();
+            result.ExitCode.Should().Be(5);
+        }
+
+        [Fact]
         public async Task RunAsync_ProcessJob_WithTimeout_ShouldTimeout()
         {
             // Arrange

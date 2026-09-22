@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
@@ -25,6 +26,9 @@ namespace AutomationEngine.Services
 
     public class JobRunner : IJobRunner
     {
+        private static readonly ConcurrentDictionary<string, DateTime> ActiveJobRuns = new();
+        private static readonly TimeSpan RunningHeartbeatInterval = TimeSpan.FromSeconds(30);
+
         private readonly ILogger<JobRunner> _logger;
         private readonly IAuditLogService? _auditService;
 
@@ -108,6 +112,11 @@ namespace AutomationEngine.Services
                 throw new ArgumentException("WorkingDirectory contains invalid path characters", nameof(job.WorkingDirectory));
             }
 
+            if (!TryGetSuccessExitCodes(job.SuccessExitCodes, out var successExitCodes, out var successExitCodesError))
+            {
+                throw new ArgumentException(successExitCodesError, nameof(job.SuccessExitCodes));
+            }
+
             var stopwatch = Stopwatch.StartNew();
             var correlationId = LoggingContext.GetOrCreateCorrelationId();
 
@@ -145,13 +154,24 @@ namespace AutomationEngine.Services
                                 }
                             });
 
-                    var result = await policy.ExecuteAsync(ct => ExecuteOnceAsync(job, ct), cancellationToken)
-                        .ConfigureAwait(false);
+                    var result = await RunWithHeartbeatAsync(
+                        job,
+                        ct => policy.ExecuteAsync(innerCt => ExecuteOnceAsync(job, successExitCodes, innerCt), ct),
+                        cancellationToken).ConfigureAwait(false);
 
                     stopwatch.Stop();
 
-                    _logger.LogInformation("Job execution completed successfully | JobId: {JobId} | Duration: {DurationMs}ms | ExitCode: {ExitCode}",
-                        job.Id, stopwatch.ElapsedMilliseconds, result.ExitCode);
+                    if (result.Success)
+                    {
+                        _logger.LogInformation("Job execution completed successfully | JobId: {JobId} | Duration: {DurationMs}ms | ExitCode: {ExitCode}",
+                            job.Id, stopwatch.ElapsedMilliseconds, result.ExitCode);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Job execution completed with failure | JobId: {JobId} | Duration: {DurationMs}ms | ExitCode: {ExitCode}",
+                            job.Id, stopwatch.ElapsedMilliseconds, result.ExitCode);
+                    }
+
                     StructuredLogger.LogJobCompleted(_logger, job.Id, job.DisplayName, stopwatch.Elapsed, 
                         result.Success, result.StdOut);
 
@@ -196,6 +216,37 @@ namespace AutomationEngine.Services
             }
         }
 
+        private static bool TryGetSuccessExitCodes(string? configuredExitCodes, out HashSet<int> successExitCodes, out string successExitCodesError)
+        {
+            successExitCodes = new HashSet<int> { 0 };
+            successExitCodesError = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(configuredExitCodes))
+            {
+                return true;
+            }
+
+            successExitCodes.Clear();
+
+            foreach (var segment in configuredExitCodes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (!int.TryParse(segment, out var exitCode))
+                {
+                    successExitCodesError = "SuccessExitCodes must be a comma-separated list of integers.";
+                    return false;
+                }
+
+                successExitCodes.Add(exitCode);
+            }
+
+            if (successExitCodes.Count == 0)
+            {
+                successExitCodes.Add(0);
+            }
+
+            return true;
+        }
+
         private bool ValidateFileFilter(string filter, string targetFolder)
         {
             if (string.IsNullOrWhiteSpace(filter))
@@ -224,7 +275,7 @@ namespace AutomationEngine.Services
             }
         }
 
-        private async Task<JobResult> ExecuteOnceAsync(JobConfig job, CancellationToken cancellationToken)
+        private async Task<JobResult> ExecuteOnceAsync(JobConfig job, HashSet<int> successExitCodes, CancellationToken cancellationToken)
         {
             var result = new JobResult();
             string? tempScriptPath = null;
@@ -327,12 +378,20 @@ namespace AutomationEngine.Services
                     result.ExitCode = process.ExitCode;
                     result.StdOut = stdOut.ToString();
                     result.StdErr = stdErr.ToString();
-                    result.Success = process.ExitCode == 0;
+                    result.Success = successExitCodes.Contains(process.ExitCode);
 
-                    _logger.LogInformation("Process execution completed successfully | JobId: {JobId} | ExitCode: {ExitCode} | Duration: {DurationMs}ms | OutputSize: {OutputSize}",
-                        job.Id, process.ExitCode, stopwatch.ElapsedMilliseconds, result.StdOut.Length);
+                    if (result.Success)
+                    {
+                        _logger.LogInformation("Process execution completed successfully | JobId: {JobId} | ExitCode: {ExitCode} | Duration: {DurationMs}ms | OutputSize: {OutputSize}",
+                            job.Id, process.ExitCode, stopwatch.ElapsedMilliseconds, result.StdOut.Length);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Process execution completed with failure | JobId: {JobId} | ExitCode: {ExitCode} | Duration: {DurationMs}ms | OutputSize: {OutputSize} | SuccessExitCodes: {SuccessExitCodes}",
+                            job.Id, process.ExitCode, stopwatch.ElapsedMilliseconds, result.StdOut.Length, string.Join(",", successExitCodes.OrderBy(code => code)));
+                    }
 
-                    StructuredLogger.LogProcessExecution(_logger, job.Id, fileName, arguments, process.ExitCode);
+                    StructuredLogger.LogProcessExecution(_logger, job.Id, fileName, arguments, process.ExitCode, result.Success);
                 }
 
                 // Log stdout/stderr at appropriate levels
@@ -384,6 +443,59 @@ namespace AutomationEngine.Services
             }
 
             return result;
+        }
+
+        private async Task<JobResult> RunWithHeartbeatAsync(
+            JobConfig job,
+            Func<CancellationToken, Task<JobResult>> execute,
+            CancellationToken cancellationToken)
+        {
+            var runId = $"{job.Id}:{Guid.NewGuid():N}";
+            ActiveJobRuns[runId] = DateTime.UtcNow;
+
+            _logger.LogDebug("Registered active job run | JobId: {JobId} | RunId: {RunId} | ActiveCount: {ActiveCount}",
+                job.Id, runId, ActiveJobRuns.Count);
+
+            using var heartbeatCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            var heartbeatTask = LogRunningHeartbeatAsync(job, runId, heartbeatCts.Token);
+
+            try
+            {
+                return await execute(cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                heartbeatCts.Cancel();
+
+                try
+                {
+                    await heartbeatTask.ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                }
+
+                ActiveJobRuns.TryRemove(runId, out _);
+                _logger.LogDebug("Unregistered active job run | JobId: {JobId} | RunId: {RunId} | ActiveCount: {ActiveCount}",
+                    job.Id, runId, ActiveJobRuns.Count);
+            }
+        }
+
+        private async Task LogRunningHeartbeatAsync(JobConfig job, string runId, CancellationToken cancellationToken)
+        {
+            using var timer = new PeriodicTimer(RunningHeartbeatInterval);
+
+            while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
+            {
+                if (!ActiveJobRuns.TryGetValue(runId, out var startedAtUtc))
+                {
+                    return;
+                }
+
+                var runningFor = DateTime.UtcNow - startedAtUtc;
+                _logger.LogInformation("Job still running | JobId: {JobId} | DisplayName: {DisplayName} | RunningForSeconds: {RunningForSeconds} | ActiveCount: {ActiveCount}",
+                    job.Id, job.DisplayName, (int)runningFor.TotalSeconds, ActiveJobRuns.Count);
+            }
         }
 
         private bool IsPathSafeForDeletion(string targetFolder)

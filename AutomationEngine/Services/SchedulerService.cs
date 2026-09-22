@@ -143,7 +143,7 @@ namespace AutomationEngine.Services
             try
             {
                 using var scope = _services.CreateScope();
-                var runner = scope.ServiceProvider.GetRequiredService<JobRunner>();
+                var runner = scope.ServiceProvider.GetRequiredService<IJobRunner>();
 
                 // Convert JobEntity to JobConfig for runner. Keep mapping similar to existing schema and read persisted Type/Script.
                 var jobConfig = new JobConfig
@@ -158,8 +158,13 @@ namespace AutomationEngine.Services
                     Schedule = job.Schedule,
                     TimeoutSeconds = job.TimeoutSeconds,
                     Retry = job.Retry,
+                    SuccessExitCodes = job.SuccessExitCodes,
                     OnFailureNotify = job.OnFailureNotify,
-                    OnSuccessNotify = job.OnSuccessNotify
+                    OnSuccessNotify = job.OnSuccessNotify,
+                    TargetFolder = job.TargetFolder,
+                    FileAgeInDays = job.FileAgeInDays,
+                    Recurse = job.Recurse,
+                    FileFilter = job.FileFilter
                 };
 
                 // Run the job once. Retries are handled inside JobRunner via Polly.
@@ -217,7 +222,19 @@ namespace AutomationEngine.Services
             {
                 _logger.LogError(ex, "Scheduler failed running job | JobId: {JobId} | DisplayName: {DisplayName}", 
                     job.JobId, job.DisplayName);
-                await _hubContext.BroadcastJobCompletedAsync(job.JobId, false, -1, ex.Message).ConfigureAwait(false);
+
+                var failedResult = new JobResult
+                {
+                    Success = false,
+                    ExitCode = -1,
+                    StdErr = ex.Message,
+                    StdOut = string.Empty
+                };
+
+                var duration = DateTime.UtcNow - startTime;
+                await _stateManager.SaveJobRunAsync(job.JobId, failedResult, startTime, duration);
+
+                await _hubContext.BroadcastJobCompletedAsync(job.JobId, false, -1, ex.Message, (int)duration.TotalMilliseconds).ConfigureAwait(false);
                 await _hubContext.BroadcastJobsListUpdatedAsync().ConfigureAwait(false);
             }
         }

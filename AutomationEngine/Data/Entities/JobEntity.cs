@@ -44,6 +44,10 @@ namespace AutomationEngine.Data.Entities
         public int TimeoutSeconds { get; set; } = 0;
 
         public int Retry { get; set; } = 0;
+
+        [MaxLength(100)]
+        public string? SuccessExitCodes { get; set; }
+
         public bool OnFailureNotify { get; set; } = false;
         public bool OnSuccessNotify { get; set; } = false;
 

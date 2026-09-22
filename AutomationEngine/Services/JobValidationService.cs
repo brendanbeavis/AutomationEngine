@@ -117,6 +117,13 @@ namespace AutomationEngine.Services
                 _logger.LogWarning("Job validation failed: Arguments too long | JobId: {JobId}", job.JobId);
             }
 
+            if (!string.IsNullOrWhiteSpace(job.SuccessExitCodes) && !TryParseSuccessExitCodes(job.SuccessExitCodes, out var successExitCodesError))
+            {
+                var error = new ValidationResult(successExitCodesError ?? "SuccessExitCodes must be a comma-separated list of integers", new[] { nameof(job.SuccessExitCodes) });
+                errors.Add(error);
+                _logger.LogWarning("Job validation failed: Invalid success exit codes | JobId: {JobId} | SuccessExitCodes: {SuccessExitCodes}", job.JobId, job.SuccessExitCodes);
+            }
+
             if (errors.Count == 0)
             {
                 _logger.LogDebug("Job validation passed | JobId: {JobId}", job.JobId);
@@ -198,6 +205,22 @@ namespace AutomationEngine.Services
             {
                 errorMessage = cronError;
                 return false;
+            }
+
+            return true;
+        }
+
+        private static bool TryParseSuccessExitCodes(string successExitCodes, out string? errorMessage)
+        {
+            errorMessage = null;
+
+            foreach (var segment in successExitCodes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (!int.TryParse(segment, out _))
+                {
+                    errorMessage = "SuccessExitCodes must be a comma-separated list of integers";
+                    return false;
+                }
             }
 
             return true;
